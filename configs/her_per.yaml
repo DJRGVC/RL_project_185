@@ -1,0 +1,6 @@
+defaults: base
+
+replay:
+  type: her_per
+  her_k: 4
+  her_strategy: future

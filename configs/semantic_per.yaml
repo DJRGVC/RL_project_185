@@ -1,0 +1,21 @@
+defaults:
+  - base
+
+replay:
+  type: semantic_per
+  capacity: 1_000_000
+  per_alpha: 0.6
+  per_beta_start: 0.4
+  per_beta_end: 1.0
+  per_beta_anneal_steps: 500_000
+  per_epsilon: 1.0e-6
+  vlm_keyframes: 5
+  vlm_failure_window: 5
+  semantic_alpha: 0.7
+  semantic_boost: 10.0
+  vlm_provider: openai
+  vlm_model: gpt-4o
+  vlm_call_interval: 10
+
+logging:
+  run_name: semantic_per

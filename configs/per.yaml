@@ -1,0 +1,14 @@
+defaults:
+  - base
+
+replay:
+  type: per
+  capacity: 1_000_000
+  per_alpha: 0.6
+  per_beta_start: 0.4
+  per_beta_end: 1.0
+  per_beta_anneal_steps: 500_000
+  per_epsilon: 1.0e-6
+
+logging:
+  run_name: td_per

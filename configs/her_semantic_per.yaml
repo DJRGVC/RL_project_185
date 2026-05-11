@@ -1,0 +1,7 @@
+defaults: base
+
+replay:
+  type: her_semantic_per
+  her_k: 4
+  her_strategy: future
+  vlm_call_interval: 1

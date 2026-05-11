@@ -1,0 +1,68 @@
+env:
+  name: FetchPickAndPlace-v4
+  max_episode_steps: 50
+  render_mode: rgb_array
+  goal_distance_threshold: 0.05
+
+sac:
+  hidden_dim: 256
+  lr_actor: 3.0e-4
+  lr_critic: 3.0e-4
+  lr_alpha: 3.0e-4
+  gamma: 0.98
+  tau: 0.005
+  init_temperature: 0.2
+  auto_entropy_tuning: true
+  batch_size: 256
+  updates_per_step: 1
+
+training:
+  total_steps: 1_000_000
+  warmup_steps: 10_000
+  eval_interval: 5_000
+  eval_episodes: 20
+  save_interval: 50_000
+  log_interval: 1_000
+  seed: 42
+
+replay:
+  type: semantic_per          # options: uniform | per | semantic_per
+  capacity: 1_000_000
+  # PER params
+  per_alpha: 0.6              # priority exponent
+  per_beta_start: 0.4         # IS correction start
+  per_beta_end: 1.0
+  per_beta_anneal_steps: 500_000
+  per_epsilon: 1.0e-6
+  # Semantic PER params
+  vlm_keyframes: 5            # K keyframes per episode
+  vlm_failure_window: 5       # half-width of priority boost window (timesteps)
+  semantic_alpha: 0.7         # blend: semantic_alpha * vlm_priority + (1 - semantic_alpha) * uniform
+  semantic_boost: 10.0        # priority multiplier for failure window transitions
+  vlm_provider: openai        # openai | anthropic
+  vlm_model: gpt-4o           # gpt-4o | claude-3-5-sonnet-20241022
+  vlm_call_interval: 1        # run VLM every N episodes (1 = every episode)
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+  prompt_template: >
+    You are analyzing a robotic manipulation trajectory.
+    Task: {task_description}
+
+    You are shown {K} keyframes from an episode that FAILED (the robot did not achieve the goal).
+    The frames are shown in chronological order. Frame indices map to approximate timestep fractions:
+    {frame_index_map}
+
+    Identify the keyframe index (0-indexed) where the robot's action MOST CLEARLY caused or
+    revealed the failure — the critical decision point or contact failure moment.
+
+    Respond with ONLY a JSON object: {{"failure_frame_index": <int>, "reasoning": "<one sentence>"}}
+
+logging:
+  project: RL_project
+  wandb_entity:              # injected from WANDB_ENTITY env var at runtime
+  use_wandb: true
+  use_tensorboard: true
+  log_dir: logs/
+  checkpoint_dir: checkpoints/

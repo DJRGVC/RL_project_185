@@ -1,0 +1,9 @@
+defaults:
+  - base
+
+replay:
+  type: uniform
+  capacity: 1_000_000
+
+logging:
+  run_name: uniform_replay
