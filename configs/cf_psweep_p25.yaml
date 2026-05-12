@@ -1,0 +1,21 @@
+defaults: base
+
+# p_counterfactual = 0.25 — default Path C mix (matches oracle_cf.yaml).
+# Replicated here so the sweep grid is self-contained; the run_name keeps
+# the cf_psweep_* prefix so W&B groups them together.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: oracle
+  cf_input_kind: state
+  p_counterfactual: 0.25          # ← sweep variable (= default)
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 1
+  cf_window: 4
+
+logging:
+  run_name: cf_psweep_p25

@@ -91,33 +91,55 @@ def load_config(path: str, overrides: list) -> dict:
 # ─────────────────────────────────────────────────── CF provider ──
 
 def _build_cf_provider(cfg: dict, env_name: str, task_desc: str):
-    """Build the (callable, input_kind) pair for the CF-HER buffer.
+    """Build the (callable, input_kind, verifier) tuple for the CF-HER buffer.
 
     cf_provider:
         'oracle'    -> hand-coded state-based CF (no API calls)
         'vlm'       -> VLM CF, raw position output
-        'verified'  -> VLM CF + simulator verification gate
+        'verified'  -> VLM CF + simulator verification gate (N1)
+
+    Returns
+    -------
+    (callable, input_kind, verifier_or_None)
+        - callable: the CF function the buffer invokes.
+        - input_kind: 'state' (oracle) or 'vlm' (others).
+        - verifier_or_None: a VerifiedCounterfactualLocalizer instance
+          when provider_kind == 'verified', else None. The buffer holds
+          this reference so its stats counters can be surfaced to W&B.
     """
     provider_kind = cfg["replay"].get("cf_provider", "oracle")
     cf_input_kind = cfg["replay"].get("cf_input_kind",
                                        "state" if provider_kind == "oracle" else "vlm")
 
     if provider_kind == "oracle":
-        return make_oracle_cf_fn(env_name), cf_input_kind
+        return make_oracle_cf_fn(env_name), cf_input_kind, None
 
     # ── VLM CFs ──
     from src.vlm.counterfactual import make_counterfactual_fn
+    is_verified = provider_kind == "verified"
+    # `verified` needs the corrective_action 4-vector from the VLM, so we
+    # force the prompt variant to one that emits it ('all') and ask
+    # make_counterfactual_fn to plumb the action through in a 4-tuple.
+    variant = cfg["replay"].get("vlm_variant", "achieved_goal")
+    if is_verified and variant not in ("all", "action"):
+        logger.warning(
+            f"[verified_cf] vlm_variant='{variant}' does not emit a "
+            f"corrective_action — overriding to 'all' so the simulator "
+            f"verifier has something to roll out."
+        )
+        variant = "all"
     cf_fn_raw = make_counterfactual_fn(
         provider=cfg["replay"].get("vlm_provider", "openai"),
         model=cfg["replay"].get("vlm_model", "gpt-4o-mini"),
-        variant=cfg["replay"].get("vlm_variant", "achieved_goal"),
+        variant=variant,
         task_description=task_desc,
         K_keyframes=cfg["replay"].get("vlm_keyframes", 5),
         min_confidence=cfg["replay"].get("cf_min_confidence", 0.5),
         reject_teleport_radius_m=cfg["replay"].get("reject_teleport_radius_m", 0.05),
+        return_action=is_verified,
     )
     if provider_kind == "vlm":
-        return cf_fn_raw, cf_input_kind
+        return cf_fn_raw, cf_input_kind, None
 
     # ── Verified CFs: wrap cf_fn_raw with sim verifier (N1). ──
     if provider_kind != "verified":
@@ -125,7 +147,7 @@ def _build_cf_provider(cfg: dict, env_name: str, task_desc: str):
     # For verification we need the simulator. We don't have the live training
     # env's snapshot at call time, so verified-CF uses N1's `localize_and_verify`
     # path with a freshly-reconstructed snapshot at the failure timestep
-    # (good-enough for smoke; production would pipe live snapshots).
+    # (kinematic approximation; production would pipe live snapshots).
     from src.vlm.verified_counterfactual import (
         VerifiedCounterfactualLocalizer,
         reconstruct_snapshot_for_synthetic_episode,
@@ -137,6 +159,11 @@ def _build_cf_provider(cfg: dict, env_name: str, task_desc: str):
         success_threshold=cfg["replay"].get("verify_success_threshold", 0.05),
         repeat_action=cfg["replay"].get("verify_repeat_action", True),
     )
+    # We need a deterministic seed to reconstruct snapshots; reuse the
+    # training seed. Snapshots are kinematic approximations (block teleported
+    # to achieved_goal_at_failure, robot pose = initial pose) — close enough
+    # for the action-rollout verification to be informative.
+    snapshot_seed = int(cfg["training"]["seed"])
 
     def cf_fn_verified(achieved_goals, desired_goal, keyframes=None):
         cfs = cf_fn_raw(
@@ -146,17 +173,80 @@ def _build_cf_provider(cfg: dict, env_name: str, task_desc: str):
         )
         if cfs is None:
             return None
-        # Try to verify each candidate. Drop ones the simulator rejects.
         verified = []
-        # Rebuild a snapshot at the most-divergent achieved frame for each CF.
-        for (k_i, g, c) in cfs:
-            # Skip verification when we have only a position-style CF
-            # (the VLM 'achieved_goal' variant). Position-only CFs aren't
-            # verifiable via the action-rollout protocol; trust them.
-            verified.append((k_i, g, c))
+        achieved_arr = np.asarray(achieved_goals)
+        for entry in cfs:
+            # `cf_fn_raw(return_action=True)` returns 4-tuples; defend against
+            # 3-tuples too in case a future refactor flips return_action off.
+            if len(entry) == 4:
+                k_i, g, c, ca = entry
+            else:
+                k_i, g, c = entry
+                ca = None
+
+            # Without an action 4-vec we cannot run the simulator. Fall back
+            # to position-only trust + the teleport gate already applied by
+            # make_counterfactual_fn. Counts as a "no-action" rejection in
+            # the verifier stats but we still surface the CF so the buffer
+            # keeps a usable signal.
+            if ca is None:
+                verifier.stats["rejected_no_action"] += 1
+                verified.append((int(k_i), np.asarray(g, dtype=np.float32), float(c)))
+                continue
+
+            # Build a kinematic snapshot at the failure frame: object placed
+            # at achieved_goals[k_i], goal = desired_goal, robot at init.
+            ach_at_fail = np.asarray(achieved_arr[int(k_i)], dtype=np.float64)
+            try:
+                snap = reconstruct_snapshot_for_synthetic_episode(
+                    env_name=env_name,
+                    seed=snapshot_seed,
+                    achieved_at_failure=ach_at_fail,
+                    desired_goal=np.asarray(desired_goal, dtype=np.float64),
+                    failure_t=int(k_i),
+                )
+            except Exception as e:  # noqa: BLE001 — never crash training.
+                logger.warning(f"[verified_cf] snapshot reconstruction failed: {e!r}")
+                verified.append((int(k_i), np.asarray(g, dtype=np.float32), float(c)))
+                continue
+
+            # Run the VLM's proposed action and check whether the env's
+            # sparse reward fires. .verify() updates verifier.stats counters.
+            try:
+                vc = verifier.verify(
+                    snap=snap,
+                    corrective_action=np.asarray(ca, dtype=np.float32),
+                    failure_t=int(k_i),
+                    achieved_at_failure=ach_at_fail.astype(np.float32),
+                    vlm_confidence=float(c),
+                )
+            except Exception as e:  # noqa: BLE001 — never crash training.
+                logger.warning(f"[verified_cf] verifier.verify raised: {e!r}")
+                verified.append((int(k_i), np.asarray(g, dtype=np.float32), float(c)))
+                continue
+
+            if vc.verified:
+                # The simulator confirmed the corrective action reaches the
+                # goal — promote confidence to 1.0 and replace the position
+                # with the *actual* achieved_goal at success time so the
+                # buffer relabels with the physically-realised hindsight
+                # rather than the VLM's possibly-noisy prediction.
+                achieved_goal_at_success = (
+                    vc.verified_achieved_goal
+                    if vc.verified_achieved_goal is not None
+                    else np.asarray(g, dtype=np.float32)
+                )
+                verified.append((
+                    int(k_i),
+                    np.asarray(achieved_goal_at_success, dtype=np.float32),
+                    1.0,
+                ))
+            # Else: simulator rejected this CF — drop it. The buffer will
+            # still see N HER relabels per real transition, so we degrade
+            # gracefully to vanilla HER for this episode if all CFs reject.
         return verified if verified else None
 
-    return cf_fn_verified, cf_input_kind
+    return cf_fn_verified, cf_input_kind, verifier
 
 
 # ─────────────────────────────────────────────────── evaluation ──
@@ -257,7 +347,7 @@ def train(cfg: dict):
             strategy=cfg["replay"].get("her_strategy", "future"),
         )
     elif use_cf_her:
-        cf_fn, cf_input_kind = _build_cf_provider(cfg, env_name, task_desc)
+        cf_fn, cf_input_kind, cf_verifier = _build_cf_provider(cfg, env_name, task_desc)
         replay = CounterfactualHERBuffer(
             underlying_buffer=replay,
             counterfactual_fn=cf_fn,
@@ -272,6 +362,7 @@ def train(cfg: dict):
             cf_input_kind=cf_input_kind,
             cf_window=cfg["replay"].get("cf_window", 4),
             env_name=env_name,
+            verifier=cf_verifier,
         )
 
     # ── failure localizer (semantic PER only) ──
@@ -429,6 +520,28 @@ def train(cfg: dict):
                             max(1, stats.get("verifications_attempted", 0))
                         ),
                     }
+                    # If the verified provider is active, surface the
+                    # simulator-verifier counters so the W&B summary makes
+                    # `verified_cf` differentiable from `vlm_cf` at a glance.
+                    verifier_obj = getattr(replay, "verifier", None)
+                    if verifier_obj is not None and hasattr(verifier_obj, "get_stats"):
+                        vstats = verifier_obj.get_stats()
+                        attempted = int(vstats.get("verifications_attempted", 0))
+                        succeeded = int(vstats.get("verifications_succeeded", 0))
+                        cf_metrics["buffer/cf_verifications_attempted"] = attempted
+                        cf_metrics["buffer/cf_verifications_succeeded"] = succeeded
+                        cf_metrics["buffer/cf_verifications_rejected_no_action"] = (
+                            int(vstats.get("rejected_no_action", 0))
+                        )
+                        cf_metrics["buffer/cf_verifications_rejected_no_success"] = (
+                            int(vstats.get("rejected_no_success", 0))
+                        )
+                        cf_metrics["buffer/cf_verifications_rejected_exception"] = (
+                            int(vstats.get("rejected_exception", 0))
+                        )
+                        cf_metrics["buffer/cf_verifications_success_rate"] = (
+                            succeeded / max(1, attempted)
+                        )
                     train_log.log(cf_metrics, global_step, prefix="")
                 except Exception as e:
                     logger.warning(f"CF stats log failed: {e}")

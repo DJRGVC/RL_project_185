@@ -600,6 +600,7 @@ def make_counterfactual_fn(
     K_keyframes: int = 5,
     min_confidence: float = 0.5,
     reject_teleport_radius_m: float = 0.05,
+    return_action: bool = False,
 ):
     """Build the callback function agent C2 expects.
 
@@ -620,6 +621,16 @@ def make_counterfactual_fn(
 
     Returns None on any VLM failure (parse error / API exception) so the
     SAC buffer can fall back to vanilla HER.
+
+    Parameters
+    ----------
+    return_action
+        If True, the returned tuples are 4-tuples
+        `(frame_index, corrective_goal_xyz, confidence, corrective_action_4d
+        or None)` so the verified-CF provider can pipe the proposed
+        4-vector into N1's simulator verification gate. Default False
+        preserves the original 3-tuple contract used by the vanilla VLM
+        and oracle providers — backwards-compatible with C2's stub.
     """
     loc = CounterfactualLocalizer(provider=provider, model=model)
 
@@ -682,6 +693,13 @@ def make_counterfactual_fn(
         # Reject the desired_goal-teleport collapse (failure-mode F1).
         if np.linalg.norm(cf_pos - np.asarray(desired_goal)) < reject_teleport_radius_m:
             return None
+
+        if return_action:
+            # 4-tuple form: includes corrective_action (may be None if the
+            # variant did not request it / parsing failed).
+            ca = (np.asarray(res.corrective_action, dtype=np.float32)
+                  if res.corrective_action is not None else None)
+            return [(int(failure_t), cf_pos, float(res.confidence), ca)]
 
         return [(int(failure_t), cf_pos, float(res.confidence))]
 

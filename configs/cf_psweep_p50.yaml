@@ -1,0 +1,22 @@
+defaults: base
+
+# p_counterfactual = 0.50 — equal-share CF / HER mix.
+# At this point, half the relabels are CF goals (oracle-quality) and half
+# are achieved-future HER goals. Approaches the upper end of what's safe
+# under a non-oracle CF provider; oracle should still benefit.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: oracle
+  cf_input_kind: state
+  p_counterfactual: 0.50          # ← sweep variable
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 1
+  cf_window: 4
+
+logging:
+  run_name: cf_psweep_p50

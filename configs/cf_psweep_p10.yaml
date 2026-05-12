@@ -1,0 +1,21 @@
+defaults: base
+
+# p_counterfactual = 0.10 — conservative CF mixing.
+# 1 in 10 relabels uses the oracle CF; the other 9 use vanilla HER.
+# Tests whether even a small CF signal lifts performance above HER.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: oracle
+  cf_input_kind: state
+  p_counterfactual: 0.10          # ← sweep variable
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 1
+  cf_window: 4
+
+logging:
+  run_name: cf_psweep_p10

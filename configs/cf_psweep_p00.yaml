@@ -1,0 +1,26 @@
+defaults: base
+
+# p_counterfactual = 0.0 — pure HER ablation point.
+# This MUST recover HER performance exactly (no CF transitions in buffer).
+# Used as the lower-bound anchor for the p_counterfactual sweep.
+#
+# Sweep schedule: p ∈ {0.0, 0.1, 0.25, 0.5, 0.75}. The 0.25 point is the
+# default and matches `oracle_cf.yaml`. Higher values stress-test how much
+# the buffer can tolerate the (always-trustworthy) oracle CF before it
+# crowds out the proven HER signal.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: oracle             # oracle is deterministic; use it for the sweep
+  cf_input_kind: state
+  p_counterfactual: 0.0           # ← sweep variable
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 1
+  cf_window: 4
+
+logging:
+  run_name: cf_psweep_p00

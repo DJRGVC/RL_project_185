@@ -1,0 +1,24 @@
+defaults: base
+
+# p_counterfactual = 0.75 — CF-dominant mix.
+# Most relabels use the oracle CF; only 1 in 4 uses standard HER.
+# Stress-tests whether the proven HER signal becomes a bottleneck when CF
+# is trustworthy. If oracle CF is genuinely as informative as we believe,
+# this should still beat the lower-p points; if it underperforms, the
+# diversity of HER goals matters even with a good CF.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: oracle
+  cf_input_kind: state
+  p_counterfactual: 0.75          # ← sweep variable
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 1
+  cf_window: 4
+
+logging:
+  run_name: cf_psweep_p75
