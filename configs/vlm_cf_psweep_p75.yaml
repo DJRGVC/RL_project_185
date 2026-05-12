@@ -1,0 +1,33 @@
+defaults: base
+
+# VLM-CF p_counterfactual = 0.75 — VLM-CF-dominant mix.
+# Most relabels use the VLM-imagined CF; only 1 in 4 is standard HER.
+# Stress-tests whether HER's proven achieved-future signal is still needed
+# as a backstop when VLM relabels make up the majority of the buffer.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: vlm
+  cf_input_kind: vlm
+  p_counterfactual: 0.75          # ← sweep variable
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 16
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  vlm_provider: anthropic
+  vlm_model: claude-sonnet-4-5
+  vlm_keyframes: 5
+  vlm_variant: achieved_goal
+  vlm_task_description: ""
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: vlm_cf_psweep_p75

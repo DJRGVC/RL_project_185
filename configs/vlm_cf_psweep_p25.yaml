@@ -1,0 +1,32 @@
+defaults: base
+
+# VLM-CF p_counterfactual = 0.25 — default Path C mix (matches vlm_cf.yaml).
+# Replicated here so the sweep grid is self-contained; run_name keeps the
+# vlm_cf_psweep_* prefix so W&B groups them together.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: vlm
+  cf_input_kind: vlm
+  p_counterfactual: 0.25          # ← sweep variable (= production default)
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 16
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  vlm_provider: anthropic
+  vlm_model: claude-sonnet-4-5
+  vlm_keyframes: 5
+  vlm_variant: achieved_goal
+  vlm_task_description: ""
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: vlm_cf_psweep_p25

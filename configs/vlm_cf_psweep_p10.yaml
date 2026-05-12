@@ -1,0 +1,34 @@
+defaults: base
+
+# VLM-CF p_counterfactual = 0.10 — conservative VLM mixing.
+# 1 in 10 relabels uses the VLM-imagined counterfactual goal; the other 9
+# use vanilla HER (achieved_future). Tests whether a small VLM signal is
+# enough to lift performance above pure HER given that VLM outputs are
+# noisier than oracle outputs.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: vlm
+  cf_input_kind: vlm
+  p_counterfactual: 0.10          # ← sweep variable
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 16
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  vlm_provider: anthropic
+  vlm_model: claude-sonnet-4-5
+  vlm_keyframes: 5
+  vlm_variant: achieved_goal
+  vlm_task_description: ""
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: vlm_cf_psweep_p10

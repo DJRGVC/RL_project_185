@@ -71,7 +71,8 @@ image = (
     timeout=TIMEOUT,
     retries=1,
 )
-def train_remote(config_path: str, overrides: Optional[List[str]] = None):
+def train_remote(config_path: str, overrides: Optional[List[str]] = None,
+                 wandb_tags: Optional[str] = None):
     """Run one training job on a remote A10G GPU.
 
     Args:
@@ -79,6 +80,11 @@ def train_remote(config_path: str, overrides: Optional[List[str]] = None):
                      e.g. "configs/semantic_per.yaml"
         overrides:   List of "key.subkey=value" CLI-style overrides.
                      e.g. ["env.name=FetchPush-v4", "training.seed=42"]
+        wandb_tags:  Optional comma-separated W&B tag list, exported as
+                     WANDB_TAGS before wandb.init() (used by
+                     run_path_c_vlm_cf_psweep). Backward-compatible: existing
+                     callers that don't pass this leave tag derivation to
+                     logger.py (method-prefix only).
     """
     import os
     import sys
@@ -91,6 +97,9 @@ def train_remote(config_path: str, overrides: Optional[List[str]] = None):
     # This mirrors the a1-her-baselines fix.
     os.environ["WANDB_PROJECT"] = "RL_project"
     os.environ["WANDB_ENTITY"] = "d-grant-uc-berkeley"
+
+    if wandb_tags:
+        os.environ["WANDB_TAGS"] = wandb_tags
 
     # Force OSMesa rendering on Modal containers. The Modal secret is built
     # from local .env which has MUJOCO_GL=egl (for the local 5070 Ti) — but
@@ -219,3 +228,59 @@ def run_path_c_phase2():
         print(f"spawned: {run['run_name']}")
     print(f"\nLaunched {spawned} Path C Phase 2 jobs onto Modal.")
     print("Track progress at https://wandb.ai/d-grant-uc-berkeley/RL_project?tags=path_c_overnight_2026-05-11")
+
+
+@app.local_entrypoint()
+def run_path_c_vlm_cf_psweep():
+    """Spawn the 18-run VLM-CF p_counterfactual sweep on FetchPickAndPlace-v4.
+
+    Sweep grid: p ∈ {0.00, 0.10, 0.25, 0.50, 0.75, 1.00} × 3 seeds × 500k
+    steps × FetchPickAndPlace-v4. Each run uses the corresponding
+    configs/vlm_cf_psweep_p{NN}.yaml (vlm_provider=anthropic, Sonnet-4.5,
+    achieved_goal variant, cf_call_interval=16, reject_teleport_radius=0.05).
+
+    Purpose: answer "does p=1.0 (pure VLM-imagined relabels) beat the
+    p=0.25 production default?" The current Path C default is HER+VLM-CF
+    at p=0.25, copied from the oracle-CF default. If VLM CFs are high
+    enough quality, p closer to 1.0 should dominate; if HER's hindsight
+    guarantee is load-bearing, the peak should sit at p=0.25–0.50.
+
+    Tags every run with `path_c_vlm_cf_psweep_2026-05-12` so morning
+    analysis can pull them with one W&B filter URL.
+    """
+    P_VALUES = ["00", "10", "25", "50", "75", "100"]
+    SEEDS = [42, 123, 999]
+    ENV_NAME = "FetchPickAndPlace-v4"
+    TAG_BASE = "path_c_vlm_cf_psweep_2026-05-12"
+
+    common_overrides = [
+        f"env.name={ENV_NAME}",
+        "training.total_steps=500000",
+        "training.eval_interval=10000",
+        "training.save_interval=100000",
+        "training.log_interval=1000",
+        "logging.use_wandb=true",
+    ]
+
+    spawned = 0
+    for p in P_VALUES:
+        config = f"configs/vlm_cf_psweep_p{p}.yaml"
+        for seed in SEEDS:
+            run_name = f"path_c_vlm_cf_psweep_p{p}_pp_s{seed}_seed{seed}"
+            overrides = list(common_overrides) + [
+                f"training.seed={seed}",
+                f"logging.run_name={run_name}",
+            ]
+            tags = ",".join([
+                TAG_BASE,
+                "vlm_cf_psweep",
+                f"p{p}",
+                "pathc_lead",
+                ENV_NAME,
+            ])
+            train_remote.spawn(config, overrides, wandb_tags=tags)
+            spawned += 1
+            print(f"spawned: {run_name}")
+    print(f"\nLaunched {spawned} Path C VLM-CF p-sweep jobs onto Modal.")
+    print("Track progress at "
+          "https://wandb.ai/d-grant-uc-berkeley/RL_project?tags=path_c_vlm_cf_psweep_2026-05-12")
