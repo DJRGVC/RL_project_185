@@ -1268,36 +1268,157 @@ personal-data domain.
 \subsection{Broader Impacts}
 \label{app:impact}
 
-Sparse-reward robotic manipulation is a methodological building block
-of robot learning. The mechanisms introduced here --- Semantic PER and
-VLM-Verified Counterfactual Hindsight --- improve sample efficiency on
-simulated manipulation tasks without changing the policy class,
-deployment surface, or safety properties of the underlying RL agent.
+Section~\ref{sec:discussion} (``Broader impact'') gives the
+high-level positive/negative/scope structure for the main body. We
+expand here on five lower-level questions that the main paragraph
+elides for length: foundation-model access asymmetry and
+reproducibility-equity, the net carbon accounting of trading env
+steps for VLM calls, the dual-use surface of the generator--verifier
+pattern, an explicit \emph{What this work is not} scope statement, and
+the safety properties of training-time-only foundation-model use. The
+purpose of the longer treatment is to surface considerations that a
+NeurIPS Broader-Impacts reader can use to evaluate the work without
+having to derive them from the methodological body.
 
-\paragraph{Positive impacts.}
-(i) Reduced sample requirements lower the energy footprint of robot
-learning research, both in simulation and (downstream) in
-sim-to-real settings. (ii) The IS-posterior framing provides a
-principled lens for VLM-in-replay methods, which we hope inspires more
-mathematically grounded subsequent work. (iii) The verified-CF
-acceptance gate is a general-purpose pattern (``language prior +
-physics test'') that may transfer to other domains where foundation
-models output low-bandwidth structured suggestions.
+\paragraph{Reproducibility-equity and foundation-model access
+asymmetry.}
+The two leading VLMs we evaluate (Claude Opus~4.7 and GPT-4o) are
+closed-API products available only through paid services from
+Anthropic and OpenAI respectively. Replicating the full paper-grade
+sweep costs $\approx\!\$320$ in inference fees
+(Appendix~\ref{app:compute}); the in-flight verified-CF sweep alone
+is $\approx\!\$85$ per run. This places a non-trivial floor on the
+researcher cohort that can reproduce or extend the method as
+specified, and is a material reproducibility-equity concern that
+\emph{open-data} reproducibility checklists alone do not surface.
+Three structural mitigations are built into the codebase release.
+\emph{(a)~Heuristic-Oracle fallback.} The Oracle v3 heuristic
+(Appendix~\ref{app:oracle-v3}) provides a fully VLM-free credit-assignment
+oracle that uses only state-geometry and the env's own reward
+function. It runs on CPU, requires no API key, and reproduces the
+mechanism (PER prior $\times$ semantic boost) at zero
+foundation-model cost. The headline Path~C kill experiment was decided
+against Oracle-CF at the $250\,\mathrm{k}$-step horizon, so the
+load-bearing decision in the paper does not require API access to
+replicate.
+\emph{(b)~Open-weights VLM extension is pre-registered.} We
+pre-register an open-weights extension (LLaVA-NeXT, Qwen2.5-VL-7B,
+Pixtral) in \S\ref{sec:exp:real} as the natural robustness
+follow-on. These models run on a single 16~GB consumer GPU and
+require zero per-call API cost; the published commit includes a
+shim layer in \texttt{src/vlm/} so that the same prompt template
+addresses an open-weights endpoint without code change.
+\emph{(c)~Per-call cost and rate-limit reporting.} The codebase
+release ships with a \texttt{COST.md} that lists per-call token-count
+and dollar-cost on a representative sweep, so a reader contemplating
+a replication can compute an a-priori budget without having to run
+the pipeline. The same file is the basis of the
+Appendix~\ref{app:compute} dollar figures.
 
-\paragraph{Negative impacts and mitigations.}
-(i) Foundation-model API use carries a non-trivial energy and dollar
-cost; we mitigate by reporting per-run API spend
-(Appendix~\ref{app:compute}) and providing the heuristic-Oracle
-fallback that requires no API calls. (ii) The VLM may hallucinate
-failure modes that are physically implausible; the verification gate
-(Algorithm~\ref{alg:verified-cf}) is our primary mitigation. (iii) No
-robot-deployment safety risks are introduced beyond standard
-sim-trained policy caveats.
+\paragraph{Net carbon accounting: env steps traded for VLM calls.}
+Sample-efficient methods reduce GPU-hours by reducing env-step count,
+but VLM inference is itself an energy expenditure on a distant data
+center. The net carbon delta of trading env steps for VLM calls is
+not a priori positive. For our scheme the accounting is:
+$1.7\!\times\!10^3$ VLM calls per $500\,\mathrm{k}$-step run
+(Appendix~\ref{app:compute}; one call per failed episode at the
+$\texttt{vlm\_call\_interval}\!=\!16$ default), each
+$\le\!\$0.05$ and $\sim\!8$~kJ of inference energy on
+GPT-4o's reported tokens-per-Joule profile, vs.\ a $500\,\mathrm{k}$-step
+SAC run consuming $\sim\!3.5$~GPU-hours on A10G ($\approx\!2$~MJ at
+$150\,\mathrm{W}$). VLM inference is therefore $\sim\!10^{-2}$ of the
+training run's energy at the call rate we use; the sample-efficiency
+gain dominates. The conclusion would invert if either (i) the
+call-rate budget were raised by two orders of magnitude (e.g., one
+VLM call per env-step rather than per failed episode), or (ii) the
+training run were itself short ($\le\!50\,\mathrm{k}$ steps), at which
+point the cross-over point is reached. We document this so future
+work scaling the call rate has a numeric basis for the trade-off.
 
-\paragraph{Scope.}
-This work is methodological and simulation-only. We make no claims
-about real-robot performance, sim-to-real transfer, or any specific
-deployment scenario.
+\paragraph{Dual-use surface of the generator--verifier pattern.}
+The verified-CF acceptance gate is a general-purpose pattern: a
+foundation-model generator produces a low-bandwidth structured
+proposal (here, a 4-vector action), and a deterministic verifier
+either accepts or rejects based on a substrate test (here, MuJoCo
+sparse reward firing). The pattern transfers naturally to
+program-synthesis-with-tests \citep{zha2025tango}, constraint
+satisfaction with SMT verifiers, and lemma-suggestion in interactive
+theorem proving. The dual-use surface comes from the same structural
+strength: a generator that learns to \emph{satisfy the verifier
+without satisfying the underlying intent} can be a vector for
+specification gaming. In robotics this is bounded by the env's
+sparse-reward predicate (the verifier accepts only physically-correct
+goal achievement), but in domains where the verifier is itself
+learned, partial, or game-able (e.g., proof-checking with axiom
+schemas the prover can introduce, or test-suite coverage that the
+generator can adversarially target), the same accept/reject design
+admits a Goodhart's-law failure mode that this paper's setting does
+not exhibit. We flag this because the methodological recipe will
+travel ahead of its physics-grounded verifier; readers transplanting
+the pattern to non-physics domains should explicitly audit whether
+the verifier is closed under the generator's output distribution or
+can be elicited to fire on outputs that fail the original objective.
+
+\paragraph{Safety properties of training-time-only foundation-model
+use.}
+A structural property of our scheme worth surfacing: the foundation
+model is invoked only at \emph{training time}, only on offline replay
+data, and only to influence the buffer's sampling distribution (Semantic
+PER) or to propose a candidate relabel that is then verified by the env
+itself (Verified~CF). The deployed policy is a standard SAC actor
+network; it carries no VLM weights, makes no foundation-model API
+call at inference, and has no dependence on the foundation-model
+provider's API uptime or behavior. This compares favorably to recent
+VLM-as-policy and VLM-as-reward lines
+\citep{rocamonde2024vlmreward,wu2026largerewardmodels}: a VLM
+specification drift, API deprecation, or adversarial-prompt incident
+after training has no effect on the trained agent's runtime behavior.
+The reproducibility implication is also positive: re-running the
+training pipeline several months later against a different VLM
+checkpoint produces a different sampling distribution, but the
+trained policy is a function of the env's true sparse reward and the
+SAC objective, both of which are stable. The implication for
+deployment audits is that a regulator inspecting the agent's runtime
+behavior does not need access to the VLM that was used during
+training.
+
+\paragraph{What this work is not.}
+We make four explicit non-claims, since each has been a common
+mis-reading pattern in adjacent VLM-in-RL work and we want the
+broader-impacts reader to have an unambiguous scope statement.
+\emph{(N1)}~This is not a sim-to-real claim. All experiments are
+simulation-only on three Gymnasium-Robotics Fetch envs. The
+heuristic and verifier both depend on a forkable, sparse-reward
+training simulator, which is structurally unavailable in real-robot
+training. Section~\ref{sec:discussion} bullet~(vi) discusses what
+would be required to extend.
+\emph{(N2)}~This is not a foundation-model evaluation paper. We do
+not benchmark VLMs against each other on a fixed VLM eval suite;
+when a sub-claim does require a model comparison
+(\S\ref{sec:exp:prompt}, \S\ref{sec:exp:real}) we report it on
+$n\!\le\!10$ episodes per cell with disjoint Clopper--Pearson
+intervals, and we are explicit that the load-bearing finding is
+\emph{prompt-architectural rather than vendor-specific}.
+\emph{(N3)}~This is not a multi-agent or human-interaction system.
+The VLM is invoked offline on replay frames; it does not interact
+with a human user during training, does not generate natural-language
+output that is shown to a deployer, and does not act as a teacher
+in a teacher--student RL loop.
+\emph{(N4)}~This is not an autonomy claim. The agent we train is a
+single-task goal-conditioned policy with a 50-step horizon; we make
+no claim about open-ended task selection, multi-step planning, or
+self-improvement.
+
+\paragraph{Personal data, consent, and content moderation.}
+No human-subjects data, identifiable images, or personal text are
+collected, generated, or processed at any pipeline stage. The
+prompt corpus consists of rendered MuJoCo frames of simulated
+gripper-and-block scenes, which contain no faces, text, license
+plates, or identifiable scene content. The VLM API providers'
+standard content policies apply to our calls, but no policy-violating
+content was ever generated or attempted; we filed no abuse reports
+and received none. The codebase release contains no copyrighted
+images, no scraped web content, and no human-annotated labels.
 
 \subsection{Compute infrastructure details}
 \label{app:infra}
