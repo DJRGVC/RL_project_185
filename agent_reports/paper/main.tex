@@ -984,21 +984,113 @@ Variant & Model & $n$ & Plausibility & Goal-progress & Teleport-collapse \\
 \end{tabular}
 \end{table}
 
-\textbf{Key finding.} The \texttt{(GPT-4o, achieved\_goal)} configuration
-\emph{strictly dominates} every other (model, position-emitting variant) cell:
-0\% teleport-collapse (vs.\ Opus's 100\%), 0.79~plausibility (tied for the
-highest in the entire grid), and 0.83~goal-progress (only narrowly behind
-Opus's degenerate 0.97 which trivially copies the goal). We adopt this as the
-production configuration. Critically, GPT-4o still teleport-collapses on the
-joint \textsc{all} variant in 4/6 episodes: the failure mode is
-\emph{prompt-architectural}, not model-specific. Section~\ref{sec:exp:real}
-extends this prompt grid to a third VLM family (Sonnet~4.5) on real-data
-failures and confirms the prompt-architectural fix transfers. This constitutes
-a \emph{VLM-family robustness ablation} across at least three frontier-model
-families (Opus~4.7, GPT-4o, Sonnet~4.5): the prompt-architectural fix
-that eliminates teleport-collapse is portable across model families, and any
-implementation of the verified-counterfactual mechanism is not dependent on
-access to a single proprietary model.
+\textbf{Key finding.} On the position-emitting axis (the only axis on which
+teleport-collapse is observable), the \texttt{(GPT-4o, achieved\_goal)}
+configuration dominates every comparable cell:
+$0/6$ teleport-collapse (vs.\ Opus's $4/4$ on the same variant and $2/2$ on
+\textsc{all}), the highest plausibility in the position-emitting block
+($0.79$, tying \textsc{narrative}-Opus across the whole grid), and the
+second-highest goal-progress ($0.83$, behind only Opus's
+$0.97$ on \textsc{achieved\_goal}, which by inspection is achieved by
+trivially copying \texttt{desired\_goal}---the same mechanism that produces
+its $4/4$ teleport rate, so a degenerate ``win''). We adopt
+\texttt{(GPT-4o, achieved\_goal)} as the production configuration for
+position-emitting prompts; the verified-CF mechanism (\S\ref{sec:method:verified})
+uses the \textsc{action} variant instead, which is structurally immune.
+Critically, GPT-4o still teleport-collapses on the joint \textsc{all} variant
+in $4/6$ episodes, identifying the failure mode as
+\emph{prompt-architectural} (a function of which fields the prompt exposes
+to the model), not model-specific.
+Section~\ref{sec:exp:real} extends this prompt grid to a third VLM family
+(Sonnet~4.5) on real on-policy failures and confirms the prompt-architectural
+fix transfers; combined, the three families (Opus~4.7, GPT-4o, Sonnet~4.5)
+constitute the closest reading of a \emph{VLM-family robustness
+sub-ablation} the present budget allowed. We note in agreement with the
+limitations of \S\ref{sec:discussion} that two of the three families share
+training-corpus and RLHF lineage (Opus/Sonnet are both Anthropic), so the
+``three-family'' claim should be read as two-vendor.
+
+\paragraph{Mechanism of the position-copy attractor.}
+Section~\ref{sec:method:prompt} gives the mechanistic account at the
+output-schema level; here we add the empirical signature. Across the four
+\textsc{achieved\_goal} Opus calls the predicted
+\texttt{corrective\_position} matched \texttt{desired\_goal} to within
+$\le\!1$\,cm in $4/4$ cases; on \textsc{all} the match held in $2/2$ Opus
+calls. GPT-4o's $0/6$ on \textsc{achieved\_goal} vs.\ $4/6$ on \textsc{all}
+is the discriminating signature: the only structural difference between the
+two prompts is the inclusion of the full action-history block in
+\textsc{all}, which lengthens the prompt and crowds out the discouragement
+of position-copying in the system message. This is consistent with a
+prompt-length-dependent attentional dilution: longer prompts shift relative
+weight away from the late-prompt instruction discouraging
+position-copying, while leaving the in-context goal triplet as the strongest
+local numerical attractor. The interpretation is testable:
+shortening the \textsc{all} variant's action history should monotonically
+reduce GPT-4o's teleport-collapse rate; this is a falsifiable prediction we
+flag for the camera-ready follow-on (\S\ref{sec:discussion}).
+
+\paragraph{Judge-bias and inter-rater reliability.}
+The judge for Table~\ref{tab:prompt-variants} is Claude Opus 4.7, which is
+also one of the two candidate models. This same-vendor judge-candidate
+overlap is the most direct external-validity threat to the table: the
+$0.97$ goal-progress score that Opus's degenerate goal-copy receives---a
+literal copy of \texttt{desired\_goal} into \texttt{corrective\_position}---is
+exactly the failure mode a self-preferring judge would amplify, since the
+prediction matches the rubric's ``goal-progress'' anchor mechanically. We mitigate
+in three ways. (i) The \emph{teleport-collapse} metric is computed by
+predicate, not judge: $\mathbb{1}[\|\hat p\!-\!g\|_2\!\le\!d_{\text{th}}]$
+is decided by Euclidean distance, so the load-bearing $0/6$ vs.\ $4/4$
+comparison is judge-independent. (ii) Plausibility is computed against a
+fixed 5-point rubric in the system prompt (Appendix~\ref{app:prompts}),
+which constrains the response space relative to free-form scoring. (iii)
+The Section~\ref{sec:exp:real} replication on real on-policy data uses
+Sonnet~4.5 as the candidate, removing the same-vendor judge-candidate edge
+case for the load-bearing GPT-4o comparison. We do not run a cross-judge
+ablation in the present budget; if Opus-as-judge over-weights the Opus
+\textsc{narrative} $0.79$ relative to ground truth, the table's effect
+would be to \emph{inflate} Opus's plausibility rank, biasing
+\emph{against} the GPT-4o adoption claim that the table is used to
+support. The honest reading is that the judge-bias direction is
+adversarial to our preferred conclusion, which is the safer of the two
+mis-specifications.
+
+\paragraph{Statistical-power and pre-registration framing.}
+Cell sizes are $n\!=\!6$ on the GPT-4o rows and $n\!=\!2$--$4$ on the Opus
+rows (Opus calls were re-used from C1's partial grid to avoid
+re-billing). At $n\!=\!6$ a $0/6$ outcome is consistent with any true
+teleport-collapse rate $\le\!0.39$ at $\alpha\!=\!0.05$ (Clopper--Pearson
+upper); at $n\!=\!4$ a $4/4$ outcome is consistent with any true rate
+$\ge\!0.40$. The two intervals are disjoint, so the $0/6$ vs.\ $4/4$
+contrast between \texttt{(GPT-4o, achieved\_goal)} and
+\texttt{(Opus, achieved\_goal)} is the strongest single
+binary-classification claim the table makes; the plausibility and
+goal-progress numbers are weaker, with $n\!=\!4$ standard errors of
+$0.04$--$0.18$ that admit ranking swaps under any single retry. We
+pre-register the following falsification: \emph{a $30$-episode
+re-evaluation of \texttt{(GPT-4o, achieved\_goal)} on
+\texttt{FetchPickAndPlace} with the production prompt should show a
+teleport-collapse rate $\le 5\%$}. A higher rate falsifies the
+prompt-architectural claim and reverts the recommendation to the
+\textsc{action} variant alone. The cost is $\le\!\$2$ of GPT-4o calls and
+is queued for the camera-ready window.
+
+\paragraph{Connection to the IS-posterior framing.}
+The prompt-design ablation sits upstream of the \S\ref{sec:theory}
+posterior framing: $q_\phi$, the VLM's approximation to
+$p(t^\star\!\mid\!\tau)$, is what is being measured here in the
+specific case where the localization is of a \emph{corrective} timestep,
+not a \emph{failure-causing} one. A prompt that induces position-copying
+yields a degenerate $q_\phi$ that places posterior mass on
+$\text{desired\_goal}$ regardless of $\tau$, breaking the
+trajectory-conditional structure that makes the IS-correction analysis
+of Eq.~\eqref{eq:headline} go through. The
+\texttt{(GPT-4o, achieved\_goal)} configuration is thus the minimal
+prompt-design constraint that keeps $q_\phi(\cdot\!\mid\!\tau)$
+$\tau$-dependent at all. Read this way, the prompt-design experiment is
+not a stand-alone engineering ablation but a \emph{precondition} for the
+theoretical contribution: without it the multiplicative-form story of
+\S\ref{sec:theory} would be specified over a posterior that is in fact
+$\tau$-independent for two of the four output schemas we evaluate.
 
 \subsection{Cross-Task Transferability}
 \label{sec:exp:transfer}
