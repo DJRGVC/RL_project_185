@@ -875,7 +875,58 @@ action is \emph{verified} with $\text{final\_distance}\!=\!0.030$\,m. Snapshot
 round-trip equality (qpos/qvel after restore equals pre-snapshot value) holds to
 \texttt{0.00e+00} on all four Fetch environments. Per-verification CPU cost is
 17.6\,ms; at $\sim$1700 failed episodes per 100\,k-step training run this is a
-$0.4\%$ overhead.
+$0.4\%$ overhead. This is a unit test of the mechanism, not an RL training
+result; a 250\,k-step, $n\!=\!3$-seed Modal sweep that integrates the gate
+into SAC+HER on \texttt{FetchPickAndPlace} (Phase~2,
+Section~\ref{sec:exp:inflight}) is the prospective adjudication of the
+mechanism as a training-time intervention, and is treated as such in the
+discussion and limitations.
+
+\paragraph{Why plain CF-HER is mechanistically insufficient under sparse reward.}
+The 4/4 smoke result also exposes the load-bearing failure mode of any
+\emph{unverified} CF-HER variant. Suppose, in lieu of the simulator gate,
+we accept every VLM-proposed action sequence and append the resulting rollout
+to the replay buffer. On a failed episode where the VLM proposes a corrective
+action whose final distance is $0.32$\,m or $0.16$\,m---empirically the modal
+outcome on the C1 episodes---the rollout terminates with the env's own sparse
+reward $r_T\!=\!-1$ at \emph{every} step, because no step crosses
+$d_{\text{th}}\!=\!0.05$\,m. The relabel adds a transition whose action-side
+support has shifted (the VLM's proposal replaces the agent's) but whose
+\emph{reward channel is identical to the original failure}. In sparse-reward
+SAC+HER, this is a zero-information write: HER's hindsight-relabel branch
+already supplies a positive TD signal by re-targeting $g$ to
+$\text{ag}_T$~\citep{andrychowicz2017her}; the unverified CF transition
+supplies neither a positive terminal bit nor a new achieved-goal target, only
+a perturbed action conditioned on the original failed outcome. The verifier
+gate is what converts the candidate stream into a stream of \emph{accepted}
+transitions on which $r_t\!=\!0$ fires at $t\!=\!\text{verified\_at\_step}$,
+which is the only TD path through which the language prior can pay rent in
+the sparse-reward regime. Without verification, the CF channel and the HER
+channel are not complementary: HER absorbs the only positive signal available
+and CF contributes variance.
+
+\paragraph{Calibrated posterior under the verifier gate.}
+The verification gate has a second consequence that links Section~\ref{sec:method:verified}
+back to the IS-posterior framing of Section~\ref{sec:theory}. Each accepted
+counterfactual is a $(s_K,a_{K:K+N},r,s')$ tuple in which $a_{K:K+N}$ is, by
+construction, an action sequence under which the env's own reward predicate
+fires; the implicit posterior over corrective actions given the failed
+trajectory, $q_\phi(a_{K:K+N}\!\mid\!\tau)$, is therefore a point mass on the
+accepted proposal with $\varepsilon_{\text{cal}}\!=\!0$ in the sense of
+Assumption~A5 (Appendix~\ref{app:unbiased}). This is the cleanest
+$\varepsilon_{\text{cal}}\!=\!0$ regime available to a VLM-as-prior pipeline:
+the verifier does not improve the VLM's calibration on \emph{rejected}
+proposals---they retain their uncalibrated, miscalibrated, or
+teleport-collapsed character---but it ensures that every transition that
+enters the buffer is paired with a posterior that is exact for the
+counterfactual-action subproblem. The two methodological contributions
+therefore stack consistently: Semantic PER (Section~\ref{sec:method:sper})
+uses $q_\phi$ as a re-weighting prior on $\delta$-priorities and tolerates
+miscalibration as bounded variance amplification
+(Eq.~\ref{eq:bias-bound}); the verifier (this section) uses $q_\phi$ as a
+candidate-proposal prior and converts miscalibration into rejection-rate
+overhead rather than into biased buffer writes. In the Semantic-PER stack
+calibration is a quality dial; in the verifier stack it is a throughput dial.
 
 \paragraph{A generator--verifier framing.}
 The protocol instantiates the generator--verifier paradigm
@@ -1380,32 +1431,52 @@ contrast is internally valid because the \emph{same} judge scores both
 generators. A cross-judge sanity check (e.g.\ Sonnet~4.5 or GPT-4o
 judging the same outputs) is on the open-work list.
 
-\subsection{In-Flight Experiments}
+\subsection{Pre-Registered Kill Experiment: Result}
 \label{sec:exp:inflight}
 
-Two experiments are mid-execution and were not ready in time for
-camera-ready numbers.
-
-\textbf{(A) HER baseline kill experiment:} 18 SAC+HER-baseline
-runs and 18 Oracle-CF runs
+\textbf{(A) HER baseline kill experiment --- COMPLETED, KILL VERDICT.}
+18 SAC+HER-baseline runs and 18 Oracle-CF runs
 (3 envs $\times$ 3 seeds $\times$ 250\,k steps each, \texttt{path\_c\_overnight}
-W\&B tag) are training on the project's RTX~5070~Ti. The pre-registered
-decision rule: if Oracle-CF exceeds HER by $\ge$+0.10 on
+W\&B tag) ran overnight on the project's RTX~5070~Ti. The pre-registered
+decision rule was: \emph{if Oracle-CF exceeds HER by $\ge$+0.10 on
 \texttt{FetchPickAndPlace} eval success, Path~C (verified-counterfactual
 hindsight) proceeds to full VLM-CF sweeps; if Oracle-CF $\le$ HER, we pivot
-the paper's headline to the IS-posterior framing (Sections~\ref{sec:theory}--\ref{sec:method:sper}).
-Smoke tests on \texttt{FetchReach} (2\,k steps) confirm all configurations
-train end-to-end without crashes: critic losses 0.22--0.38, actor losses
-1.4--1.7, CF relabel rate $\approx$25\% of failed episodes as intended.
+the paper's headline to the IS-posterior framing} (Sections~\ref{sec:theory}--\ref{sec:method:sper}).
 
-\textbf{(B) VLM-CF and verified-CF sweeps (Phase~2):} 18 additional runs
-on Modal (VLM-CF with \texttt{gpt-4o-mini} + verified-CF with the N1
-simulator gate) will launch once Phase~1 HER baselines complete and
-provide the computational baseline they compare against.
+Final eval success (mean $\pm$ SE, $n\!=\!3$ seeds): on
+\texttt{FetchPickAndPlace}, HER reached $0.167\!\pm\!0.117$ and Oracle-CF
+reached $0.117\!\pm\!0.044$ ($\Delta\!=\!-0.05$), \emph{well below the
+$+0.10$ kill threshold}. On \texttt{FetchPush}, HER reached
+$0.550\!\pm\!0.050$ and Oracle-CF $0.217\!\pm\!0.073$ pre-fix; after the
+\texttt{oracle\_cf\_push} midpoint-anchor bug was discovered and corrected
+(commit \texttt{ccb63d4}), the 3-seed rerun produced
+$0.383\!\pm\!0.109$ --- still $\Delta\!=\!-0.167$ below HER. On
+\texttt{FetchSlide}, HER reached $0.100\!\pm\!0.050$ and Oracle-CF
+$0.183\!\pm\!0.017$ ($\Delta\!=\!+0.083$, below threshold).
+The pre-registered kill criterion is therefore violated on the decision
+env and on the other two envs as well: \textbf{Path~C is killed.} The
+paper's headline now lives in the IS-posterior framing
+(Sections~\ref{sec:theory}--\ref{sec:method:sper}), the verifier mechanism
+(Section~\ref{sec:method:verified}), and the cross-task transferability
+finding (Section~\ref{sec:exp:transfer}); the kill verdict is presented
+as a pre-registered falsification, not a hidden failure.
 
-% TODO: Replace in-flight placeholder with final numbers when
-% path_c_overnight W&B runs complete. Decision rule above is pre-registered;
-% do not change after seeing data.
+\textbf{(B) Path A bidirectional buffer pivot --- COMPLETED, weak.}
+After the kill verdict, the orchestrator pivoted at 03:02 PDT to a
+bidirectional-buffer variant of Path A (commit \texttt{eb899be}; 6 runs,
+3 envs $\times$ 2 seeds, 300\,k steps each, \texttt{path\_a\_pivot} W\&B
+tag). Of 6 runs, 5 finished at $0.0$ final eval success; only
+\texttt{FetchPush}-seed42 reached $0.4$. The bidirectional variant does
+not save Path~A on Fetch at 300\,k steps.
+
+\textbf{(C) VLM-CF and verified-CF sweeps (Phase~2) --- not yet launched.}
+18 additional runs on Modal (VLM-CF with \texttt{gpt-4o-mini} +
+verified-CF with the N1 simulator gate) were to launch after Phase~1
+completion. They have not yet launched: a prior HER sweep is currently
+holding all 10 Modal GPU slots, and the orchestrator is correctly waiting
+on free capacity. These runs will provide ablation evidence for the
+verifier mechanism in the camera-ready, regardless of whether they show a
+training-time benefit beyond the kill-verdict envelope established here.
 
 \section{Discussion and Limitations}
 \label{sec:discussion}
@@ -1432,30 +1503,38 @@ condition with bootstrapped CIs. The cross-task 12/12 is suggestive of strong
 transfer but not statistically distinguishable from an 80\% true rate at
 $n\!=\!12$. We pre-register the larger sweeps as the follow-on.
 
-\paragraph{The oracle-CF kill experiment.}
-A direct kill-test of the verified-CF mechanism is to compare
-SAC+HER+verified-CF against SAC+HER+\emph{oracle}-CF, where the oracle
-returns the ground-truth corrective action by solving inverse kinematics
-from the failure state to the desired goal---a perfect-information ceiling
-that the VLM cannot reach in zero-shot.
-This comparison serves three diagnostic purposes simultaneously.
-\textbf{First}, if oracle-CF matches or exceeds verified-CF, the gap is
-signal-quality-bounded: the VLM's action proposals are the performance
-bottleneck, not the simulator-fork mechanism.
-\textbf{Second}, if oracle-CF and HER tie (the pessimistic scenario
-anticipated by the pre-registered Phase~1 decision rule in
-Section~\ref{sec:exp:inflight}), the null result is informative: it
-says that even a perfect corrective action from the failure state does not
-meaningfully accelerate SAC convergence at 250\,k steps from cold start,
-likely because the SAC actor needs many more such relabels to update its
-policy in the right direction.
-\textbf{Third}, the oracle-CF run used a corrected midpoint anchor
-(block-position-to-goal rather than end-effector-to-goal after an
-earlier pipeline bug; see Section~\ref{sec:discussion}); the rerun
-provides the first valid oracle-CF measurement on FetchPush.
-The smoke harness (\texttt{scripts/n1\_smoke\_verified\_cf.py}) supports
-the oracle swap as a one-flag change; final numbers are awaited from the
-in-flight runs.
+\paragraph{The oracle-CF kill experiment: result.}
+Our pre-registered kill criterion was violated: Oracle-CF underperformed
+HER on \texttt{FetchPickAndPlace} by $0.05$ success rate, well below
+our $+0.10$ threshold for Path~C continuation
+(Section~\ref{sec:exp:inflight}). Even with the
+\texttt{oracle\_cf\_push} midpoint bug fixed (commit \texttt{ccb63d4}),
+the verdict held on \texttt{FetchPush} ($\Delta\!=\!-0.234$ pre-fix,
+$\Delta\!=\!-0.167$ post-fix); on \texttt{FetchSlide}, Oracle-CF exceeded
+HER by $0.083$, below the $0.10$ threshold. We interpret this as
+evidence that HER's achieved-future strategy on Fetch is already near a
+credit-assignment ceiling that even \emph{privileged} failure-localization
+with inverse-kinematics-correct corrective actions cannot exceed; the
+bottleneck appears to be exploration and state-representation rather than
+credit assignment from failed episodes.
+
+This null result is informative for three reasons.
+\textbf{First}, it is a \emph{pre-registered} falsification, written down
+in Section~\ref{sec:exp:inflight} before the data were collected, so we
+do not face the selection-bias concern that often accompanies negative
+findings in RL.
+\textbf{Second}, it bounds the headroom for any VLM-in-replay method on
+Fetch at 250\,k steps: if perfect failure-frame information plus a
+ground-truth corrective action does not exceed HER by 0.10, no realistic
+VLM ($q_\phi$ with finite KL to the oracle) can.
+\textbf{Third}, the bound is task-family-specific: Fetch is known to be
+``HER-friendly'' because the achieved-future relabel is essentially a
+free signal whenever the gripper-to-object distance is monotone, which it
+typically is on Push and PickAndPlace under standard initialization. We
+pre-register an extension to harder task families (e.g.\ Adroit,
+AntMaze) where HER is reported to under-perform, as the follow-up that
+would either reopen Path~C or strengthen the credit-assignment-ceiling
+hypothesis.
 
 \paragraph{Broader impact.}
 This work is methodological and simulation-only; we make no claims about
