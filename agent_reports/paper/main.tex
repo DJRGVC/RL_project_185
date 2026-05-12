@@ -1707,6 +1707,13 @@ dominant failure mode of language-only counterfactuals by construction:
 the VLM generates corrective actions, the ground-truth simulator verifies
 them, and only physics-consistent relabels enter the buffer---eliminating
 modeling error entirely.
+The simulator-as-verifier gate is a precision-over-recall instrument:
+every accepted relabel is guaranteed sparse-reward-positive, but early
+in training---when the snapshot state sits far from the goal---the joint
+event (VLM proposes a corrective action; action sequence reaches the goal
+within $N$ verifier steps) can have near-zero base rate, reducing the
+channel to a strictly costlier HER until the underlying policy matures
+(Limitation~(ix)).
 A two-vendor, three-model (GPT-4o, Opus~4.7, Sonnet~4.5) prompt sweep on
 6 synthetic and 10 real Fetch failures identifies the teleport-collapse failure
 as prompt-architectural and task-conditioned, not model-specific; critically,
@@ -1714,6 +1721,11 @@ the prompt-design experiment is not a stand-alone engineering ablation but a
 precondition for the IS-posterior framing: a position-copying $q_\phi$ breaks
 the trajectory-conditional structure of Eq.~\eqref{eq:headline}.
 A single prompt template achieves 12/12 cross-task annotations.
+To enable a head-to-head empirical comparison with \citet{sharony2026vlmrb},
+we provide a faithful reproduction of their VLM-RB method on Fetch in our
+codebase---same priority formula, $\lambda$-schedule, and clip length,
+substituting Claude Sonnet~4.5 for the frozen PerceptionLM that is not
+API-accessible---pre-staged for the camera-ready evaluation.
 The IS-posterior framing, the precondition argument, and the simulator-as-verifier
 guarantee stand independently of the in-flight training outcomes.
 
