@@ -1138,10 +1138,32 @@ seeds drawn from the same env distribution.
 \begin{itemize}\itemsep0pt
 \item \textbf{Theoretical claims justified.} Section~\ref{sec:theory}
 gives the IS-posterior framing; Appendix~\ref{app:is-derivation} gives
-the step-by-step derivation. Assumptions (A1)--(A4) for unbiasedness
-are stated in Appendix~\ref{app:unbiased}.
-\item \textbf{Algorithm pseudocode.} Algorithms~\ref{alg:sem-per} and
-\ref{alg:verified-cf} give full step-by-step pseudocode.
+the step-by-step derivation. Assumptions (A1)--(A5) for unbiasedness
+are stated in Appendix~\ref{app:unbiased}. We note explicitly that the
+derivation in Appendix~\ref{app:is-derivation} describes the
+strictly-corrected estimator (using $w_{\text{IS},\text{Sem}}$), while
+the running implementation uses the under-corrected $w_{\text{IS},P}$
+for variance-reduction reasons detailed in
+Section~\ref{sec:theory} and Limitation~(i). These are not the same
+estimator; the abstract's ``IS-corrected interpretation'' refers to
+the strictly-corrected variant.
+\item \textbf{Algorithm pseudocode.} Algorithm~\ref{alg:sem-per} gives
+the Semantic-PER training loop pseudocode including the sum-tree priority
+update (lines~8--10); Algorithm~\ref{alg:verified-cf} covers VLM-Verified
+Counterfactual Hindsight. The \emph{exact re-blending} mechanism---storing
+$(|\delta_i|\!+\!\varepsilon)^\alpha$ in a sibling \texttt{float64} array
+$\{q_i\}$ and computing the sum-tree leaf on demand as $p_i\!=\!q_i\!\cdot\!w_i$
+to prevent rounding error accumulation across joint TD/VLM
+updates---is described in the ``Exact re-blending'' paragraph of
+Section~\ref{sec:method:sper} (main text). No separate pseudocode
+block is provided for this sub-step; the implementation resides in
+\texttt{src/replay/semantic\_per\_buffer.py} (method
+\texttt{\_rebuild\_leaf}).
+\item \textbf{Bidirectional variant.} The sliding-window width used to
+operationalize $t_{\text{succ}}$ without a VLM call is $W_s\!=\!W\!=\!5$
+(same half-width as the failure kernel $K_W$, chosen for symmetry with the
+per-slot semantic boost rather than separately tuned). This is stated in the
+``Bidirectional variant'' paragraph of Section~\ref{sec:method:sper}.
 \item \textbf{Hyperparameters.} Tables~\ref{tab:hparams-sac}--\ref{tab:hparams-vlm}
 list every hyperparameter used. Table~\ref{tab:hparams-sac} includes
 full network architecture details (number of layers, activation,
@@ -1188,6 +1210,29 @@ NumPy~1.26, Anthropic SDK 0.39, OpenAI SDK 1.55.
 \item Total compute: $\approx 80$~h local GPU, $\approx 130$~h Modal
 A10G, $\approx 200$~h CPU, $\approx \$320$ in VLM API calls. See
 Appendix~\ref{app:compute} for breakdown.
+\item \textbf{VLM call latency and amortization.}
+A single VLM localization call (5-keyframe render $\to$ API
+round-trip $\to$ JSON parse) takes $1.2$--$3.5$~s wall-clock on
+\texttt{gpt-4o-2024-08-06} and $0.9$--$2.8$~s on
+\texttt{claude-opus-4-7-20250529}, measured over the C1v2 real-data
+sweep (Appendix~\ref{app:ratelimit}). VLM calls occur \emph{once per
+failed episode}, not once per transition; at the empirical failure
+rate of $\approx 0.15$~failures/episode in Phase~1 training
+($\approx\!1700$ failed episodes per $100{,}000$ steps), a $500{,}000$-step
+run incurs $\approx\!8{,}500$ VLM calls. At $\approx\!2$~s each, the
+total blocking latency is $\approx\!4.7$~h of VLM round-trips per
+run. We amortize this cost by issuing the call
+\emph{off the training thread} via a lightweight worker queue:
+keyframes are dispatched immediately at episode-end, the training loop
+continues with $w_i\!=\!1$ (unbosted) for that episode, and the
+semantic weight update (lines~6--10 of Algorithm~\ref{alg:sem-per})
+is applied asynchronously when the API response arrives. This means
+$\approx\!1$~episode's slots may be un-boosted at any given time; the
+bias is bounded by the ratio of the episode length $T$ to the buffer
+capacity $|\mathcal{D}_B|\!=\!10^6$, which is negligible
+($T/|\mathcal{D}_B|\!\approx\!5\!\times\!10^{-5}$ for $T\!=\!50$).
+The worker-queue implementation is in
+\texttt{src/vlm/localization\_worker.py}.
 \end{itemize}
 
 \paragraph{Statistical reporting.}
@@ -1195,8 +1240,20 @@ Appendix~\ref{app:compute} for breakdown.
 \item Sample sizes are explicitly noted ($n\!=\!3$ seeds; $n\!=\!4$--6 per
 prompt-variant cell; $n\!=\!12$ cross-task pilot). All small-sample
 claims are flagged as preliminary in Section~\ref{sec:discussion}.
-\item Confidence intervals: mean~$\pm$~SE throughout, with bootstrap
-where seed-level resampling is feasible (Appendix~\ref{app:stats}).
+\item Confidence intervals: mean~$\pm$~SE throughout (df~$=2$ for
+$n\!=\!3$ seeds), with bootstrap CIs where seed-level resampling is
+feasible (Appendix~\ref{app:stats}). We acknowledge that non-overlapping
+SE intervals at df~$=\!2$ are not a hypothesis test and do not constitute
+a formal significance claim; all comparisons drawn from Figure~\ref{fig:headline}
+are explicitly labeled as ``preliminary trends'' in
+Section~\ref{sec:exp:headline} and Section~\ref{sec:discussion}.
+Agarwal et al.\ (2021) stratified bootstrap IQM/Optimality-Gap
+aggregation would require $n\!\ge\!5$ seeds and is deferred to the
+camera-ready revision once the corrected-pipeline runs complete.
+\item \textbf{Prompt-design sweep.} The $n\!=\!4$--6 per-cell counts in
+Table~\ref{tab:prompt-variants} are episode-level, not seed-level; no
+seed-level aggregation is applicable. Counts and percentages in that
+table are exact.
 \end{itemize}
 
 \paragraph{Ethics.}
