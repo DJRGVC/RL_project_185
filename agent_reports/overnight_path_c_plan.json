@@ -84,5 +84,46 @@
       "replay.cf_call_interval=8",
       "logging.use_wandb=true"
     ]
+  },
+  "phase3_ablation_vlmtier": {
+    "_target_runtime_minutes": 30,
+    "_target_total_steps": 250000,
+    "_concurrency_local": 3,
+    "_gpu": "local-5070ti",
+    "_depends_on": ["phase1_complete"],
+    "_design_doc": "agent_reports/ablation_vlmtier_design.md",
+    "_hypothesis": "verified-CF success is sim-gate-bounded, not VLM-quality-bounded: gpt-4o-mini matches opus-4-7 within +-0.10 success.",
+    "_falsification": "if v3 (opus-4-7) beats v0 (gpt-4o-mini) by >= 0.10 mean success at 250k steps on FetchPickAndPlace, the generator-verifier-asymmetry framing in section 4.3 must be retracted.",
+    "_estimated_cost_usd": 106,
+    "_estimated_gpu_hours": 6,
+    "_dollar_breakdown": {
+      "gpt-4o-mini": 2.25,
+      "gpt-4o":      22.50,
+      "claude-sonnet-4-5": 13.50,
+      "claude-opus-4-7":   67.50
+    },
+    "runs": [
+      {"id": "vlmt_v0_pp_s42",  "config": "configs/ablation_vlmtier_v0_mini.yaml",   "env": "FetchPickAndPlace-v4", "seed": 42,  "run_name": "path_c_ablation_vlmtier_pp_gpt4omini_s42",  "tags": ["path_c_ablation_vlmtier_2026-05-12","vlmtier","gpt4omini","FetchPickAndPlace-v4"]},
+      {"id": "vlmt_v0_pp_s123", "config": "configs/ablation_vlmtier_v0_mini.yaml",   "env": "FetchPickAndPlace-v4", "seed": 123, "run_name": "path_c_ablation_vlmtier_pp_gpt4omini_s123", "tags": ["path_c_ablation_vlmtier_2026-05-12","vlmtier","gpt4omini","FetchPickAndPlace-v4"]},
+      {"id": "vlmt_v0_pp_s999", "config": "configs/ablation_vlmtier_v0_mini.yaml",   "env": "FetchPickAndPlace-v4", "seed": 999, "run_name": "path_c_ablation_vlmtier_pp_gpt4omini_s999", "tags": ["path_c_ablation_vlmtier_2026-05-12","vlmtier","gpt4omini","FetchPickAndPlace-v4"]},
+      {"id": "vlmt_v1_pp_s42",  "config": "configs/ablation_vlmtier_v1_gpt4o.yaml",  "env": "FetchPickAndPlace-v4", "seed": 42,  "run_name": "path_c_ablation_vlmtier_pp_gpt4o_s42",     "tags": ["path_c_ablation_vlmtier_2026-05-12","vlmtier","gpt4o","FetchPickAndPlace-v4"]},
+      {"id": "vlmt_v1_pp_s123", "config": "configs/ablation_vlmtier_v1_gpt4o.yaml",  "env": "FetchPickAndPlace-v4", "seed": 123, "run_name": "path_c_ablation_vlmtier_pp_gpt4o_s123",    "tags": ["path_c_ablation_vlmtier_2026-05-12","vlmtier","gpt4o","FetchPickAndPlace-v4"]},
+      {"id": "vlmt_v1_pp_s999", "config": "configs/ablation_vlmtier_v1_gpt4o.yaml",  "env": "FetchPickAndPlace-v4", "seed": 999, "run_name": "path_c_ablation_vlmtier_pp_gpt4o_s999",    "tags": ["path_c_ablation_vlmtier_2026-05-12","vlmtier","gpt4o","FetchPickAndPlace-v4"]},
+      {"id": "vlmt_v2_pp_s42",  "config": "configs/ablation_vlmtier_v2_sonnet.yaml", "env": "FetchPickAndPlace-v4", "seed": 42,  "run_name": "path_c_ablation_vlmtier_pp_sonnet45_s42",  "tags": ["path_c_ablation_vlmtier_2026-05-12","vlmtier","sonnet45","FetchPickAndPlace-v4"]},
+      {"id": "vlmt_v2_pp_s123", "config": "configs/ablation_vlmtier_v2_sonnet.yaml", "env": "FetchPickAndPlace-v4", "seed": 123, "run_name": "path_c_ablation_vlmtier_pp_sonnet45_s123", "tags": ["path_c_ablation_vlmtier_2026-05-12","vlmtier","sonnet45","FetchPickAndPlace-v4"]},
+      {"id": "vlmt_v2_pp_s999", "config": "configs/ablation_vlmtier_v2_sonnet.yaml", "env": "FetchPickAndPlace-v4", "seed": 999, "run_name": "path_c_ablation_vlmtier_pp_sonnet45_s999", "tags": ["path_c_ablation_vlmtier_2026-05-12","vlmtier","sonnet45","FetchPickAndPlace-v4"]},
+      {"id": "vlmt_v3_pp_s42",  "config": "configs/ablation_vlmtier_v3_opus.yaml",   "env": "FetchPickAndPlace-v4", "seed": 42,  "run_name": "path_c_ablation_vlmtier_pp_opus47_s42",    "tags": ["path_c_ablation_vlmtier_2026-05-12","vlmtier","opus47","FetchPickAndPlace-v4"]},
+      {"id": "vlmt_v3_pp_s123", "config": "configs/ablation_vlmtier_v3_opus.yaml",   "env": "FetchPickAndPlace-v4", "seed": 123, "run_name": "path_c_ablation_vlmtier_pp_opus47_s123",   "tags": ["path_c_ablation_vlmtier_2026-05-12","vlmtier","opus47","FetchPickAndPlace-v4"]},
+      {"id": "vlmt_v3_pp_s999", "config": "configs/ablation_vlmtier_v3_opus.yaml",   "env": "FetchPickAndPlace-v4", "seed": 999, "run_name": "path_c_ablation_vlmtier_pp_opus47_s999",   "tags": ["path_c_ablation_vlmtier_2026-05-12","vlmtier","opus47","FetchPickAndPlace-v4"]}
+    ],
+    "common_overrides": [
+      "training.total_steps=250000",
+      "training.eval_interval=10000",
+      "training.save_interval=50000",
+      "training.log_interval=1000",
+      "replay.cf_call_interval=8",
+      "logging.use_wandb=true"
+    ],
+    "shell_script": "scripts/run_ablation_vlmtier.sh"
   }
 }

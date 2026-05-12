@@ -1,0 +1,51 @@
+defaults: base
+
+# VLM tier ablation — v0: cheap tier (gpt-4o-mini).
+# Tests whether the headline Path C result survives a ~10x cheaper VLM
+# (gpt-4o-mini @ ~$0.005/call vs gpt-4o @ ~$0.05/call).
+#
+# Sweep grid (configs/ablation_vlmtier_v{0,1,2,3}.yaml):
+#   v0: gpt-4o-mini       (OpenAI,    ~$0.005/call)  ← THIS FILE
+#   v1: gpt-4o            (OpenAI,    ~$0.05/call)
+#   v2: claude-sonnet-4-5 (Anthropic, ~$0.03/call)
+#   v3: claude-opus-4-7   (Anthropic, ~$0.15/call)
+#
+# Hypothesis: gpt-4o-mini suffices for verified-CF on Fetch tasks because
+# the simulator-verification gate filters degenerate outputs regardless of
+# model size. Falsification: a >=0.10 success gap between v0 and v3 at
+# 250k steps would invalidate the cost-effective-deployment claim.
+#
+# Pipeline: HER + verified-CF (sim-gated VLM counterfactuals).
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: verified
+  cf_input_kind: vlm
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 8             # cost control: VLM every 8 failed eps
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  # VLM provider — TIER VARIABLE
+  vlm_provider: openai
+  vlm_model: gpt-4o-mini          # ← tier variable (cheap)
+  vlm_keyframes: 5
+  vlm_variant: all                # need corrective_action for verification
+
+  # Verification
+  verify_enabled: true
+  verify_n_steps: 50
+  verify_success_threshold: 0.05
+  verify_repeat_action: true
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: ablation_vlmtier_v0_mini

@@ -1,0 +1,40 @@
+defaults: base
+
+# VLM tier ablation — v3: frontier-premium tier (claude-opus-4-7).
+# Premium reference: ~3x the per-call cost of Sonnet 4.5. Establishes the
+# upper-cost-anchor of the tier sweep. If v3 does not beat v0 (mini) by
+# >=0.10 success at 250k, the cost-effective-deployment claim survives.
+#
+# See configs/ablation_vlmtier_v0_mini.yaml for the full sweep design.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: verified
+  cf_input_kind: vlm
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 8
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  # VLM provider — TIER VARIABLE
+  vlm_provider: anthropic
+  vlm_model: claude-opus-4-7      # ← tier variable (frontier-premium)
+  vlm_keyframes: 5
+  vlm_variant: all
+
+  verify_enabled: true
+  verify_n_steps: 50
+  verify_success_threshold: 0.05
+  verify_repeat_action: true
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: ablation_vlmtier_v3_opus
