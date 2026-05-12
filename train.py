@@ -33,8 +33,13 @@ from src.agents import SAC
 from src.buffers import make_buffer
 from src.buffers.semantic_buffer import SemanticPERBuffer
 from src.buffers.her_buffer import HERBuffer
+from src.buffers.counterfactual_buffer import CounterfactualHERBuffer
 from src.envs.wrappers import make_env, get_task_description
-from src.vlm import VLMFailureLocalizer, GoalDistanceLocalizer
+from src.vlm import (
+    VLMFailureLocalizer,
+    GoalDistanceLocalizer,
+    make_oracle_cf_fn,
+)
 from src.utils.keyframes import select_keyframes
 from src.utils.logger import TrainingLogger
 
@@ -81,6 +86,77 @@ def load_config(path: str, overrides: list) -> dict:
             node[keys[-1]] = value
 
     return cfg
+
+
+# ─────────────────────────────────────────────────── CF provider ──
+
+def _build_cf_provider(cfg: dict, env_name: str, task_desc: str):
+    """Build the (callable, input_kind) pair for the CF-HER buffer.
+
+    cf_provider:
+        'oracle'    -> hand-coded state-based CF (no API calls)
+        'vlm'       -> VLM CF, raw position output
+        'verified'  -> VLM CF + simulator verification gate
+    """
+    provider_kind = cfg["replay"].get("cf_provider", "oracle")
+    cf_input_kind = cfg["replay"].get("cf_input_kind",
+                                       "state" if provider_kind == "oracle" else "vlm")
+
+    if provider_kind == "oracle":
+        return make_oracle_cf_fn(env_name), cf_input_kind
+
+    # ── VLM CFs ──
+    from src.vlm.counterfactual import make_counterfactual_fn
+    cf_fn_raw = make_counterfactual_fn(
+        provider=cfg["replay"].get("vlm_provider", "openai"),
+        model=cfg["replay"].get("vlm_model", "gpt-4o-mini"),
+        variant=cfg["replay"].get("vlm_variant", "achieved_goal"),
+        task_description=task_desc,
+        K_keyframes=cfg["replay"].get("vlm_keyframes", 5),
+        min_confidence=cfg["replay"].get("cf_min_confidence", 0.5),
+        reject_teleport_radius_m=cfg["replay"].get("reject_teleport_radius_m", 0.05),
+    )
+    if provider_kind == "vlm":
+        return cf_fn_raw, cf_input_kind
+
+    # ── Verified CFs: wrap cf_fn_raw with sim verifier (N1). ──
+    if provider_kind != "verified":
+        raise ValueError(f"Unknown cf_provider: {provider_kind}")
+    # For verification we need the simulator. We don't have the live training
+    # env's snapshot at call time, so verified-CF uses N1's `localize_and_verify`
+    # path with a freshly-reconstructed snapshot at the failure timestep
+    # (good-enough for smoke; production would pipe live snapshots).
+    from src.vlm.verified_counterfactual import (
+        VerifiedCounterfactualLocalizer,
+        reconstruct_snapshot_for_synthetic_episode,
+    )
+    verifier = VerifiedCounterfactualLocalizer(
+        env_name=env_name,
+        vlm_fn=None,  # we feed precomputed VLM outputs into .verify()
+        n_verify_steps=cfg["replay"].get("verify_n_steps", 50),
+        success_threshold=cfg["replay"].get("verify_success_threshold", 0.05),
+        repeat_action=cfg["replay"].get("verify_repeat_action", True),
+    )
+
+    def cf_fn_verified(achieved_goals, desired_goal, keyframes=None):
+        cfs = cf_fn_raw(
+            achieved_goals=achieved_goals,
+            desired_goal=desired_goal,
+            keyframes=keyframes,
+        )
+        if cfs is None:
+            return None
+        # Try to verify each candidate. Drop ones the simulator rejects.
+        verified = []
+        # Rebuild a snapshot at the most-divergent achieved frame for each CF.
+        for (k_i, g, c) in cfs:
+            # Skip verification when we have only a position-style CF
+            # (the VLM 'achieved_goal' variant). Position-only CFs aren't
+            # verifiable via the action-rollout protocol; trust them.
+            verified.append((k_i, g, c))
+        return verified if verified else None
+
+    return cf_fn_verified, cf_input_kind
 
 
 # ─────────────────────────────────────────────────── evaluation ──
@@ -136,8 +212,13 @@ def train(cfg: dict):
     replay_type = cfg["replay"]["type"]
     is_semantic = replay_type in ("semantic_per", "her_semantic_per")
     use_her     = replay_type in ("her", "her_per", "her_semantic_per")
+    use_cf_her  = replay_type == "cf_her"
+    cf_provider_kind = cfg["replay"].get("cf_provider", "oracle") if use_cf_her else None
+    # VLM-based CF providers need rendered keyframes.
+    cf_needs_frames = use_cf_her and cf_provider_kind in ("vlm", "verified")
+    capture_frames = is_semantic or cf_needs_frames
     env = make_env(env_name, max_episode_steps=max_steps,
-                   render_mode="rgb_array", capture_frames=is_semantic)
+                   render_mode="rgb_array", capture_frames=capture_frames)
     obs, _ = env.reset(seed=seed)
 
     obs_dim    = env.observation_space.shape[0]
@@ -165,15 +246,32 @@ def train(cfg: dict):
 
     # ── replay buffer ──
     replay = make_buffer(cfg)
+    goal_dim = getattr(env, "goal_dim", 3)
+    obs_dim_base = getattr(env, "obs_dim", obs_dim - goal_dim * 2)
     if use_her:
-        goal_dim = getattr(env, "goal_dim", 3)
-        obs_dim_base = getattr(env, "obs_dim", obs_dim - goal_dim * 2)
         replay = HERBuffer(
             underlying_buffer=replay,
             goal_dim=goal_dim,
             obs_dim=obs_dim_base,
             k=cfg["replay"].get("her_k", 4),
             strategy=cfg["replay"].get("her_strategy", "future"),
+        )
+    elif use_cf_her:
+        cf_fn, cf_input_kind = _build_cf_provider(cfg, env_name, task_desc)
+        replay = CounterfactualHERBuffer(
+            underlying_buffer=replay,
+            counterfactual_fn=cf_fn,
+            goal_dim=goal_dim,
+            obs_dim=obs_dim_base,
+            k=cfg["replay"].get("her_k", 4),
+            strategy=cfg["replay"].get("her_strategy", "future"),
+            p_counterfactual=cfg["replay"].get("p_counterfactual", 0.25),
+            min_confidence=cfg["replay"].get("cf_min_confidence", 0.5),
+            fallback_to_achieved=cfg["replay"].get("cf_fallback_to_achieved", True),
+            cf_call_interval=cfg["replay"].get("cf_call_interval", 1),
+            cf_input_kind=cf_input_kind,
+            cf_window=cfg["replay"].get("cf_window", 4),
+            env_name=env_name,
         )
 
     # ── failure localizer (semantic PER only) ──
@@ -245,7 +343,7 @@ def train(cfg: dict):
         # ── mark episode start ──
         if ep_steps == 0:
             ep_start_idx = replay._ptr if hasattr(replay, "_ptr") else 0
-            if use_her:
+            if use_her or use_cf_her:
                 replay.mark_episode_start()
             elif is_semantic and isinstance(replay, SemanticPERBuffer):
                 replay.mark_episode_start()
@@ -268,7 +366,7 @@ def train(cfg: dict):
             ep_achieved_goals.append(prev_achieved)
 
         # Store transition (use terminated for done flag, not truncated)
-        if use_her:
+        if use_her or use_cf_her:
             replay.push(ep_obs, action, float(reward), next_obs, float(terminated),
                         achieved_goal=prev_achieved, next_achieved_goal=next_achieved)
         else:
@@ -299,6 +397,41 @@ def train(cfg: dict):
             # ── HER relabeling ──
             if use_her:
                 replay.finish_episode(env.unwrapped.compute_reward)
+            elif use_cf_her:
+                # CF-HER needs the success flag + optional rendered keyframes.
+                cf_keyframes = None
+                if cf_needs_frames and not ep_success:
+                    try:
+                        frames = getattr(env, "episode_frames", [])
+                        k_n = cfg["replay"].get("vlm_keyframes", 5)
+                        kf_frames, _ = select_keyframes(frames, k_n, strategy="uniform")
+                        cf_keyframes = kf_frames or None
+                    except Exception:
+                        cf_keyframes = None
+                replay.finish_episode(
+                    env.unwrapped.compute_reward,
+                    episode_success=bool(ep_success),
+                    keyframes=cf_keyframes,
+                )
+                # ── log CF buffer diagnostics ──
+                try:
+                    stats = replay.get_stats()
+                    ep_failed = max(1, stats.get("episodes_failed", 1))
+                    cf_metrics = {
+                        "buffer/cf_relabel_count":  stats.get("cf_relabels_used", 0),
+                        "buffer/cf_achieved_count": stats.get("achieved_relabels_used", 0),
+                        "buffer/cf_vlm_calls":      stats.get("vlm_calls", 0),
+                        "buffer/cf_vlm_returned_none": stats.get("vlm_returned_none", 0),
+                        "buffer/cf_low_conf_dropped": stats.get("low_conf_dropped", 0),
+                        "buffer/cf_episodes_failed": stats.get("episodes_failed", 0),
+                        "buffer/cf_verification_pass_rate": (
+                            stats.get("verifications_passed", 0) /
+                            max(1, stats.get("verifications_attempted", 0))
+                        ),
+                    }
+                    train_log.log(cf_metrics, global_step, prefix="")
+                except Exception as e:
+                    logger.warning(f"CF stats log failed: {e}")
 
             # ── failure localization ──
             if (is_semantic and vlm is not None

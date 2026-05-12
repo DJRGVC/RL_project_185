@@ -1,0 +1,32 @@
+defaults: base
+
+# CF-HER buffer with VLM-generated counterfactual goals (GPT-4o-mini default).
+# Variant 'achieved_goal' wins per C1v2-A bake-off (0% teleport collapse).
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: vlm
+  cf_input_kind: vlm
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 8             # cost control: VLM every 8 failed eps
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  # VLM provider config
+  vlm_provider: openai            # openai | anthropic
+  vlm_model: gpt-4o-mini          # gpt-4o-mini for cheap training-time CF
+  vlm_keyframes: 5
+  vlm_variant: achieved_goal      # C1v2-A bake-off winner
+  vlm_task_description: ""        # filled per env in train.py
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: vlm_cf

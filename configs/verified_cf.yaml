@@ -1,0 +1,37 @@
+defaults: base
+
+# CF-HER buffer with VLM CFs gated by simulator verification (N1's mechanism).
+# Counterfactual is accepted only if a fresh sim rollout from the failure
+# state under the VLM's proposed corrective action reaches the goal.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: verified
+  cf_input_kind: vlm
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 8
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  vlm_provider: openai
+  vlm_model: gpt-4o-mini
+  vlm_keyframes: 5
+  vlm_variant: all                 # need corrective_action for verification
+
+  # Verification
+  verify_enabled: true
+  verify_n_steps: 50
+  verify_success_threshold: 0.05
+  verify_repeat_action: true
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: verified_cf

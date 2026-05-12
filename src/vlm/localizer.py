@@ -116,7 +116,7 @@ class VLMFailureLocalizer:
             "If the failure point is ambiguous or cannot be determined from these frames, "
             'set failure_frame_index to null.\n\n'
             "Respond with ONLY a JSON object: "
-            '{"failure_frame_index": <int or null>, "reasoning": "<one sentence>"}'
+            '{{"failure_frame_index": <int or null>, "reasoning": "<one sentence>"}}'
         )
 
         self._init_client()

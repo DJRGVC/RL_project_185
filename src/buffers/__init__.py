@@ -35,7 +35,7 @@ def make_buffer(cfg):
 
     # HER types: the underlying buffer is constructed first;
     # HERBuffer wrapping happens in train.py after env is created.
-    if rtype in ("uniform", "her"):
+    if rtype in ("uniform", "her", "cf_her"):
         return UniformReplayBuffer(capacity)
     elif rtype in ("per", "her_per"):
         return _make_per(cfg)

@@ -56,7 +56,7 @@ Design choices documented below in the class.
 """
 from __future__ import annotations
 
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -153,6 +153,10 @@ class CounterfactualHERBuffer(HERBuffer):
         min_confidence: float = 0.5,
         fallback_to_achieved: bool = True,
         cf_call_interval: int = 1,
+        cf_input_kind: str = "vlm",
+        cf_window: int = 4,
+        env_name: Optional[str] = None,
+        verifier: Optional[object] = None,
     ):
         super().__init__(
             underlying_buffer=underlying_buffer,
@@ -166,6 +170,15 @@ class CounterfactualHERBuffer(HERBuffer):
         self.min_confidence      = float(min_confidence)
         self.fallback_to_achieved = bool(fallback_to_achieved)
         self.cf_call_interval    = int(cf_call_interval)
+        # 'vlm' → cf_fn receives (achieved_goals, desired_goal, keyframes)
+        # 'state' → cf_fn receives a full trajectory dict (for oracle CFs)
+        self.cf_input_kind       = str(cf_input_kind)
+        # When a CF is returned for a single frame K, also push the same
+        # corrective goal as relabel for transitions in [K-cf_window, K+cf_window]
+        # (still constrained to causal validity at draw time).
+        self.cf_window           = int(cf_window)
+        self.env_name            = env_name
+        self.verifier            = verifier
 
         # Diagnostics — populated as episodes finish. Read these from train.py
         # and log to W&B to debug the mechanism.
@@ -177,6 +190,8 @@ class CounterfactualHERBuffer(HERBuffer):
             "cf_relabels_used":      0,
             "achieved_relabels_used": 0,
             "low_conf_dropped":      0,
+            "verifications_attempted": 0,
+            "verifications_passed":   0,
         }
 
     # ── public episode finish — overrides HERBuffer ─────────────────────────
@@ -213,14 +228,15 @@ class CounterfactualHERBuffer(HERBuffer):
         # Decide whether to query VLM for counterfactual goals.
         cf_list: Optional[List[Counterfactual]] = None
         is_failure = (episode_success is False) or (episode_success is None)
+
+        if is_failure:
+            self.stats["episodes_failed"] += 1
+
         should_call_vlm = (
             is_failure
             and self.p_counterfactual > 0.0
             and (self.stats["episodes_failed"] % self.cf_call_interval == 0)
         )
-
-        if is_failure:
-            self.stats["episodes_failed"] += 1
 
         if should_call_vlm:
             cf_list = self._query_vlm(ep, keyframes)
@@ -230,10 +246,12 @@ class CounterfactualHERBuffer(HERBuffer):
                 cf_list = None
             else:
                 # Drop low-confidence counterfactuals.
+                pre_n = len(cf_list)
                 cf_list = [
                     (k_i, g, c) for (k_i, g, c) in cf_list
                     if c >= self.min_confidence
                 ]
+                self.stats["low_conf_dropped"] += (pre_n - len(cf_list))
                 if len(cf_list) == 0:
                     cf_list = None
 
@@ -266,28 +284,60 @@ class CounterfactualHERBuffer(HERBuffer):
         ep: List[dict],
         keyframes: Optional[List],
     ) -> Optional[List[Counterfactual]]:
-        """Build inputs and call the VLM. Owned by agent C1's interface.
+        """Build inputs and call the CF provider.
 
-        TODO(C1 interface): C1's CounterfactualLocalizer should accept:
-            - achieved_goals: (T, goal_dim) ndarray
-            - desired_goal:   (goal_dim,)    ndarray
-            - keyframes:      Optional[list[PIL.Image]]
-            - failure_t:      Optional[int]  (from existing localizer)
-        And return: List[(frame_index, corrective_goal_xyz, confidence)].
+        For `cf_input_kind == 'vlm'` (default), the callback receives the
+        (achieved_goals, desired_goal, keyframes) tuple — matches the C1
+        signature.
+
+        For `cf_input_kind == 'state'`, the callback receives a single
+        trajectory dict carrying ee_pos, object_pos, actions, achieved
+        and desired goal arrays — for hand-coded oracle counterfactuals.
         """
         achieved = np.stack([tr["achieved_goal"] for tr in ep])
         # The desired_goal is in the last goal_dim entries of obs.
-        desired  = ep[0]["obs"][-self.goal_dim:]
+        desired  = ep[0]["obs"][-self.goal_dim:].astype(np.float32)
         try:
-            return self.cf_fn(
-                achieved_goals=achieved,
-                desired_goal=desired,
-                keyframes=keyframes,
-            )
+            if self.cf_input_kind == "state":
+                trajectory = self._build_trajectory_dict(ep, desired)
+                return self.cf_fn(trajectory=trajectory)
+            else:
+                return self.cf_fn(
+                    achieved_goals=achieved,
+                    desired_goal=desired,
+                    keyframes=keyframes,
+                )
         except Exception as e:
             # Never crash training because the VLM had a bad day.
             self.stats["vlm_returned_none"] += 1
             return None
+
+    def _build_trajectory_dict(self, ep: List[dict], desired: np.ndarray) -> Dict[str, Any]:
+        """Pack episode tensors for state-based CF providers (oracle).
+
+        Layout assumes Fetch envs: obs vector is
+        [obs_body(25), achieved_goal(3), desired_goal(3)] with the
+        end-effector position at obs[0:3] (Fetch convention).
+        """
+        T = len(ep)
+        obs        = np.stack([tr["obs"] for tr in ep]).astype(np.float32)
+        actions    = np.stack([tr["action"] for tr in ep]).astype(np.float32)
+        achieved   = np.stack([tr["achieved_goal"] for tr in ep]).astype(np.float32)
+        next_ach   = np.stack([tr["next_achieved_goal"] for tr in ep]).astype(np.float32)
+        # In Fetch obs vector: 0:3 = ee_pos; achieved_goal = object_pos.
+        ee_pos     = obs[:, 0:3].copy()
+        object_pos = achieved.copy()
+        return {
+            "obs":                obs,
+            "actions":            actions,
+            "achieved_goals":     achieved,
+            "next_achieved_goals": next_ach,
+            "ee_pos":             ee_pos,
+            "object_pos":         object_pos,
+            "desired_goal":       np.asarray(desired, dtype=np.float32),
+            "T":                  T,
+            "env_name":           self.env_name,
+        }
 
     def _draw_relabel_goal(
         self,
@@ -305,10 +355,18 @@ class CounterfactualHERBuffer(HERBuffer):
         already-passed corrective state).
         """
         if use_cf and cf_list is not None:
-            # Pick uniformly from causally-valid counterfactuals.
+            # Causal: only use CFs whose target frame is >= t. Prefer the
+            # closest CF frame to t (i.e. the upcoming corrective waypoint).
             valid = [(k_i, g, c) for (k_i, g, c) in cf_list if k_i >= t]
             if len(valid) > 0:
-                _, goal, _ = valid[np.random.randint(len(valid))]
+                valid.sort(key=lambda x: x[0])  # ascending frame index
+                # Bias: pick the *nearest upcoming* CF with the higher confidence.
+                weights = np.array([c / max(1, (k_i - t + 1))
+                                    for (k_i, _, c) in valid], dtype=np.float64)
+                weights = weights / weights.sum() if weights.sum() > 0 else None
+                idx = (np.random.choice(len(valid), p=weights)
+                       if weights is not None else np.random.randint(len(valid)))
+                _, goal, _ = valid[idx]
                 self.stats["cf_relabels_used"] += 1
                 return np.asarray(goal, dtype=np.float32)
             elif not self.fallback_to_achieved:
