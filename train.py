@@ -32,6 +32,7 @@ except ImportError:
 from src.agents import SAC
 from src.buffers import make_buffer
 from src.buffers.semantic_buffer import SemanticPERBuffer
+from src.buffers.bidirectional_buffer import BidirectionalSemanticBuffer
 from src.buffers.her_buffer import HERBuffer
 from src.buffers.counterfactual_buffer import CounterfactualHERBuffer
 from src.envs.wrappers import make_env, get_task_description
@@ -300,17 +301,20 @@ def train(cfg: dict):
     task_desc  = get_task_description(env_name)
 
     replay_type = cfg["replay"]["type"]
-    is_semantic = replay_type in ("semantic_per", "her_semantic_per")
-    use_her     = replay_type in ("her", "her_per", "her_semantic_per")
+    is_semantic = replay_type in ("semantic_per", "her_semantic_per",
+                                  "bidir", "her_bidir")
+    is_bidir    = replay_type in ("bidir", "her_bidir")
+    use_her     = replay_type in ("her", "her_per", "her_semantic_per",
+                                  "her_bidir")
     use_cf_her  = replay_type == "cf_her"
     cf_provider_kind = cfg["replay"].get("cf_provider", "oracle") if use_cf_her else None
     # VLM-based CF providers need rendered keyframes.
     cf_needs_frames = use_cf_her and cf_provider_kind in ("vlm", "verified")
-    # Semantic PER only needs frames when its localizer is a VLM (not the
-    # heuristic goal-distance localizer, which is purely state-based).
-    needs_frames_semantic = is_semantic and (
-        cfg["replay"].get("vlm_provider", "openai") != "heuristic"
-    )
+    # Semantic PER only needs frames when its localizer is an image-VLM (not the
+    # heuristic goal-distance localizer, which is purely state-based). Bidir always
+    # uses the state-based heuristic so it never needs frames.
+    vlm_provider = cfg["replay"].get("vlm_provider", "openai") if is_semantic else None
+    needs_frames_semantic = is_semantic and not is_bidir and vlm_provider != "heuristic"
     capture_frames = needs_frames_semantic or cf_needs_frames
     env = make_env(env_name, max_episode_steps=max_steps,
                    render_mode="rgb_array", capture_frames=capture_frames)
@@ -370,12 +374,13 @@ def train(cfg: dict):
             verifier=cf_verifier,
         )
 
-    # ── failure localizer (semantic PER only) ──
+    # ── failure localizer (semantic PER / bidir only) ──
     vlm = None
     use_heuristic_localizer = False
     if is_semantic:
         vlm_provider = cfg["replay"].get("vlm_provider", "openai")
-        if vlm_provider == "heuristic":
+        # Bidir requires a state-based localizer (it needs localize_best_progress).
+        if is_bidir or vlm_provider == "heuristic":
             vlm = GoalDistanceLocalizer()
             use_heuristic_localizer = True
         else:
@@ -422,6 +427,8 @@ def train(cfg: dict):
     ep_start_time       = time.time()
     ep_start_idx        = 0
     ep_achieved_goals   = []   # for heuristic localizer
+    ep_ee_positions     = []   # for Oracle v3 contact-aware localizer
+    ep_object_positions = []   # for Oracle v3 contact-aware localizer
     goal_dim            = getattr(env, "goal_dim", 3)
     vlm_call_interval   = cfg["replay"].get("vlm_call_interval", 1)
 
@@ -441,7 +448,8 @@ def train(cfg: dict):
             ep_start_idx = replay._ptr if hasattr(replay, "_ptr") else 0
             if use_her or use_cf_her:
                 replay.mark_episode_start()
-            elif is_semantic and isinstance(replay, SemanticPERBuffer):
+            elif is_semantic and isinstance(replay,
+                    (SemanticPERBuffer, BidirectionalSemanticBuffer)):
                 replay.mark_episode_start()
 
         # ── action selection ──
@@ -457,9 +465,16 @@ def train(cfg: dict):
         done = terminated or truncated
         next_achieved = next_obs[-goal_dim*2:-goal_dim].copy() if goal_dim > 0 else None
 
-        # Track achieved goals for heuristic localizer
-        if use_heuristic_localizer:
+        # Track achieved goals + (Oracle v3) ee/object positions for heuristic localizer
+        # For Push/Slide/PickPlace the Fetch obs vector layout is:
+        #   [0:3]  grip_pos (ee_pos)
+        #   [3:6]  object_pos
+        # For FetchReach, object_pos slots don't carry an object — they're zero
+        # but the contact-aware phase won't fire because there's no contact loss.
+        if use_heuristic_localizer or is_bidir:
             ep_achieved_goals.append(prev_achieved)
+            ep_ee_positions.append(ep_obs[0:3].copy())
+            ep_object_positions.append(ep_obs[3:6].copy())
 
         # Store transition (use terminated for done flag, not truncated)
         if use_her or use_cf_her:
@@ -552,19 +567,46 @@ def train(cfg: dict):
                 except Exception as e:
                     logger.warning(f"CF stats log failed: {e}")
 
-            # ── failure localization ──
+            # ── failure / success localization ─────────────────────────
+            # For SemanticPER: apply failure window only on failed episodes.
+            # For BidirectionalSemanticBuffer: apply success window on EVERY
+            # episode (the "best progress" idea is meaningful for both), and
+            # also apply failure window on failed episodes.
+            window = cfg["replay"].get("vlm_failure_window", 5)
+            desired_goal = ep_obs[-goal_dim:]
+
+            # ─── 1) bidir: success boost on every episode ───
+            if (is_bidir and vlm is not None
+                    and isinstance(vlm, GoalDistanceLocalizer)
+                    and ep_count % vlm_call_interval == 0
+                    and ep_steps > 1):
+                try:
+                    success_t, succ_conf, succ_reason = vlm.localize_best_progress(
+                        achieved_goals=ep_achieved_goals,
+                        desired_goal=desired_goal,
+                        window=window,
+                    )
+                    replay.apply_success_priority(
+                        episode_start_idx=ep_start_idx,
+                        episode_length=ep_steps,
+                        success_timestep=success_t,
+                        window=window,
+                    )
+                except Exception as e:
+                    logger.warning(f"Bidir success-boost error (ep {ep_count}): {e}")
+
+            # ─── 2) failure boost on failed episodes ───
             if (is_semantic and vlm is not None
                     and not ep_success
                     and ep_count % vlm_call_interval == 0):
                 try:
-                    window = cfg["replay"]["vlm_failure_window"]
-
                     if use_heuristic_localizer:
-                        # Use ground-truth goal distances — no API call needed
-                        desired_goal = ep_obs[-goal_dim:]
+                        # Oracle v3: pass ee/object positions for contact-aware phase
                         fail_t, conf, reason = vlm.localize_failure(
                             achieved_goals=ep_achieved_goals,
                             desired_goal=desired_goal,
+                            ee_positions=ep_ee_positions,
+                            object_positions=ep_object_positions,
                         )
                         failure_frame_img = None
                     else:
@@ -619,6 +661,8 @@ def train(cfg: dict):
             ep_steps         = 0
             ep_start_time    = time.time()
             ep_achieved_goals = []
+            ep_ee_positions     = []
+            ep_object_positions = []
 
         # ── periodic logging ──
         if global_step % log_interval == 0 and critic_losses:

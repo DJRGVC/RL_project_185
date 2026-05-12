@@ -1,0 +1,26 @@
+defaults:
+  - base
+
+replay:
+  type: bidir
+  capacity: 1_000_000
+  per_alpha: 0.6
+  per_beta_start: 0.4
+  per_beta_end: 1.0
+  per_beta_anneal_steps: 500_000
+  per_epsilon: 1.0e-6
+  # Window of timesteps boosted around each oracle-identified target.
+  vlm_failure_window: 5
+  # Boost multipliers. Match the semantic_per baseline for fair comparison.
+  failure_boost: 10.0
+  success_boost: 10.0
+  # Localizer: always heuristic for bidir (needs ground-truth state, no API call).
+  vlm_provider: heuristic
+  vlm_call_interval: 1
+  # Kept for backwards compatibility with code paths that read these keys.
+  semantic_boost: 10.0
+  semantic_alpha: 0.7
+  vlm_keyframes: 5
+
+logging:
+  run_name: bidir

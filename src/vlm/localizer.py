@@ -26,16 +26,20 @@ logger = logging.getLogger(__name__)
 class GoalDistanceLocalizer:
     """Heuristic failure localizer using ground-truth state geometry.
 
-    Two-phase logic:
-      1. Ballistic detection — if the object is thrown and moves freely
-         (velocity peaks early and remains elevated after peak), the causal
-         failure is the throw moment, not the closest approach. Used for
-         tasks like FetchSlide where the agent loses contact mid-episode.
-      2. Closest-approach fallback — for contact tasks (FetchPush,
-         FetchPickAndPlace) where the agent maintains contact, argmin
-         distance to the goal identifies the divergence point correctly.
+    ===== Oracle v3: three-phase logic (in priority order) =====
+      1. Ballistic detection — if the object moves freely after a velocity
+         peak (post-peak velocity > BALLISTIC_RATIO * peak), the causal
+         failure is the throw moment. Used for FetchSlide.
+      2. Contact-loss detection (NEW in v3) — for contact tasks (Push,
+         PickAndPlace), find the timestep where the end-effector loses
+         contact with the object while the object is still far from goal.
+         This captures the dynamics failure (control loss) rather than
+         the geometric near-miss.
+      3. Closest-approach fallback — argmin distance, used only when
+         neither ballistic nor contact-loss apply.
 
-    No API calls. Uses only achieved_goal trajectory (object position).
+    No API calls. Uses ee_pos + object_pos extracted from the observation
+    vector (Fetch obs structure: [0:3]=ee, [3:6]=object).
     """
 
     # Fraction of peak velocity that must persist after the peak to
@@ -46,15 +50,38 @@ class GoalDistanceLocalizer:
     # How many steps after the peak to average for post-peak velocity.
     POST_PEAK_WINDOW  = 6
 
+    # ===== Oracle v3 contact-loss params =====
+    # Below this ee→object distance the gripper is considered in contact.
+    CONTACT_DISTANCE      = 0.05
+    # Minimum number of consecutive in-contact steps before "loss" counts
+    # (avoids spurious losses from a brushing pass on the way to the object).
+    MIN_CONTACT_RUN       = 2
+    # Above this object→goal distance, the object is still meaningfully off-goal,
+    # so a contact loss here is a causal failure (not just settling on goal).
+    OBJECT_FAR_FROM_GOAL  = 0.10
+
     def localize_failure(
         self,
         achieved_goals: List[np.ndarray],
         desired_goal: np.ndarray,
+        ee_positions: Optional[List[np.ndarray]] = None,
+        object_positions: Optional[List[np.ndarray]] = None,
         **kwargs,
     ) -> Tuple[int, float, str]:
+        """Localize the causal failure timestep using state geometry.
+
+        Args:
+            achieved_goals: list of T per-step achieved_goal vectors (object pos for
+                            Push/Slide/PickPlace, ee for Reach).
+            desired_goal:   final goal position.
+            ee_positions:   optional list of T ee_pos vectors (for contact-aware v3).
+            object_positions: optional list of T object_pos vectors (for contact-aware v3).
+                              If both ee and object are provided, the v3 contact-loss
+                              phase is enabled. Otherwise we degrade to v2 behavior.
+        """
         positions = np.array(achieved_goals)  # (T, goal_dim)
 
-        # ── ballistic phase detection ──────────────────────────────────
+        # ── Phase 1: ballistic detection ───────────────────────────────
         if len(positions) > 4:
             displacements = np.linalg.norm(np.diff(positions, axis=0), axis=1)  # (T-1,)
             peak_t   = int(np.argmax(displacements))
@@ -64,23 +91,93 @@ class GoalDistanceLocalizer:
                 post_window = displacements[peak_t + 1: peak_t + 1 + self.POST_PEAK_WINDOW]
                 post_mean   = float(np.mean(post_window))
                 if post_mean > self.BALLISTIC_RATIO * peak_vel:
-                    # Object keeps moving after peak → agent released it here
                     reasoning = (
-                        f"Ballistic throw at t={peak_t} "
+                        f"[v3:ballistic] throw at t={peak_t} "
                         f"(peak disp={peak_vel:.4f}, post-peak mean={post_mean:.4f}); "
                         f"agent lost causal control here."
                     )
                     return peak_t, 1.0, reasoning
 
-        # ── closest-approach fallback ──────────────────────────────────
+        # ── Phase 2: contact-loss detection (Oracle v3, NEW) ───────────
+        if ee_positions is not None and object_positions is not None \
+                and len(ee_positions) == len(object_positions) == len(positions):
+            ee_arr  = np.asarray(ee_positions, dtype=np.float32)
+            obj_arr = np.asarray(object_positions, dtype=np.float32)
+            ee_obj_dist  = np.linalg.norm(ee_arr - obj_arr, axis=1)  # (T,)
+            obj_goal_dist = np.linalg.norm(obj_arr - desired_goal, axis=1)  # (T,)
+            in_contact   = ee_obj_dist < self.CONTACT_DISTANCE  # (T,) bool
+
+            # Walk through episode finding contact-loss events:
+            # a transition from in_contact at t → not-in-contact at t+1,
+            # following a run of MIN_CONTACT_RUN consecutive contact steps,
+            # while object is still meaningfully off-goal.
+            contact_loss_t = -1
+            run_len = 0
+            for t in range(len(in_contact) - 1):
+                if in_contact[t]:
+                    run_len += 1
+                else:
+                    run_len = 0
+                # Detect loss: contact run ended at t, and t+1 is not in contact
+                if run_len >= self.MIN_CONTACT_RUN and not in_contact[t + 1] \
+                        and obj_goal_dist[t] > self.OBJECT_FAR_FROM_GOAL:
+                    contact_loss_t = t  # prefer the *latest* contact loss
+                    run_len = 0  # reset, look for any later loss event
+
+            if contact_loss_t >= 0:
+                reasoning = (
+                    f"[v3:contact-loss] t={contact_loss_t} "
+                    f"(ee→obj={ee_obj_dist[contact_loss_t]:.3f}m at loss, "
+                    f"obj→goal={obj_goal_dist[contact_loss_t]:.3f}m); "
+                    f"gripper released object while object still off-goal."
+                )
+                return contact_loss_t, 1.0, reasoning
+
+        # ── Phase 3: closest-approach fallback ─────────────────────────
         distances = np.array([np.linalg.norm(ag - desired_goal) for ag in achieved_goals])
         failure_t = int(np.argmin(distances))
         reasoning = (
-            f"Closest approach at t={failure_t} "
+            f"[v3:argmin] closest approach at t={failure_t} "
             f"(dist={float(distances[failure_t]):.3f}); "
             f"agent diverged from goal after this point."
         )
         return failure_t, 1.0, reasoning
+
+    # ── Oracle v3 success localizer (best-progress timestep) ──────────────
+    def localize_best_progress(
+        self,
+        achieved_goals: List[np.ndarray],
+        desired_goal: np.ndarray,
+        window: int = 5,
+    ) -> Tuple[int, float, str]:
+        """Identify the timestep of maximum windowed progress toward the goal.
+
+        Used by BidirectionalSemanticBuffer as a proxy for what Sharony et al.'s
+        VLM would mark as a "successful sub-trajectory" worth boosting. We use
+        argmax(distance_reduction_over_window) instead of argmin(distance) so
+        we catch *progress* (closing distance) rather than just *proximity*.
+        """
+        positions = np.array(achieved_goals, dtype=np.float32)
+        dists = np.linalg.norm(positions - desired_goal, axis=1)
+        T = len(dists)
+        if T < 2:
+            return 0, 0.0, "[v3:progress] degenerate episode"
+
+        w = min(window, T - 1)
+        # Distance reduction = dist[t] - dist[t+w]; positive means we got closer.
+        progress = dists[:-w] - dists[w:]  # length T - w
+        if len(progress) == 0:
+            t = int(np.argmin(dists))
+            return t, 0.5, f"[v3:progress-fallback] argmin t={t}"
+
+        best_start = int(np.argmax(progress))
+        # Mark the *center* of the progress window as the success timestep.
+        best_t = best_start + w // 2
+        reasoning = (
+            f"[v3:progress] best progress at t={best_t} "
+            f"(window dist drop {float(progress[best_start]):.3f} over {w} steps)"
+        )
+        return best_t, 1.0, reasoning
 
 
 def _frame_to_base64(frame: np.ndarray) -> str:
