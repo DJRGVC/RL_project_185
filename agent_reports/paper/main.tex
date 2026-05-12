@@ -1458,11 +1458,35 @@ the oracle swap as a one-flag change; final numbers are awaited from the
 in-flight runs.
 
 \paragraph{Broader impact.}
-Sparse-reward manipulation RL is a building block of robot learning; our work
-is methodological and inherits the standard impact profile of that domain. No
-new safety risks are introduced beyond standard simulation-trained policy
-deployment caveats. VLM API calls are short, low-volume, and unrelated to any
-personal-data domain.
+This work is methodological and simulation-only; we make no claims about
+real-robot performance, sim-to-real transfer, or any specific deployment
+scenario.
+%
+\emph{Positive aspects.}
+(i)~Reduced sample requirements lower the energy footprint of robot-learning
+research: fewer environment steps means fewer GPU-hours, both in simulation
+and---downstream---in sim-to-real fine-tuning.
+(ii)~The IS-posterior framing provides a principled lens for the
+emerging class of VLM-in-replay methods; we hope it encourages more
+mathematically grounded work in the subfield.
+(iii)~The verified-CF acceptance gate is a general-purpose pattern
+(``language prior $+$ physics test'') that may transfer to other domains
+where foundation models output low-bandwidth structured proposals---not
+just robotics replay, but, e.g., program-synthesis verification or
+constraint-satisfaction guidance.
+%
+\emph{Negative aspects and mitigations.}
+(i)~Foundation-model API use carries non-trivial energy and dollar cost per
+training run; we mitigate by reporting per-run API spend
+(Appendix~\ref{app:compute}) and providing the heuristic Oracle fallback
+that requires no API calls.
+(ii)~The VLM may hallucinate physically implausible corrective actions; the
+simulator-verification gate (Algorithm~\ref{alg:verified-cf}) is our
+primary mitigation---a hallucinated action that does not satisfy the env's
+sparse reward is rejected before entering the buffer.
+(iii)~No robot-deployment safety risks are introduced beyond standard
+simulation-trained policy deployment caveats. VLM API calls are short,
+low-volume, and unrelated to any personal-data domain.
 
 \paragraph{Limitations.}
 (i) Our IS-correction is conservative (uses $w_{\text{IS},P}$ rather than the
