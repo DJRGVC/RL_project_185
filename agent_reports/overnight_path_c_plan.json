@@ -1,0 +1,88 @@
+{
+  "_meta": {
+    "generated_at_pdt": "2026-05-11T22:15:00",
+    "wandb_entity": "d-grant-uc-berkeley",
+    "wandb_project": "RL_project",
+    "wandb_tags": ["path_c_overnight_2026-05-11", "pathc_lead"],
+    "morning_deadline_pdt": "07:00",
+    "notes": [
+      "Phase 1 (KILL): HER vs HER+Oracle-CF on 3 envs x 3 seeds x 500k steps.",
+      "Phase 2 (VLM-CF): HER+VLM-CF and HER+Verified-VLM-CF, 3 envs x 3 seeds.",
+      "Per-task VLM model selection: Sonnet 4.5 for PnP, gpt-4o-mini elsewhere.",
+      "Decision rule: if HER+Oracle-CF does NOT beat HER by >=0.10 success on PnP, kill Path C."
+    ]
+  },
+  "phase1_kill": {
+    "_target_runtime_minutes": 30,
+    "_target_total_steps": 250000,
+    "_concurrency_local": 3,
+    "_gpu": "local-5070ti",
+    "runs": [
+      {"id": "her_pp_s42",    "config": "configs/her.yaml",       "env": "FetchPickAndPlace-v4", "seed": 42,  "run_name": "path_c_kill_her_pp_s42",    "tags": ["path_c_overnight_2026-05-11","path_c_kill","her","FetchPickAndPlace-v4"]},
+      {"id": "her_pp_s123",   "config": "configs/her.yaml",       "env": "FetchPickAndPlace-v4", "seed": 123, "run_name": "path_c_kill_her_pp_s123",   "tags": ["path_c_overnight_2026-05-11","path_c_kill","her","FetchPickAndPlace-v4"]},
+      {"id": "her_pp_s999",   "config": "configs/her.yaml",       "env": "FetchPickAndPlace-v4", "seed": 999, "run_name": "path_c_kill_her_pp_s999",   "tags": ["path_c_overnight_2026-05-11","path_c_kill","her","FetchPickAndPlace-v4"]},
+      {"id": "her_push_s42",  "config": "configs/her.yaml",       "env": "FetchPush-v4",         "seed": 42,  "run_name": "path_c_kill_her_push_s42",  "tags": ["path_c_overnight_2026-05-11","path_c_kill","her","FetchPush-v4"]},
+      {"id": "her_push_s123", "config": "configs/her.yaml",       "env": "FetchPush-v4",         "seed": 123, "run_name": "path_c_kill_her_push_s123", "tags": ["path_c_overnight_2026-05-11","path_c_kill","her","FetchPush-v4"]},
+      {"id": "her_push_s999", "config": "configs/her.yaml",       "env": "FetchPush-v4",         "seed": 999, "run_name": "path_c_kill_her_push_s999", "tags": ["path_c_overnight_2026-05-11","path_c_kill","her","FetchPush-v4"]},
+      {"id": "her_sld_s42",   "config": "configs/her.yaml",       "env": "FetchSlide-v4",        "seed": 42,  "run_name": "path_c_kill_her_sld_s42",   "tags": ["path_c_overnight_2026-05-11","path_c_kill","her","FetchSlide-v4"]},
+      {"id": "her_sld_s123",  "config": "configs/her.yaml",       "env": "FetchSlide-v4",        "seed": 123, "run_name": "path_c_kill_her_sld_s123",  "tags": ["path_c_overnight_2026-05-11","path_c_kill","her","FetchSlide-v4"]},
+      {"id": "her_sld_s999",  "config": "configs/her.yaml",       "env": "FetchSlide-v4",        "seed": 999, "run_name": "path_c_kill_her_sld_s999",  "tags": ["path_c_overnight_2026-05-11","path_c_kill","her","FetchSlide-v4"]},
+      {"id": "ocf_pp_s42",    "config": "configs/oracle_cf.yaml", "env": "FetchPickAndPlace-v4", "seed": 42,  "run_name": "path_c_kill_ocf_pp_s42",    "tags": ["path_c_overnight_2026-05-11","path_c_kill","oracle_cf","FetchPickAndPlace-v4"]},
+      {"id": "ocf_pp_s123",   "config": "configs/oracle_cf.yaml", "env": "FetchPickAndPlace-v4", "seed": 123, "run_name": "path_c_kill_ocf_pp_s123",   "tags": ["path_c_overnight_2026-05-11","path_c_kill","oracle_cf","FetchPickAndPlace-v4"]},
+      {"id": "ocf_pp_s999",   "config": "configs/oracle_cf.yaml", "env": "FetchPickAndPlace-v4", "seed": 999, "run_name": "path_c_kill_ocf_pp_s999",   "tags": ["path_c_overnight_2026-05-11","path_c_kill","oracle_cf","FetchPickAndPlace-v4"]},
+      {"id": "ocf_push_s42",  "config": "configs/oracle_cf.yaml", "env": "FetchPush-v4",         "seed": 42,  "run_name": "path_c_kill_ocf_push_s42",  "tags": ["path_c_overnight_2026-05-11","path_c_kill","oracle_cf","FetchPush-v4"]},
+      {"id": "ocf_push_s123", "config": "configs/oracle_cf.yaml", "env": "FetchPush-v4",         "seed": 123, "run_name": "path_c_kill_ocf_push_s123", "tags": ["path_c_overnight_2026-05-11","path_c_kill","oracle_cf","FetchPush-v4"]},
+      {"id": "ocf_push_s999", "config": "configs/oracle_cf.yaml", "env": "FetchPush-v4",         "seed": 999, "run_name": "path_c_kill_ocf_push_s999", "tags": ["path_c_overnight_2026-05-11","path_c_kill","oracle_cf","FetchPush-v4"]},
+      {"id": "ocf_sld_s42",   "config": "configs/oracle_cf.yaml", "env": "FetchSlide-v4",        "seed": 42,  "run_name": "path_c_kill_ocf_sld_s42",   "tags": ["path_c_overnight_2026-05-11","path_c_kill","oracle_cf","FetchSlide-v4"]},
+      {"id": "ocf_sld_s123",  "config": "configs/oracle_cf.yaml", "env": "FetchSlide-v4",        "seed": 123, "run_name": "path_c_kill_ocf_sld_s123",  "tags": ["path_c_overnight_2026-05-11","path_c_kill","oracle_cf","FetchSlide-v4"]},
+      {"id": "ocf_sld_s999",  "config": "configs/oracle_cf.yaml", "env": "FetchSlide-v4",        "seed": 999, "run_name": "path_c_kill_ocf_sld_s999",  "tags": ["path_c_overnight_2026-05-11","path_c_kill","oracle_cf","FetchSlide-v4"]}
+    ],
+    "common_overrides": [
+      "training.total_steps=250000",
+      "training.eval_interval=10000",
+      "training.save_interval=50000",
+      "training.log_interval=1000",
+      "logging.use_wandb=true"
+    ]
+  },
+  "phase2_vlm": {
+    "_target_runtime_minutes": 90,
+    "_target_total_steps": 500000,
+    "_modal_concurrency": 6,
+    "_gpu": "modal-A10G",
+    "_depends_on": ["a1_sweep_complete"],
+    "_per_task_vlm_models": {
+      "FetchPickAndPlace-v4": {"vlm_provider": "anthropic", "vlm_model": "claude-sonnet-4-5"},
+      "FetchPush-v4":         {"vlm_provider": "openai",   "vlm_model": "gpt-4o-mini"},
+      "FetchSlide-v4":        {"vlm_provider": "openai",   "vlm_model": "gpt-4o-mini"}
+    },
+    "runs": [
+      {"id": "vcf_pp_s42",    "config": "configs/vlm_cf.yaml",      "env": "FetchPickAndPlace-v4", "seed": 42,  "run_name": "path_c_vlm_cf_pp_s42",      "tags": ["path_c_overnight_2026-05-11","path_c_vlm","vlm_cf","FetchPickAndPlace-v4","sonnet45"]},
+      {"id": "vcf_pp_s123",   "config": "configs/vlm_cf.yaml",      "env": "FetchPickAndPlace-v4", "seed": 123, "run_name": "path_c_vlm_cf_pp_s123",     "tags": ["path_c_overnight_2026-05-11","path_c_vlm","vlm_cf","FetchPickAndPlace-v4","sonnet45"]},
+      {"id": "vcf_pp_s999",   "config": "configs/vlm_cf.yaml",      "env": "FetchPickAndPlace-v4", "seed": 999, "run_name": "path_c_vlm_cf_pp_s999",     "tags": ["path_c_overnight_2026-05-11","path_c_vlm","vlm_cf","FetchPickAndPlace-v4","sonnet45"]},
+      {"id": "vcf_push_s42",  "config": "configs/vlm_cf.yaml",      "env": "FetchPush-v4",         "seed": 42,  "run_name": "path_c_vlm_cf_push_s42",    "tags": ["path_c_overnight_2026-05-11","path_c_vlm","vlm_cf","FetchPush-v4","gpt4omini"]},
+      {"id": "vcf_push_s123", "config": "configs/vlm_cf.yaml",      "env": "FetchPush-v4",         "seed": 123, "run_name": "path_c_vlm_cf_push_s123",   "tags": ["path_c_overnight_2026-05-11","path_c_vlm","vlm_cf","FetchPush-v4","gpt4omini"]},
+      {"id": "vcf_push_s999", "config": "configs/vlm_cf.yaml",      "env": "FetchPush-v4",         "seed": 999, "run_name": "path_c_vlm_cf_push_s999",   "tags": ["path_c_overnight_2026-05-11","path_c_vlm","vlm_cf","FetchPush-v4","gpt4omini"]},
+      {"id": "vcf_sld_s42",   "config": "configs/vlm_cf.yaml",      "env": "FetchSlide-v4",        "seed": 42,  "run_name": "path_c_vlm_cf_sld_s42",     "tags": ["path_c_overnight_2026-05-11","path_c_vlm","vlm_cf","FetchSlide-v4","gpt4omini"]},
+      {"id": "vcf_sld_s123",  "config": "configs/vlm_cf.yaml",      "env": "FetchSlide-v4",        "seed": 123, "run_name": "path_c_vlm_cf_sld_s123",    "tags": ["path_c_overnight_2026-05-11","path_c_vlm","vlm_cf","FetchSlide-v4","gpt4omini"]},
+      {"id": "vcf_sld_s999",  "config": "configs/vlm_cf.yaml",      "env": "FetchSlide-v4",        "seed": 999, "run_name": "path_c_vlm_cf_sld_s999",    "tags": ["path_c_overnight_2026-05-11","path_c_vlm","vlm_cf","FetchSlide-v4","gpt4omini"]},
+      {"id": "vrcf_pp_s42",   "config": "configs/verified_cf.yaml", "env": "FetchPickAndPlace-v4", "seed": 42,  "run_name": "path_c_vlm_vcf_pp_s42",     "tags": ["path_c_overnight_2026-05-11","path_c_vlm","verified_cf","FetchPickAndPlace-v4","sonnet45"]},
+      {"id": "vrcf_pp_s123",  "config": "configs/verified_cf.yaml", "env": "FetchPickAndPlace-v4", "seed": 123, "run_name": "path_c_vlm_vcf_pp_s123",    "tags": ["path_c_overnight_2026-05-11","path_c_vlm","verified_cf","FetchPickAndPlace-v4","sonnet45"]},
+      {"id": "vrcf_pp_s999",  "config": "configs/verified_cf.yaml", "env": "FetchPickAndPlace-v4", "seed": 999, "run_name": "path_c_vlm_vcf_pp_s999",    "tags": ["path_c_overnight_2026-05-11","path_c_vlm","verified_cf","FetchPickAndPlace-v4","sonnet45"]},
+      {"id": "vrcf_push_s42", "config": "configs/verified_cf.yaml", "env": "FetchPush-v4",         "seed": 42,  "run_name": "path_c_vlm_vcf_push_s42",   "tags": ["path_c_overnight_2026-05-11","path_c_vlm","verified_cf","FetchPush-v4","gpt4omini"]},
+      {"id": "vrcf_push_s123","config": "configs/verified_cf.yaml", "env": "FetchPush-v4",         "seed": 123, "run_name": "path_c_vlm_vcf_push_s123",  "tags": ["path_c_overnight_2026-05-11","path_c_vlm","verified_cf","FetchPush-v4","gpt4omini"]},
+      {"id": "vrcf_push_s999","config": "configs/verified_cf.yaml", "env": "FetchPush-v4",         "seed": 999, "run_name": "path_c_vlm_vcf_push_s999",  "tags": ["path_c_overnight_2026-05-11","path_c_vlm","verified_cf","FetchPush-v4","gpt4omini"]},
+      {"id": "vrcf_sld_s42",  "config": "configs/verified_cf.yaml", "env": "FetchSlide-v4",        "seed": 42,  "run_name": "path_c_vlm_vcf_sld_s42",    "tags": ["path_c_overnight_2026-05-11","path_c_vlm","verified_cf","FetchSlide-v4","gpt4omini"]},
+      {"id": "vrcf_sld_s123", "config": "configs/verified_cf.yaml", "env": "FetchSlide-v4",        "seed": 123, "run_name": "path_c_vlm_vcf_sld_s123",   "tags": ["path_c_overnight_2026-05-11","path_c_vlm","verified_cf","FetchSlide-v4","gpt4omini"]},
+      {"id": "vrcf_sld_s999", "config": "configs/verified_cf.yaml", "env": "FetchSlide-v4",        "seed": 999, "run_name": "path_c_vlm_vcf_sld_s999",   "tags": ["path_c_overnight_2026-05-11","path_c_vlm","verified_cf","FetchSlide-v4","gpt4omini"]}
+    ],
+    "common_overrides": [
+      "training.total_steps=500000",
+      "training.eval_interval=10000",
+      "training.save_interval=100000",
+      "training.log_interval=1000",
+      "replay.cf_call_interval=8",
+      "logging.use_wandb=true"
+    ]
+  }
+}

@@ -155,3 +155,50 @@ def main(
     """
     overrides = extra.split() if extra else []
     train_remote.remote(config, overrides)
+
+
+@app.local_entrypoint()
+def spawn(
+    config: str = "configs/oracle_cf.yaml",
+    extra: str = "",
+):
+    """Spawn (fire-and-forget) a remote training run.
+
+    Used by scripts/path_c_orchestrator.py to launch Phase 2 VLM-CF jobs
+    onto Modal without blocking the orchestrator process.
+
+    Example:
+        modal run --detach modal_app.py::spawn --config configs/vlm_cf.yaml \\
+            --extra "env.name=FetchPickAndPlace-v4 training.seed=42 ..."
+    """
+    overrides = extra.split() if extra else []
+    train_remote.spawn(config, overrides)
+
+
+@app.local_entrypoint()
+def run_path_c_phase2():
+    """Spawn all Phase 2 (VLM-CF) jobs from the Path C overnight plan."""
+    import json
+    import os
+    here = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(here, "agent_reports", "overnight_path_c_plan.json")) as f:
+        plan = json.load(f)
+    p2 = plan["phase2_vlm"]
+    common = p2.get("common_overrides", [])
+    per_task = p2.get("_per_task_vlm_models", {})
+    spawned = 0
+    for run in p2["runs"]:
+        overrides = list(common) + [
+            f"env.name={run['env']}",
+            f"training.seed={run['seed']}",
+            f"logging.run_name={run['run_name']}",
+        ]
+        pt = per_task.get(run["env"])
+        if pt:
+            overrides.append(f"replay.vlm_provider={pt['vlm_provider']}")
+            overrides.append(f"replay.vlm_model={pt['vlm_model']}")
+        train_remote.spawn(run["config"], overrides)
+        spawned += 1
+        print(f"spawned: {run['run_name']}")
+    print(f"\nLaunched {spawned} Path C Phase 2 jobs onto Modal.")
+    print("Track progress at https://wandb.ai/d-grant-uc-berkeley/RL_project?tags=path_c_overnight_2026-05-11")

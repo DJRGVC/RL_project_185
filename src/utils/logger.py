@@ -40,12 +40,18 @@ class TrainingLogger:
                 import wandb
                 # Derive group from run_name prefix (method name) for W&B dashboard grouping
                 method = run_name.split("_fetch")[0] if "_fetch" in run_name else run_name.split("_seed")[0]
+                # Pick up tags from WANDB_TAGS env var (CSV) if set.
+                tags = None
+                tag_env = os.environ.get("WANDB_TAGS")
+                if tag_env:
+                    tags = [t.strip() for t in tag_env.split(",") if t.strip()]
                 self._wandb_run = wandb.init(
                     project=wandb_project or "RL_project",
                     entity=wandb_entity or None,
                     name=run_name,
                     group=method,
                     config=config or {},
+                    tags=tags,
                     resume="allow",
                 )
                 # All metrics share the same x-axis in the W&B dashboard
