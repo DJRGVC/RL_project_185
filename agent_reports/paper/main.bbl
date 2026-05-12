@@ -1,4 +1,4 @@
-\begin{thebibliography}{27}
+\begin{thebibliography}{31}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -35,6 +35,12 @@ Caleb Chuck, Fan Feng, Carl Qi, Chang Shi, Siddhant Agarwal, Amy Zhang, and
   reinforcement learning.
 \newblock In \emph{International Conference on Learning Representations
   (ICLR)}, 2025.
+
+\bibitem[Ding(2026)]{ding2026agentHER}
+Liang Ding.
+\newblock {AgentHER}: Hindsight experience replay for {LLM} agent trajectory
+  relabeling.
+\newblock \emph{arXiv preprint arXiv:2603.21357}, 2026.
 
 \bibitem[Duan et~al.(2025)Duan, Pumacay, Kumar, Wang, Tian, Yuan, Krishna, Fox,
   Mandlekar, and Guo]{duan2025aha}
@@ -187,12 +193,33 @@ Elad Sharony, Tom Jurgenson, Orr Krupnik, Dotan Di~Castro, and Shie Mannor.
 \newblock {VLM}-guided experience replay.
 \newblock \emph{arXiv preprint arXiv:2602.01915}, 2026.
 
+\bibitem[Urp{\'i} et~al.(2024)Urp{\'i}, Bagatella, Vlastelica, and
+  Martius]{urpi2024caiac}
+N{\'u}ria~Armengol Urp{\'i}, Marco Bagatella, Marin Vlastelica, and Georg
+  Martius.
+\newblock Causal action influence aware counterfactual data augmentation.
+\newblock \emph{arXiv preprint arXiv:2405.18917}, 2024.
+
 \bibitem[Venuto et~al.(2024)Venuto, Islam, Klissarov, Precup, Yang, and
   Anand]{venuto2024car}
 David Venuto, Sami~Nur Islam, Martin Klissarov, Doina Precup, Sherry Yang, and
   Ankit Anand.
 \newblock Code as reward: Empowering reinforcement learning with {VLM}s.
 \newblock In \emph{International Conference on Machine Learning (ICML)}, 2024.
+
+\bibitem[Wang et~al.(2024)Wang, Sun, Zhang, Xian, Biyik, Held, and
+  Erickson]{wang2024rlvlmf}
+Yufei Wang, Zhou Sun, Jiayuan Zhang, Zhenjia Xian, Erdem Biyik, David Held, and
+  Zackory Erickson.
+\newblock {RL-VLM-F}: Reinforcement learning from vision language foundation
+  model feedback.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2024.
+
+\bibitem[Wu et~al.(2025)Wu, Yin, Feng, and Long]{wu2025rlvrworld}
+Jialong Wu, Shaofeng Yin, Ningya Feng, and Mingsheng Long.
+\newblock {RLVR-World}: Training world models with reinforcement learning.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2025.
 
 \bibitem[Wu et~al.(2026)Wu, Yuan, Qi, Guizilini, Mao, and
   Wang]{wu2026largerewardmodels}
