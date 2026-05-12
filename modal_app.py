@@ -284,3 +284,164 @@ def run_path_c_vlm_cf_psweep():
     print(f"\nLaunched {spawned} Path C VLM-CF p-sweep jobs onto Modal.")
     print("Track progress at "
           "https://wandb.ai/d-grant-uc-berkeley/RL_project?tags=path_c_vlm_cf_psweep_2026-05-12")
+
+
+# ── Wave B launchers (queued after p_counterfactual sweep) ────────────────────
+# These three entrypoints are fired sequentially by
+# scripts/launch_waveB_when_psweep_done.sh AFTER the p-sweep finishes:
+#   B1: HER+PER canonical baseline (Andrychowicz + Schaul) — 9 runs
+#   B2: Sharony VLM-RB head-to-head                          — 9 runs
+#   B3: 2x2 numeric/blind prompt ablation on PnP             — 12 runs
+# Total: 30 runs, ~18 hr wall on the Modal 10-cap, ~$310 spend.
+
+# Env slug convention shared with overnight_path_c_plan.json:
+#   FetchPickAndPlace-v4 -> "pp"
+#   FetchPush-v4         -> "push"
+#   FetchSlide-v4        -> "slide"
+_ENV_SLUGS = {
+    "FetchPickAndPlace-v4": "pp",
+    "FetchPush-v4":         "push",
+    "FetchSlide-v4":        "slide",
+}
+
+
+def _waveB_common_overrides(env_name: str):
+    """Shared overrides matching the p-sweep budget (500k steps, eval cadence)."""
+    return [
+        f"env.name={env_name}",
+        "training.total_steps=500000",
+        "training.eval_interval=10000",
+        "training.save_interval=100000",
+        "training.log_interval=1000",
+        "logging.use_wandb=true",
+    ]
+
+
+@app.local_entrypoint()
+def run_path_c_waveB_her_per():
+    """Wave B1 — HER+PER canonical baseline (Andrychowicz + Schaul).
+
+    9 runs = 3 envs × 3 seeds × 500k steps. Closes the "missing canonical
+    non-VLM comparator" gap — HER+PER is the strongest combination from
+    pre-VLM-era goal-conditioned RL literature, so any VLM-CF claim must
+    beat it.
+
+    All runs tagged `path_c_her_per_2026-05-13` for one-shot W&B filter.
+    """
+    ENVS  = ["FetchPickAndPlace-v4", "FetchPush-v4", "FetchSlide-v4"]
+    SEEDS = [42, 123, 999]
+    TAG_BASE = "path_c_her_per_2026-05-13"
+    CONFIG = "configs/her_per.yaml"
+
+    spawned = 0
+    for env_name in ENVS:
+        env_slug = _ENV_SLUGS[env_name]
+        for seed in SEEDS:
+            run_name = f"path_c_her_per_{env_slug}_s{seed}_seed{seed}"
+            overrides = _waveB_common_overrides(env_name) + [
+                f"training.seed={seed}",
+                f"logging.run_name={run_name}",
+            ]
+            tags = ",".join([
+                TAG_BASE,
+                "her_per",
+                "waveB1",
+                "pathc_lead",
+                env_name,
+            ])
+            train_remote.spawn(CONFIG, overrides, wandb_tags=tags)
+            spawned += 1
+            print(f"spawned: {run_name}")
+    print(f"\nLaunched {spawned} Wave B1 (HER+PER) jobs onto Modal.")
+    print("Track progress at "
+          "https://wandb.ai/d-grant-uc-berkeley/RL_project?tags=path_c_her_per_2026-05-13")
+
+
+@app.local_entrypoint()
+def run_path_c_waveB_sharony():
+    """Wave B2 — Sharony VLM-RB head-to-head.
+
+    9 runs = 3 envs × 3 seeds × 500k steps using configs/vlm_rb.yaml
+    (Sharony et al. 2026 baseline, commit ebce938). Closes R1 W7
+    "differentiation from Sharony only methodological" with numbers.
+
+    All runs tagged `path_c_sharony_vlmrb_2026-05-13`.
+    """
+    ENVS  = ["FetchPickAndPlace-v4", "FetchPush-v4", "FetchSlide-v4"]
+    SEEDS = [42, 123, 999]
+    TAG_BASE = "path_c_sharony_vlmrb_2026-05-13"
+    CONFIG = "configs/vlm_rb.yaml"
+
+    spawned = 0
+    for env_name in ENVS:
+        env_slug = _ENV_SLUGS[env_name]
+        for seed in SEEDS:
+            run_name = f"path_c_sharony_vlmrb_{env_slug}_s{seed}_seed{seed}"
+            overrides = _waveB_common_overrides(env_name) + [
+                f"training.seed={seed}",
+                f"logging.run_name={run_name}",
+            ]
+            tags = ",".join([
+                TAG_BASE,
+                "sharony_vlmrb",
+                "waveB2",
+                "pathc_lead",
+                env_name,
+            ])
+            train_remote.spawn(CONFIG, overrides, wandb_tags=tags)
+            spawned += 1
+            print(f"spawned: {run_name}")
+    print(f"\nLaunched {spawned} Wave B2 (Sharony VLM-RB) jobs onto Modal.")
+    print("Track progress at "
+          "https://wandb.ai/d-grant-uc-berkeley/RL_project?tags=path_c_sharony_vlmrb_2026-05-13")
+
+
+@app.local_entrypoint()
+def run_path_c_waveB_2x2():
+    """Wave B3 — 2x2 numeric × blind prompt ablation on PnP.
+
+    12 runs = 4 variants × 3 seeds × 500k steps on FetchPickAndPlace-v4
+    (the env where VLM-CF matters most). Variants:
+      - vlm_cf.yaml                 knows desired_goal × visual only
+      - vlm_cf_blind.yaml           blind             × visual only
+      - vlm_cf_numeric.yaml         knows desired_goal × visual + numeric
+      - vlm_cf_blind_numeric.yaml   blind             × visual + numeric
+
+    Answers: "does giving the VLM a numerical trajectory and/or hiding
+    the desired_goal coords improve counterfactual relabel quality?"
+
+    All runs tagged `path_c_2x2_2026-05-13`.
+    """
+    VARIANTS = [
+        ("configs/vlm_cf.yaml",                "knowsgoal_visual"),
+        ("configs/vlm_cf_blind.yaml",          "blind_visual"),
+        ("configs/vlm_cf_numeric.yaml",        "knowsgoal_numeric"),
+        ("configs/vlm_cf_blind_numeric.yaml",  "blind_numeric"),
+    ]
+    SEEDS = [42, 123, 999]
+    ENV_NAME = "FetchPickAndPlace-v4"
+    env_slug = _ENV_SLUGS[ENV_NAME]
+    TAG_BASE = "path_c_2x2_2026-05-13"
+
+    spawned = 0
+    for config_path, variant_slug in VARIANTS:
+        for seed in SEEDS:
+            run_name = f"path_c_2x2_{variant_slug}_{env_slug}_s{seed}_seed{seed}"
+            overrides = _waveB_common_overrides(ENV_NAME) + [
+                f"training.seed={seed}",
+                f"logging.run_name={run_name}",
+            ]
+            tags = ",".join([
+                TAG_BASE,
+                "vlm_cf_2x2",
+                f"variant_{variant_slug}",
+                "waveB3",
+                "pathc_lead",
+                ENV_NAME,
+            ])
+            train_remote.spawn(config_path, overrides, wandb_tags=tags)
+            spawned += 1
+            print(f"spawned: {run_name}")
+    print(f"\nLaunched {spawned} Wave B3 (2x2 numeric ablation) jobs onto Modal.")
+    print("Track progress at "
+          "https://wandb.ai/d-grant-uc-berkeley/RL_project?tags=path_c_2x2_2026-05-13")
