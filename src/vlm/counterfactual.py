@@ -158,6 +158,43 @@ Respond with ONLY a JSON object:
 }}
 """
 
+ACHIEVED_GOAL_BLIND_PROMPT = """You are analyzing a robotic manipulation trajectory.
+
+Task: {task_description}
+
+In the Fetch suite, `achieved_goal` is the current 3D position of the
+manipulated object (or the gripper, for FetchReach). The Fetch workspace
+coords range roughly: x ∈ [1.05, 1.55] m, y ∈ [0.4, 1.1] m, z ∈ [0.4, 0.85] m
+(the table surface is at z ≈ 0.42 m).
+
+{K} keyframes from a FAILED episode are shown in chronological order.
+Frame-to-timestep mapping:
+{frame_index_map}
+
+A failure-detection module identified Frame {failure_frame_index}
+(~{failure_frame_pct:.0f}% through the episode) as the critical moment.
+
+The target's exact coordinates are intentionally withheld; you must infer
+the corrective target ONLY from the visual evidence in the keyframes and
+the task description above.
+
+QUESTION: Based on the trajectory observed in the keyframes, what 3D
+position should the object have reached at Frame {failure_frame_index} to
+make progress toward the (unspecified) goal? Propose a hindsight
+`achieved_goal` for this frame — a plausible intermediate location along
+a successful path, consistent with the task and with what you see in the
+images.
+
+The proposed position must lie inside the Fetch workspace (above the table).
+
+Respond with ONLY a JSON object:
+{{
+  "corrective_position": [<x>, <y>, <z>],
+  "explanation": "<one concise sentence>",
+  "confidence": <float in [0,1]>
+}}
+"""
+
 ALL_PROMPT = """You are analyzing a robotic manipulation trajectory.
 
 Task: {task_description}
@@ -194,10 +231,11 @@ Respond with ONLY a JSON object:
 
 
 PROMPT_TEMPLATES: Dict[str, str] = {
-    "narrative":     NARRATIVE_PROMPT,
-    "action":        ACTION_PROMPT,
-    "achieved_goal": ACHIEVED_GOAL_PROMPT,
-    "all":           ALL_PROMPT,
+    "narrative":           NARRATIVE_PROMPT,
+    "action":              ACTION_PROMPT,
+    "achieved_goal":       ACHIEVED_GOAL_PROMPT,
+    "achieved_goal_blind": ACHIEVED_GOAL_BLIND_PROMPT,
+    "all":                 ALL_PROMPT,
 }
 
 
@@ -487,7 +525,7 @@ class CounterfactualLocalizer:
         corrective_action = _coerce_vec(data.get("corrective_action"), 4)
 
         # Sanity: variants require certain fields. If missing, log but don't fail.
-        if variant in ("achieved_goal", "all") and corrective_position is None:
+        if variant in ("achieved_goal", "achieved_goal_blind", "all") and corrective_position is None:
             logger.warning(f"[CF variant={variant}] missing corrective_position")
         if variant in ("action", "all") and corrective_action is None:
             logger.warning(f"[CF variant={variant}] missing corrective_action")

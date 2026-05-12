@@ -605,6 +605,14 @@ def train(cfg: dict):
                     if hasattr(replay, "get_per_stats"):
                         for pk, pv in replay.get_per_stats().items():
                             cf_metrics[f"buffer/{pk}"] = pv
+                    # CF-deviation running-mean diagnostics: how far the
+                    # VLM's `corrective_position` lies from the desired_goal
+                    # (teleport-collapse signal) and from the actual
+                    # achieved_goal at the failure frame ("stay-the-course"
+                    # signal). Keys already namespaced under buffer/.
+                    if hasattr(replay, "get_cf_deviation_stats"):
+                        for dk, dv in replay.get_cf_deviation_stats().items():
+                            cf_metrics[dk] = dv
                     train_log.log(cf_metrics, global_step, prefix="")
                 except Exception as e:
                     logger.warning(f"CF stats log failed: {e}")

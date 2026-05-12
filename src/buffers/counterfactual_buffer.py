@@ -209,7 +209,24 @@ class CounterfactualHERBuffer(HERBuffer):
             "low_conf_dropped":      0,
             "verifications_attempted": 0,
             "verifications_passed":   0,
+            # CF-deviation counters: tally of accepted CFs whose
+            # `corrective_position` we have evaluated (running totals;
+            # divide by `cf_accepted_count` to get the running mean).
+            "cf_accepted_count":     0,
+            "cf_in_workspace_count": 0,
         }
+        # Running sums for CF deviation metrics. Kept as floats so we can emit
+        # exact running means without integer truncation. Reset by
+        # `reset_cf_deviation_stats()` (see below) — train.py calls this on
+        # episode_reset boundaries when it wants per-window snapshots.
+        self._cf_dev_sum_to_desired: float  = 0.0
+        self._cf_dev_sum_to_achieved: float = 0.0
+        # Fetch workspace bounds in metres (table surface z≈0.42); used as the
+        # in-workspace indicator. Numbers mirror the bounds quoted in the
+        # achieved_goal prompt in src/vlm/counterfactual.py so the VLM and
+        # the diagnostics agree on what "in workspace" means.
+        self._workspace_lo = np.array([1.05, 0.4, 0.4], dtype=np.float32)
+        self._workspace_hi = np.array([1.55, 1.1, 0.85], dtype=np.float32)
 
     # ── public episode finish — overrides HERBuffer ─────────────────────────
 
@@ -271,6 +288,16 @@ class CounterfactualHERBuffer(HERBuffer):
                 self.stats["low_conf_dropped"] += (pre_n - len(cf_list))
                 if len(cf_list) == 0:
                     cf_list = None
+                else:
+                    # CF-deviation diagnostics: for each accepted CF, log how
+                    # far the proposed corrective_position lies from
+                    #   (a) the original desired_goal       — teleport collapse
+                    #       signal: small ⇒ VLM is just regurgitating the goal.
+                    #   (b) the actual achieved_goal at frame K — "stay the
+                    #       course" signal: small ⇒ VLM is suggesting we
+                    #       continue doing what we already did (useless).
+                    # The productive regime sits between the two.
+                    self._update_cf_deviation_stats(ep, cf_list)
 
         # Standard HER loop, augmented with per-relabel counterfactual draws.
         for t, tr in enumerate(ep):
@@ -434,6 +461,107 @@ class CounterfactualHERBuffer(HERBuffer):
         self.buffer.push(
             new_obs, tr["action"], new_reward, new_next_obs, tr["done"]
         )
+
+    # ── CF deviation diagnostics ────────────────────────────────────────────
+
+    def _update_cf_deviation_stats(
+        self,
+        ep: List[dict],
+        cf_list: List[Counterfactual],
+    ) -> None:
+        """Update running-mean accumulators for CF deviation diagnostics.
+
+        For each accepted (frame_index_K, corrective_position, _confidence)
+        we increment three running totals:
+          - sum_to_desired:  ||cp - desired_goal||
+          - sum_to_achieved: ||cp - achieved_goal_at_K||
+          - in_workspace_count: 1 if cp within Fetch bounds, 0 otherwise
+        and the denominator `cf_accepted_count`. Variants that do not emit a
+        `corrective_position` (narrative, action-only) yield CFs that we
+        cannot evaluate here — those are skipped silently.
+        """
+        if len(ep) == 0:
+            return
+        T = len(ep)
+        # desired_goal lives in the last goal_dim slots of obs.
+        try:
+            desired = np.asarray(
+                ep[0]["obs"][-self.goal_dim:], dtype=np.float32
+            )
+        except Exception:
+            return
+
+        for entry in cf_list:
+            # Robust unpack: oracle/VLM return 3-tuples; some providers may
+            # return 4-tuples with an extra action. We only need the first
+            # three fields here.
+            if len(entry) == 3:
+                k_i, cp, _c = entry
+            elif len(entry) >= 4:
+                k_i, cp, _c, *_rest = entry
+            else:
+                continue
+            cp_arr = np.asarray(cp, dtype=np.float32)
+            if cp_arr is None or cp_arr.size != self.goal_dim:
+                # variant=narrative or action-only would not get this far
+                # (cf_list construction would not include a position) — but
+                # be defensive in case a provider drops the field.
+                continue
+
+            k_clamped = int(np.clip(int(k_i), 0, T - 1))
+            try:
+                ach_at_K = np.asarray(
+                    ep[k_clamped]["achieved_goal"], dtype=np.float32
+                )
+            except Exception:
+                continue
+
+            d_des = float(np.linalg.norm(cp_arr - desired))
+            d_ach = float(np.linalg.norm(cp_arr - ach_at_K))
+            in_ws = int(
+                np.all(cp_arr >= self._workspace_lo)
+                and np.all(cp_arr <= self._workspace_hi)
+            )
+
+            self._cf_dev_sum_to_desired  += d_des
+            self._cf_dev_sum_to_achieved += d_ach
+            self.stats["cf_in_workspace_count"] += in_ws
+            self.stats["cf_accepted_count"]     += 1
+
+    def reset_cf_deviation_stats(self) -> None:
+        """Zero the CF deviation running totals.
+
+        Useful when train.py wants per-window snapshots (e.g. one mean per
+        episode rather than one running mean from training start). Counters
+        for `cf_accepted_count` / `cf_in_workspace_count` are reset together
+        with the float sums so the means stay consistent.
+        """
+        self._cf_dev_sum_to_desired  = 0.0
+        self._cf_dev_sum_to_achieved = 0.0
+        self.stats["cf_accepted_count"]     = 0
+        self.stats["cf_in_workspace_count"] = 0
+
+    def get_cf_deviation_stats(self) -> Dict[str, float]:
+        """Return running-mean CF deviation diagnostics (empty when no CFs).
+
+        Keys emitted (when at least one CF has been accepted):
+          - buffer/cf_corrective_pos_to_desired_dist
+          - buffer/cf_corrective_pos_to_achieved_dist
+          - buffer/cf_corrective_pos_in_workspace
+          - buffer/cf_accepted_count
+        """
+        n = int(self.stats.get("cf_accepted_count", 0))
+        if n <= 0:
+            return {}
+        return {
+            "buffer/cf_corrective_pos_to_desired_dist":
+                self._cf_dev_sum_to_desired / n,
+            "buffer/cf_corrective_pos_to_achieved_dist":
+                self._cf_dev_sum_to_achieved / n,
+            "buffer/cf_corrective_pos_in_workspace":
+                float(self.stats.get("cf_in_workspace_count", 0)) / n,
+            "buffer/cf_accepted_count": float(n),
+        }
 
     # ── diagnostics ─────────────────────────────────────────────────────────
 

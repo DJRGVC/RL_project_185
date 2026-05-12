@@ -771,6 +771,150 @@ class TestInvalidPriorityMode:
         raise AssertionError("Bad priority_mode must raise ValueError")
 
 
+class TestCFDeviationLogging:
+    """`get_cf_deviation_stats` reports running means over accepted CFs.
+
+    For each accepted CF we track:
+      - ||corrective_position - desired_goal||
+      - ||corrective_position - achieved_at_failure_frame||
+      - in-workspace indicator (Fetch bounds)
+    Running mean accumulators reset via `reset_cf_deviation_stats`.
+    """
+
+    def test_no_cfs_yields_empty_dict(self):
+        """Before any CFs are pushed, the deviation dict is empty (so train.py
+        can short-circuit logging cleanly)."""
+        buf = _make_buffer(p_counterfactual=0.0)
+        assert buf.get_cf_deviation_stats() == {}
+
+    def test_cf_in_workspace_with_close_to_desired(self):
+        """CF very close to desired_goal → to_desired_dist ≈ 0, in-workspace=1.
+
+        Episode is built with desired=(1.0,1.0,0.5). That's outside the
+        Fetch workspace bounds (y=1.0 is inside [0.4,1.1], but check x=1.0
+        which is BELOW x_lo=1.05 → out-of-workspace). Use a CF inside the
+        workspace bounds instead.
+        """
+        np.random.seed(0)
+        ep, desired = _build_episode(T=10)
+        # Place CF at a workspace-valid point.
+        cf_pos = np.array([1.10, 0.80, 0.50], dtype=np.float32)
+
+        def cf_fn(**kw):
+            return [(5, cf_pos, 1.0)]
+
+        buf = _make_buffer(p_counterfactual=1.0, cf_fn=cf_fn)
+        _run_episode(buf, ep, episode_success=False)
+
+        dev = buf.get_cf_deviation_stats()
+        # Keys present.
+        for k in (
+            "buffer/cf_corrective_pos_to_desired_dist",
+            "buffer/cf_corrective_pos_to_achieved_dist",
+            "buffer/cf_corrective_pos_in_workspace",
+            "buffer/cf_accepted_count",
+        ):
+            assert k in dev, f"missing dev metric {k!r}"
+        # Expected distances:
+        ach_at_5 = ep[5]["achieved_goal"]
+        expected_to_desired  = float(np.linalg.norm(cf_pos - desired))
+        expected_to_achieved = float(np.linalg.norm(cf_pos - ach_at_5))
+        assert abs(dev["buffer/cf_corrective_pos_to_desired_dist"]
+                   - expected_to_desired) < 1e-5
+        assert abs(dev["buffer/cf_corrective_pos_to_achieved_dist"]
+                   - expected_to_achieved) < 1e-5
+        # CF inside workspace.
+        assert dev["buffer/cf_corrective_pos_in_workspace"] == 1.0
+        assert dev["buffer/cf_accepted_count"] == 1.0
+
+    def test_cf_outside_workspace_records_zero(self):
+        """A CF placed outside Fetch bounds → in_workspace mean = 0."""
+        np.random.seed(0)
+        ep, _desired = _build_episode(T=10)
+        # x=0.5 is below x_lo=1.05 → out of workspace.
+        cf_pos = np.array([0.5, 0.5, 0.5], dtype=np.float32)
+
+        def cf_fn(**kw):
+            return [(5, cf_pos, 1.0)]
+
+        buf = _make_buffer(p_counterfactual=1.0, cf_fn=cf_fn)
+        _run_episode(buf, ep, episode_success=False)
+
+        dev = buf.get_cf_deviation_stats()
+        assert dev["buffer/cf_corrective_pos_in_workspace"] == 0.0
+
+    def test_running_mean_over_multiple_episodes(self):
+        """Two episodes with different CFs → running mean equals the mean
+        of the two per-CF distances."""
+        np.random.seed(0)
+
+        # Two different CFs across two episodes.
+        cf_pos_1 = np.array([1.10, 0.80, 0.50], dtype=np.float32)
+        cf_pos_2 = np.array([1.20, 0.90, 0.55], dtype=np.float32)
+        calls = {"n": 0}
+        positions = [cf_pos_1, cf_pos_2]
+
+        def cf_fn(**kw):
+            p = positions[calls["n"] % 2]
+            calls["n"] += 1
+            return [(5, p, 1.0)]
+
+        buf = _make_buffer(p_counterfactual=1.0, cf_fn=cf_fn)
+        ep1, desired = _build_episode(T=10)
+        ep2, _ = _build_episode(T=10)
+        _run_episode(buf, ep1, episode_success=False)
+        _run_episode(buf, ep2, episode_success=False)
+
+        dev = buf.get_cf_deviation_stats()
+        # Should have accumulated 2 CFs.
+        assert dev["buffer/cf_accepted_count"] == 2.0
+        # Expected running mean to_desired:
+        ach_at_5_ep1 = ep1[5]["achieved_goal"]
+        ach_at_5_ep2 = ep2[5]["achieved_goal"]
+        mean_to_desired = (
+            np.linalg.norm(cf_pos_1 - desired)
+            + np.linalg.norm(cf_pos_2 - desired)
+        ) / 2.0
+        mean_to_achieved = (
+            np.linalg.norm(cf_pos_1 - ach_at_5_ep1)
+            + np.linalg.norm(cf_pos_2 - ach_at_5_ep2)
+        ) / 2.0
+        assert abs(dev["buffer/cf_corrective_pos_to_desired_dist"]
+                   - mean_to_desired) < 1e-5
+        assert abs(dev["buffer/cf_corrective_pos_to_achieved_dist"]
+                   - mean_to_achieved) < 1e-5
+
+    def test_reset_zeroes_running_mean(self):
+        """reset_cf_deviation_stats clears the accumulators."""
+        np.random.seed(0)
+        ep, _desired = _build_episode(T=10)
+        cf_pos = np.array([1.10, 0.80, 0.50], dtype=np.float32)
+
+        def cf_fn(**kw):
+            return [(5, cf_pos, 1.0)]
+
+        buf = _make_buffer(p_counterfactual=1.0, cf_fn=cf_fn)
+        _run_episode(buf, ep, episode_success=False)
+        assert buf.get_cf_deviation_stats() != {}
+        buf.reset_cf_deviation_stats()
+        assert buf.get_cf_deviation_stats() == {}, \
+            "after reset, deviation dict must be empty until next CF"
+
+    def test_low_conf_cf_not_counted_in_deviation(self):
+        """Low-confidence CFs are dropped before deviation stats are updated."""
+        np.random.seed(0)
+        ep, _desired = _build_episode(T=10)
+        cf_pos = np.array([1.10, 0.80, 0.50], dtype=np.float32)
+
+        def cf_fn(**kw):
+            return [(5, cf_pos, 0.1)]  # below default 0.5
+
+        buf = _make_buffer(p_counterfactual=1.0, cf_fn=cf_fn, min_confidence=0.5)
+        _run_episode(buf, ep, episode_success=False)
+        # CF was dropped (low conf) → no deviation stats recorded.
+        assert buf.get_cf_deviation_stats() == {}
+
+
 def _run_all_tests_without_pytest():
     """Fallback runner — execute every test_* method on every TestX class.
 
@@ -795,6 +939,7 @@ def _run_all_tests_without_pytest():
         TestPERModeISCorrectionWeight,
         TestCFSyntheticTransitionsGetMaxPriority,
         TestInvalidPriorityMode,
+        TestCFDeviationLogging,
     ]
     n_pass = 0
     n_fail = 0
