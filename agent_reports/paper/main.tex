@@ -700,11 +700,17 @@ $w^{\text{succ}}_i = K_W(\tau_i;t_{\text{succ}})$, and slot priorities
 factor as $p_i = (|\delta_i|+\varepsilon)^\alpha \cdot w^{\text{fail}}_i
 \cdot w^{\text{succ}}_i$, so a slot inside both windows accumulates
 $w_{\max}^{\,2}\!=\!100\!\times$ the baseline TD priority.
-\emph{Without} a VLM call, $t_{\text{succ}}$ is operationalized as the
-centre of the window over which $\|\text{ag}_t\!-\!g\|$ dropped the most
-(the state-geometry proxy for what \citet{sharony2026vlmrb}'s VLM would
-mark as a successful sub-trajectory); we use this proxy to keep this
-variant a state-only ablation without VLM API cost. The bidirectional
+\emph{Without} a VLM call, $t_{\text{succ}}$ is operationalized as
+$t_{\text{succ}}\!=\!\arg\max_t\bigl(\|\text{ag}_{t-W_s}\!-\!g\|
+- \|\text{ag}_{t+W_s}\!-\!g\|\bigr)$ with sliding-window width
+$W_s\!=\!W\!=\!5$ (the same half-width used by the failure kernel
+$K_W$, chosen for symmetry with the per-slot semantic boost rather
+than separately tuned); ties are broken toward the later $t$ so the
+success window lies in the post-progress portion of the trajectory.
+This is a state-geometry proxy for what
+\citet{sharony2026vlmrb}'s VLM would mark as a successful
+sub-trajectory; we use this proxy to keep this variant a state-only
+ablation without VLM API cost. The bidirectional
 variant is the closest within-paper analogue to VLM-RB's success-direction
 signal and lets us cleanly attribute headroom to direction (failure
 vs.\ success) versus combination strategy (multiplicative vs.\ additive
@@ -814,6 +820,38 @@ attractor; \textsc{action} answers in body-frame deltas
 $(\Delta x,\Delta y,\Delta z,\text{grip})$, a coordinate system absent
 from the goal field. This is the prompt-architectural source of the
 failure---a property of the schema's output type, not of any one model.
+
+\paragraph{Mapping variants to $q_\phi$-degeneracy regimes.}
+The teleport-collapse predicate
+$\|\hat{p}\!-\!g\|_2\!\le\!d_{\text{th}}$ is the empirical signature of a
+trajectory-independent posterior, $q_\phi(\hat{p}\!\mid\!\tau)
+\!=\!\delta(\hat{p}\!-\!g)$, and the two-regime taxonomy of
+Appendix~\ref{app:unbiased} (paragraph ``Two regimes of $q_\phi$-degeneracy'')
+fixes the operational meaning of that Dirac: on the verifier channel of
+\S\ref{sec:method:verified} it is the limiting case $m_{\text{gen}}\!>\!0$,
+$m_{\text{ver}}(\sigma)\!\to\!0$, i.e., the VLM emits a parseable goal but
+the simulator rejects it because no executable controller closes the
+implied $\hat{p}\!\approx\!g$ gap (the position-emitting variants land
+here). The \textsc{narrative} variant is in a degenerate-by-modality
+state: $m_{\text{gen}}$ for an action 4-vector is identically zero
+because the output schema does not produce one; the variant cannot be
+gated by the verifier at all. The \textsc{action} variant is the only
+cell in the design space where $q_\phi$ is conditioned on
+$(\Delta x, \Delta y, \Delta z, \text{grip})$ rather than on a position
+in the same coordinate frame as the in-context $g$; the numerical
+attractor is absent by construction, so the empirically observed
+$m_{\text{gen}}$ is the (model-specific) parse rate of a well-posed
+schema, and any residual $m_{\text{ver}}\!\to\!0$ behavior we observe is
+attributable to snapshot-state difficulty rather than to a structural
+Dirac. The four-by-two map is therefore: (\textsc{narrative}, any model)
+$\Rightarrow$ $m_{\text{gen}}\!=\!0$ on the verifier channel;
+(\textsc{achieved\_goal}/\textsc{all}, position-emitting model)
+$\Rightarrow$ Dirac $q_\phi$, $m_{\text{ver}}\!\to\!0$;
+(\textsc{action}, any model) $\Rightarrow$ non-degenerate $q_\phi$. The
+production configuration of the next paragraph and the verified-CF
+mechanism of \S\ref{sec:method:verified} occupy different cells of this
+map (\textsc{achieved\_goal} with the rejection gate vs.\
+\textsc{action}) for the regime-specific reasons just enumerated.
 
 \paragraph{Why this matters for the verifier-as-gate.}
 Output type is also what makes §\ref{sec:method:verified}'s simulator
