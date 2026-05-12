@@ -91,8 +91,9 @@ This paper makes four contributions.
 We re-derive prioritized DQN \citep{schaul2016per}, retrace \citep{munos2016retrace},
 V-trace \citep{espeholt2018impala}, and Sharony~et~al.'s VLM-RB \citep{sharony2026vlmrb}
 inside a non-uniform-replay taxonomy, locating our scheme as
-\emph{proposal-shaping} with an exogenous foundation-model credit-assignment
-oracle. We choose the multiplicative form because it admits a clean
+\emph{proposal-shaping} with a frozen foundation-model credit-assignment
+oracle---the vision-modality, prioritized-replay instantiation of
+\citet{pignatelli2024calm}'s exogenous-FM-credit-oracle program in robot RL. We choose the multiplicative form because it admits a clean
 IS-correction analysis (the standard PER weight remains trajectory-conditionally
 well-defined); the additive mixture used by VLM-RB \citep{sharony2026vlmrb}
 implicitly retargets the loss to a $\lambda$-weighted objective.
@@ -103,7 +104,9 @@ goal-satisfaction; we ask the VLM the strictly more informative
 question---\emph{which single timestep made this trajectory fail?}---and
 multiply the standard PER priority by a bounded boost over a window around
 that timestep. The scheme degenerates gracefully to PER when the VLM is
-uncommitted ($w_{\max}\!=\!1$), needs no $\lambda$-warm-up, and supports a
+uncommitted ($w_{\max}\!=\!1$), adds no VLM-specific schedule on top of
+PER's standard $\beta$~anneal (in contrast to VLM-RB's
+$\lambda_t\!:\!0\!\to\!0.5$ mixture warm-up), and supports a
 strictly-corrected IS estimator (Appendix~\ref{app:is-derivation},
 Eq.~\eqref{eq:sem-corrected}); our running implementation uses PER's IS weight
 as a controlled under-correction (V-trace-analogous), deferring the
@@ -295,15 +298,20 @@ Foundation-model credit assignment is an emerging sub-thread:
 \citet{khandoga2026causalcredit} mask reasoning spans in an LLM policy to
 identify causally-influential tokens, in the lineage of \citet{mesnard2021cca}
 and the credit-assignment survey by \citet{pignatelli2023survey}.
-\citet{pignatelli2024calm} show that an LLM can serve as a zero-shot credit
-oracle via subgoal decomposition in text-based environments---confirming
-foundation-model-as-credit-oracle as a direction beyond our domain.
-\emph{Our semantic-PER introduces an exogenous foundation-model credit-assignment
-oracle}: pre-trained on web-scale data, queried zero-shot at episode granularity,
-combined with verifiable counterfactual hindsight as the acceptance gate.
-This is a strictly stronger framing than ``VLM in replay'' and places our
-contribution inside the emerging causal-credit-assignment family rather
-than the reward-shaping family.
+\citet{pignatelli2024calm} establish the foundation-model-as-credit-oracle
+program by showing that an LLM can serve as a zero-shot credit oracle via
+subgoal decomposition in text-based environments. We place Semantic PER as the
+\emph{first vision-modality, prioritized-replay instantiation} of that
+program: the oracle is a frozen VLM (not an LLM), the domain is goal-conditioned
+robot manipulation (not text adventures), and the oracle output is consumed
+by the replay-sampling distribution rather than by a planner, with the
+multiplicative-with-PER coupling and the simulator-verified counterfactual
+gate (\S\ref{sec:method:verified}) as the two methodological additions on
+top of CaLM's planner-only consumption. This places our contribution inside
+the emerging causal-credit-assignment family rather than the reward-shaping
+family---a more useful placement than ``VLM in replay'' (an engineering
+label) and a more accurate one than ``a new credit-oracle category'' (CaLM
+precedes us).
 
 \paragraph{Generator--verifier and verified counterfactual reasoning.}
 Our verification protocol (Section~\ref{sec:method:verified}) sits inside the
@@ -409,9 +417,8 @@ $\mathbb{E}_U[\ell]$ in expectation.
 A frozen VLM that answers ``which timestep caused this trajectory's outcome?''
 approximates the posterior $p(t^\star\mid\tau) \propto p(\tau\mid t^\star)p(t^\star)$
 where $t^\star$ is the (latent) outcome-causing timestep. Write
-$q_\phi(t^\star\mid\tau)$ for the VLM's approximation; in our implementation it is
-the argmax of a chain-of-thought prompt, but it can equivalently be elicited as a
-soft distribution. We define a per-transition semantic boost
+$q_\phi(t^\star\mid\tau)$ for the VLM's approximation. We define a per-transition
+semantic boost as the expected kernel weight under the posterior,
 \begin{equation}
   w_{\text{sem}}(i;\tau) \;:=\; \mathbb{E}_{t^\star\sim q_\phi(\cdot\mid\tau)}\bigl[K_W(i;t^\star)\bigr],
   \qquad K_W(i;t^\star) = 1 + (w_{\max}\!-\!1)\,\mathbb{1}\bigl[|i-t^\star|\le W\bigr],
@@ -429,6 +436,24 @@ captures \emph{causal influence} (how much posterior mass the VLM places on $i$
 being outcome-causing). Standard PER uses only the first; uniform replay uses
 neither; Semantic PER multiplies the two. When $q_\phi$ is near-uniform,
 $w_{\text{sem}}\!\approx\!1$ and we degenerate to PER.
+
+\emph{Soft versus hard elicitation of $q_\phi$.} Eq.~\eqref{eq:wsem} is written
+in its general expectation form so that two elicitation regimes nest under the
+same definition. \textbf{(i) Hard elicitation (our implementation):} a
+chain-of-thought prompt returns a single \texttt{failure\_frame\_index}
+$\hat t = \mathrm{argmax}_{t^\star} q_\phi(t^\star\!\mid\!\tau)$, which is
+equivalent to setting $q_\phi$ to a Dirac at $\hat t$; Eq.~\eqref{eq:wsem} then
+collapses to $w_{\text{sem}}(i;\tau)=K_W(i;\hat t)$, the closed-box-window form
+used in Algorithm~\ref{alg:sem-per}. \textbf{(ii) Soft elicitation (an
+ablation we pre-register):} the VLM emits a normalized $K$-vector of frame
+logits, and the expectation in Eq.~\eqref{eq:wsem} is computed exactly over
+those logits. Regime (i) is operationally a degenerate special case of (ii);
+the bias bound (Eq.~\eqref{eq:bias-bound} in Appendix~\ref{app:is-derivation})
+controls the consequence of (i)'s Dirac collapse via the $w_{\max}\!-\!1$
+multiplier. We use regime (i) because it is API-cheap and because the
+chain-of-thought trace doubles as a sanity-check artifact; we flag the soft
+ablation in Section~\ref{sec:discussion}'s limitations as the natural follow-on
+when a calibrated soft posterior is required.
 
 \paragraph{Non-uniform replay taxonomy.}
 Eq.~\eqref{eq:headline} sits inside a non-uniform-replay taxonomy
@@ -512,17 +537,31 @@ The credit-assignment survey of \citet{pignatelli2023survey} categorizes methods
 by how they identify outcome-influential actions. Endogenous oracles include
 TD-error (PER), return-decomposition (RUDDER \citep{arjonamedina2019rudder},
 HCA \citep{harutyunyan2019hca}), and counterfactual policy-gradient baselines
-(CCA-PG \citep{mesnard2021cca}). \citet{khandoga2026causalcredit} extends the
-counterfactual idea to LLM tokens by masking reasoning spans; \citet{pignatelli2024calm}
-shows that an LLM can serve as a zero-shot credit oracle via subgoal decomposition
-in text-based environments, confirming FM-as-oracle as a live direction.
-\emph{Our semantic-PER signal introduces a new category: exogenous foundation-model
-credit-assignment oracles}, where the oracle is pre-trained on a different
-distribution (web video, image-text) and queried zero-shot at the trajectory
-level for causal localization. This admits a strictly stronger framing of our
-contribution than ``VLM in replay'': we use foundation-model priors as
-credit-assignment oracles, with verifiable counterfactual hindsight as the
-acceptance gate.
+(CCA-PG \citep{mesnard2021cca}). The 2024--2026 literature has opened an
+\emph{exogenous} branch of this taxonomy in which the credit signal comes
+from a frozen pre-trained foundation model rather than from a critic-internal
+estimate: \citet{pignatelli2024calm} establish the foundation-model-as-credit-oracle
+program by showing that an LLM can serve as a zero-shot credit oracle via
+subgoal decomposition in text-based environments; \citet{khandoga2026causalcredit}
+extend the counterfactual variant to LLM tokens via masking of reasoning spans.
+Semantic PER is best placed as a \emph{vision-modality, prioritized-replay
+instantiation} of this program: the FM is a frozen VLM rather than an LLM, the
+domain is goal-conditioned manipulation rather than text adventures, and the
+oracle output is consumed by the replay-sampling distribution
+$\mu_{\text{Sem}}$ (Eq.~\eqref{eq:headline}) rather than by a subgoal-decomposition
+planner. Two specifics make this instantiation non-trivial rather than a
+domain port: (i) the multiplicative $\mu_P\!\cdot\!w_{\text{sem}}$ form
+preserves PER's IS-correction structure (the analysis in this section),
+which CaLM does not need because text-environment credit assignment is not
+coupled to a TD-error proposal; (ii) the verified-counterfactual-hindsight
+gate of Section~\ref{sec:method:verified} converts the FM credit signal into
+an acceptance test under the training simulator's exact dynamics, a step
+absent from both CaLM's planner-only consumption and Khandoga's
+LLM-token-masking. The framing is not ``VLM in replay'' (an
+engineering label) and not a new top-level taxon (CaLM precedes us); it is
+the first vision-and-prioritized-replay instance of CaLM's
+exogenous-FM-credit-oracle program, with the IS-correction structure and the
+simulator-gated counterfactual relabeling as the two methodological additions.
 
 \section{Method}
 \label{sec:method}
