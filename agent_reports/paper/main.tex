@@ -1677,36 +1677,53 @@ low-volume, and unrelated to any personal-data domain.
 
 \paragraph{Limitations.}
 (i) Our IS-correction is conservative (uses $w_{\text{IS},P}$ rather than the
-strictly-correct $w_{\text{IS},\text{Sem}}$); the framing motivates this as an
-analogue to V-trace truncation, but the strictly-correct ablation has not yet
-been run. (ii) The VLM's posterior $q_\phi$ is conditioned on trajectories
-collected by the current policy, which couples it to the policy in a way
-classical IS theory does not anticipate; the appropriate response is
-freshness-aware PER \citep{ma2026freshness}, deferred to future work.
-(iii) The window kernel $K_W$ is a heuristic; a softer prompt eliciting a
-proper posterior $q_\phi(t^\star\!=\!i\mid\tau)$ would dispense with $W$.
+strictly-correct $w_{\text{IS},\text{Sem}}$); the bias is bounded by
+Eq.~\eqref{eq:bias-bound} and controlled by $(w_{\max},W,\beta_t)$, and the
+framing motivates it as a V-trace-analogous controlled bias--variance tradeoff,
+but the strictly-correct ablation (run $w_{\text{IS},\text{Sem}}$) has not yet
+been executed and would remove the residual sampling bias entirely.
+(ii) The proposal $\mu_{\text{Sem}}(i)\propto\mu_P(i)\cdot w_{\text{sem}}$ depends
+on the current critic $\theta$ through $\mu_P\propto(|\delta_i(\theta)|+\varepsilon)^\alpha$,
+so the IS ratio is evaluated against a \emph{moving} proposal; this staleness
+mode is inherited from standard PER and is not specific to the semantic boost
+(Appendix~\ref{app:is-derivation} discusses it under the stop-gradient
+convention standard PER applies).
+Separately, the VLM's input ($q_\phi$ conditioned on rendered keyframes from
+$\theta_{\text{collect}}\!\neq\!\theta_{\text{train}}$ trajectories) introduces
+a second staleness channel specific to Semantic PER;
+\citet{ma2026freshness} address priority staleness for rapidly-evolving policies,
+and the appropriate extension to the two-channel case is deferred to future work.
+(iii) The window kernel $K_W$ is a heuristic: the hard-window indicator
+discretizes $q_\phi$'s temporal information into a binary boost rather than
+propagating the full soft posterior.  A softer elicitation regime---prompting the
+VLM for a normalized $K$-vector of per-frame logits and computing the
+Eq.~\eqref{eq:wsem} expectation directly---would dispense with $W$ and is
+pre-registered in \S\ref{sec:theory} as the natural follow-on; it requires a
+calibrated soft posterior that the chain-of-thought prompt does not currently emit.
 (iv) Our cross-task evidence is at $n\!=\!12$ in three Fetch envs; transfer to
 non-Fetch tasks (Adroit, OGBench, robosuite---and to VLM-RB's MiniGrid
 benchmark for a head-to-head comparison) is the natural follow-on.
-(v) Our three-VLM-family robustness sweep (Opus~4.7, GPT-4o, Sonnet~4.5)
-does not yet cover open-weights VLMs (LLaVA-NeXT, Qwen2.5-VL, Pixtral);
-the relative magnitude of the prompt-architectural teleport failure on
-smaller open VLMs is open. (vi) The simulator-as-verifier assumption
-requires a forkable training environment; tasks with non-deterministic or
-real-robot dynamics would need an additional verification layer.
+(v) Our robustness sweep covers three models from two vendors (Opus~4.7 and
+Sonnet~4.5 from Anthropic; GPT-4o from OpenAI); in terms of pre-training lineage
+it is effectively a two-family comparison, since Opus and Sonnet share a
+substantial common corpus and RLHF pipeline.  Open-weights VLMs (LLaVA-NeXT,
+Qwen2.5-VL, Pixtral) are not evaluated; the relative magnitude of the
+prompt-architectural teleport failure on smaller open VLMs is an open question.
+(vi) The simulator-as-verifier assumption requires a forkable training environment;
+tasks with non-deterministic or real-robot dynamics would need an additional
+verification layer.
 (vii) Single-timestep localization vs.\ clip-level aggregation is an
-untested trade-off.  VLM-RB's 32-frame sub-trajectory signal averages
-over more visual context and may be more robust to single-frame VLM
-attention errors; we adopt the single-timestep form because it is a
-prerequisite for the counterfactual relabeling step (clip-level signals
-cannot identify a snapshot from which to fork the simulator).  Whether
-the localization granularity independently improves credit assignment---
-independent of the verified-CF benefit---remains unablated.  The pre-registered
-$(W, w_{\max})$ sweep (Section~\ref{sec:exp:inflight}) will shed partial light
-on this by varying the window half-width $W\in\{1,3,5,10\}$, but a
-direct clip-vs-timestep comparison on a fixed policy requires held-out
-data we have not yet collected.
-% TODO: run W-sweep ablation and report results here once Phase-2 runs complete.
+untested trade-off.  VLM-RB's 32-frame sub-trajectory signal averages over more
+visual context and may be more robust to single-frame VLM attention errors; we
+adopt the single-timestep form because it is a prerequisite for the
+counterfactual relabeling step (clip-level signals cannot identify a snapshot
+from which to fork the simulator).  Whether the localization granularity
+independently improves credit assignment---independent of the verified-CF
+benefit---remains unablated.  The pre-registered $(W, w_{\max})$ sweep
+(Section~\ref{sec:exp:inflight}) will shed partial light on this by varying
+$W\!\in\!\{1,3,5,10\}$, but a direct clip-vs-timestep comparison on a fixed
+policy requires held-out data not yet collected; this ablation is a camera-ready
+priority once the Phase~2 in-flight runs conclude.
 (viii) The methodological differentiation from VLM-RB \citep{sharony2026vlmrb}
 in Table~\ref{tab:differentiation} rests on five axes, but the comparison is
 \emph{architectural}, not empirical: we do not run Semantic~PER on MiniGrid or
