@@ -381,27 +381,163 @@ acceptance gate.
 \subsection{Semantic PER with the Failure-Direction Signal}
 \label{sec:method:sper}
 
-At the end of each failed training episode, we render $K\!=\!5$ uniformly-sampled
-keyframes plus a task description, query a frozen VLM for the
-\texttt{failure\_frame\_index} $\in\{0,\dots,K\!-\!1\}$, and map this back to a
-timestep $t_{\text{fail}}\in\{0,\dots,T\!-\!1\}$. For each in-buffer slot $i$ of
-that episode we apply a multiplicative weight
-\[
-  w_i \;=\; \begin{cases} w_{\max} & |i-t_{\text{fail}}|\le W,\\ 1 & \text{otherwise}\end{cases}
-\]
-with $w_{\max}\!=\!10$ and $W\!=\!5$ steps as defaults. The priority becomes
-$p_i=(|\delta_i|+\varepsilon)^\alpha\cdot w_i$ (with $\alpha\!=\!0.6$); we keep
-the raw TD priority in a sibling array so re-blending after weight changes is
-exact (no stale sum-tree leaves).
+Semantic PER instantiates the multiplicative proposal
+modification of Eq.~\eqref{eq:headline} as a per-episode hook into the
+sum-tree of standard PER~\citep{schaul2016per}. The full system has four
+moving parts: a \emph{localization} step that calls a frozen VLM at the end
+of every failed episode; a \emph{window kernel} that smears the localized
+timestep into a multiplicative weight; a \emph{priority update} that fuses
+the semantic weight with TD-error in the sum-tree; and a sibling
+\emph{re-blend} buffer that makes priority updates exact under streaming
+TD-error changes. We describe each component below, then specialize to two
+ablation variants (bidirectional, and a privileged-state Oracle).
 
-The \emph{bidirectional} variant (used as an upper-bound experimental control)
-adds a \emph{success} window centered on \texttt{argmax}-window
-distance-reduction; this is Sharony et al.'s direction but per-timestep. Slots
-inside both windows receive $w_{\max}\!\times\!w_{\max}\!=\!100\!\times$ the
-baseline TD priority. The contact-aware ``Oracle v3'' heuristic, used as a
-privileged-state upper envelope, walks the trajectory for contact-loss events
-($\|\text{ee}-\text{obj}\| < 0.05$\,m to far-from-contact) with the object still
-$>0.10$\,m from the goal.
+\paragraph{Pipeline.}
+At the end of each failed training episode (terminal sparse reward $r_T<0$),
+we render $K\!=\!5$ uniformly-sampled keyframes plus a one-sentence task
+description, query a frozen VLM for the
+\texttt{failure\_frame\_index} $\hat k\!\in\!\{0,\dots,K\!-\!1\}$, and map this
+back to a timestep $t_{\text{fail}}\!\in\!\{0,\dots,T\!-\!1\}$ via
+$t_{\text{fail}}=\lfloor\hat k\cdot(T\!-\!1)/(K\!-\!1)\rfloor$. The localized
+timestep $t_{\text{fail}}$ is then frozen for the lifetime of those buffer
+slots (overwritten only when the ring buffer recycles them). Successful
+episodes are not queried; their slots retain $w_i\!=\!1$ and reduce to PER.
+
+\begin{figure}[t]
+\centering
+\fbox{\parbox{0.92\linewidth}{
+\textbf{Definition (Semantic kernel).}
+Given an episode $\tau$ of length $T$ and a VLM-localized failure timestep
+$t_{\text{fail}}\!\in\!\{0,\dots,T\!-\!1\}$, the per-slot semantic weight
+applied to in-episode slot $i$ with episode-local timestep
+$\tau_i\!\in\!\{0,\dots,T\!-\!1\}$ is
+\[
+  w_i \;=\; K_W(\tau_i;t_{\text{fail}})
+       \;=\; 1 + (w_{\max}\!-\!1)\,\mathbb{1}\bigl[|\tau_i\!-\!t_{\text{fail}}|\le W\bigr],
+       \quad w_{\max}\!\ge\!1,\ W\!\ge\!0,
+\]
+and the buffer priority of slot $i$ is the product
+$p_i = (|\delta_i|+\varepsilon)^\alpha \cdot w_i$ with $\alpha\!\in\![0,1]$.
+\textbf{Defaults:} $w_{\max}\!=\!10$, $W\!=\!5$, $\alpha\!=\!0.6$,
+$\varepsilon\!=\!10^{-6}$.
+\textbf{Boundary cases.} $w_{\max}\!=\!1$ recovers standard PER for every
+in-episode slot; $W\!=\!T$ uniformly boosts the episode (degenerates to a
+per-episode importance weight); $\alpha\!=\!0$ recovers a TD-agnostic
+``boost-only-the-failure-region'' scheme.
+}}
+\caption{The semantic kernel is a one-step box function centered on the
+VLM-localized failure timestep. The two hyperparameters $(w_{\max},W)$
+control the strength and spatial reach of the boost; defaults induce an
+$11$-step ($2W\!+\!1$) window with a $10\!\times$ multiplier.}
+\label{fig:kernel}
+\end{figure}
+
+\paragraph{Exact re-blending.}
+Standard PER stores $p_i$ in a sum-tree whose internal nodes are sums of
+their children; on every TD update the leaf $p_i$ is replaced and its
+ancestors recomputed. Combining a TD-driven and a VLM-driven modifier
+naively (multiplying $w_i$ into the stored leaf at episode-end, then later
+reading back $(|\delta_i|\!+\!\varepsilon)^\alpha$ from the corrupted leaf
+to compute a new priority) would compound rounding error and ``forget'' the
+semantic weight after the first TD update. We avoid this by storing
+$(|\delta_i|\!+\!\varepsilon)^\alpha$ in a \emph{sibling} float64 array
+$\{q_i\}$ and computing the sum-tree leaf on demand as $p_i = q_i\cdot w_i$.
+A weight or TD update sets the appropriate component; the sum-tree leaf is
+the exact product up to float-64 precision. The cost is one additional
+$|\mathcal{D}_B|$-sized array.
+
+\paragraph{Why this proposal-shaping family?}
+Eq.~\eqref{eq:headline}'s \emph{multiplicative} form is shared by several
+recent PER variants that combine TD-error with an auxiliary signal: ReaPER
+multiplies by a per-transition \emph{reliability} estimate
+\citep{pleiss2025reaper}; RPE-PER swaps the TD-error proposal for a
+reward-prediction-error proposal \citep{yamani2025rpeper}; Prioritized
+Generative Replay multiplies by a \emph{generative}-model relevance score
+(curiosity, value) on a learned synthetic-experience stream
+\citep{wang2025prioritizedgenerative}; and the broader non-uniform-replay
+literature \citep{krutsylo2025nonuniform} shows that any non-uniform
+proposal can beat uniform under modest conditions. Each instantiates the
+``$\mu_P \cdot g_\phi$'' template of Eq.~\eqref{eq:headline}, with the
+distinguishing choice being the source of $g_\phi$ (a critic-internal
+reliability estimate, a model-derived RPE, a generator's relevance score,
+or---in our case---a frozen foundation-model posterior over which timestep
+caused the outcome). The IS-correction analysis of Section~\ref{sec:theory}
+applies uniformly across the family because the multiplicative structure
+preserves the trajectory-conditional factorization that
+$w_{\text{IS}}\!=\!(|\mathcal{D}_B|\mu)^{-\beta}$ requires; the additive
+mixture of \citet{sharony2026vlmrb} is the family's outlier.
+
+\begin{figure}[t]
+\centering
+\fbox{\parbox{0.92\linewidth}{
+\textbf{Assumption (justifying the IS-correction interpretation).}
+We require that (i)~the VLM's posterior $q_\phi(t^\star\!\mid\!\tau)$ is
+conditioned only on the trajectory $\tau$, not on the current policy
+parameters $\theta$; (ii)~the priority $p_i$ is bounded away from zero
+($p_i\!\ge\!\varepsilon^\alpha$, satisfied by construction); and
+(iii)~the ratio $|\mathcal{D}_B|^{-1}\cdot p_i^{-1}$ has finite second
+moment under $\mu_{\text{Sem}}$ (satisfied when $w_{\max}\!<\!\infty$).
+Under (i)--(iii), the standard PER IS-correction argument
+\citep[Sec.~3.4]{schaul2016per} extends mutatis mutandis to
+$\mu_{\text{Sem}}$, with the only subtlety being that $w_{\text{IS}}$
+inherits a trajectory-conditional normalization through $w_i$. The
+\emph{policy}-conditioning loophole in~(i) is the source of our
+freshness-aware caveat \citep{ma2026freshness}; the same staleness mode
+afflicts standard PER and is not specific to the semantic boost.
+}}
+\caption{Conditions under which our IS-correction extends from PER to
+Semantic PER. Our running implementation under-corrects (uses
+$w_{\text{IS},P}$ rather than $w_{\text{IS},\text{Sem}}$) for the
+V-trace-analogous variance-reduction reason laid out in
+Section~\ref{sec:theory}; Limitation~(i) flags the strictly-correct
+ablation.}
+\label{fig:assumption}
+\end{figure}
+
+\paragraph{The bidirectional variant.}
+As an experimental control we instrument a \emph{bidirectional} semantic
+buffer that additionally boosts a \emph{success} timestep
+$t_{\text{succ}}$ on every episode (successful and failed alike). The
+success-weight is the symmetric kernel
+$w^{\text{succ}}_i = K_W(\tau_i;t_{\text{succ}})$, and slot priorities
+factor as $p_i = (|\delta_i|+\varepsilon)^\alpha \cdot w^{\text{fail}}_i
+\cdot w^{\text{succ}}_i$, so a slot inside both windows accumulates
+$w_{\max}^{\,2}\!=\!100\!\times$ the baseline TD priority.
+\emph{Without} a VLM call, $t_{\text{succ}}$ is operationalized as the
+centre of the window over which $\|\text{ag}_t\!-\!g\|$ dropped the most
+(the state-geometry proxy for what \citet{sharony2026vlmrb}'s VLM would
+mark as a successful sub-trajectory); we use this proxy to keep this
+variant a state-only ablation without VLM API cost. The bidirectional
+variant is the closest within-paper analogue to VLM-RB's success-direction
+signal and lets us cleanly attribute headroom to direction (failure
+vs.\ success) versus combination strategy (multiplicative vs.\ additive
+mixture).
+
+\paragraph{Heuristic-Oracle upper envelope.}
+The contact-aware heuristic ``Oracle v3'' is a privileged-state localizer
+that reads $(\text{ee}_t,\text{obj}_t)$ from the Fetch observation vector
+and selects $t_{\text{fail}}$ in three precedence phases:
+\textbf{(a) ballistic:} the latest contiguous run of $\ge 3$ steps with
+post-peak object velocity $>0.05$\,m/step (fires on FetchSlide's free-flight
+trajectories);
+\textbf{(b) contact-loss:} the latest transition
+$\text{in\_contact}_t\!\to\!\neg\text{in\_contact}_{t+1}$ where
+``in contact'' means $\|\text{ee}_t\!-\!\text{obj}_t\|\!<\!0.05$\,m,
+the contact-run length is $\ge 2$, and the object remains
+$>0.10$\,m from the goal (catches FetchPush/PickAndPlace drop-offs);
+\textbf{(c) argmin:} the closest-approach timestep, as fallback.
+This localizer plays two roles: it is the \emph{supervised target} for
+evaluating VLM keyframe agreement (Section~\ref{sec:exp:transfer}), and it
+is the privileged-state \emph{upper envelope} for Semantic PER in
+Figure~\ref{fig:headline}---the curve a VLM with perfect localization
+would induce. The headroom between PER and Oracle is the maximum
+achievable gain from any failure-localization signal; the headroom
+between PER and GPT-4o is the VLM-attributable fraction of that gain.
+The heuristic itself is a privileged-state generalization of contact-energy
+prioritization \citep{sayar2023cebp} and of causal-action-influence
+counterfactual augmentation \citep{urpi2024caiac}, both of which read
+ground-truth simulator state to identify outcome-influential transitions
+in Fetch-style environments.
 
 \subsection{Counterfactual Prompting and the Teleport-Collapse Failure Mode}
 \label{sec:method:prompt}

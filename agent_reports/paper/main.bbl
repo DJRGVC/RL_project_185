@@ -1,4 +1,4 @@
-\begin{thebibliography}{31}
+\begin{thebibliography}{35}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -104,6 +104,11 @@ Mykola Khandoga, Rui Yuan, and Vinay~Kumar Sankarapu.
   optimization.
 \newblock \emph{arXiv preprint arXiv:2602.09331}, 2026.
 
+\bibitem[Krutsylo(2025)]{krutsylo2025nonuniform}
+Andrii Krutsylo.
+\newblock Non-uniform memory sampling in experience replay.
+\newblock \emph{arXiv preprint arXiv:2502.11305}, 2025.
+
 \bibitem[Lee et~al.(2025)Lee, Xie, Fang, Pertsch, and Finn]{lee2025kagi}
 Olivia~Y. Lee, Annie Xie, Kuan Fang, Karl Pertsch, and Chelsea Finn.
 \newblock Affordance-guided reinforcement learning via visual prompting.
@@ -165,6 +170,11 @@ Eduardo Pignatelli, Johan Ferret, Matthieu Geist, Thomas Mesnard, Hado van
   learning.
 \newblock \emph{arXiv preprint arXiv:2312.01072}, 2023.
 
+\bibitem[Pleiss et~al.(2025)Pleiss, Sutter, and Schiffer]{pleiss2025reaper}
+Leonard~S. Pleiss, Tobias Sutter, and Maximilian Schiffer.
+\newblock Reliability-adjusted prioritized experience replay.
+\newblock \emph{arXiv preprint arXiv:2506.18482}, 2025.
+
 \bibitem[Rocamonde et~al.(2024)Rocamonde, Montesinos, Nava, Perez, and
   Lindner]{rocamonde2024vlmreward}
 Juan Rocamonde, Victoriano Montesinos, Elvis Nava, Ethan Perez, and David
@@ -207,6 +217,13 @@ David Venuto, Sami~Nur Islam, Martin Klissarov, Doina Precup, Sherry Yang, and
 \newblock Code as reward: Empowering reinforcement learning with {VLM}s.
 \newblock In \emph{International Conference on Machine Learning (ICML)}, 2024.
 
+\bibitem[Wang et~al.(2025)Wang, Frans, Abbeel, Levine, and
+  Efros]{wang2025prioritizedgenerative}
+Renhao Wang, Kevin Frans, Pieter Abbeel, Sergey Levine, and Alexei~A. Efros.
+\newblock Prioritized generative replay.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2025.
+
 \bibitem[Wang et~al.(2024)Wang, Sun, Zhang, Xian, Biyik, Held, and
   Erickson]{wang2024rlvlmf}
 Yufei Wang, Zhou Sun, Jiayuan Zhang, Zhenjia Xian, Erdem Biyik, David Held, and
@@ -227,6 +244,12 @@ Yanru Wu, Weiduo Yuan, Ang Qi, Vitor Guizilini, Jiageng Mao, and Yue Wang.
 \newblock Large reward models: Generalizable online robot reward generation
   with vision-language models.
 \newblock \emph{arXiv preprint arXiv:2603.16065}, 2026.
+
+\bibitem[Yamani et~al.(2025)]{yamani2025rpeper}
+Hoda Yamani et~al.
+\newblock Reward prediction error prioritisation in experience replay: The
+  {RPE-PER} method.
+\newblock \emph{arXiv preprint arXiv:2501.18093}, 2025.
 
 \bibitem[Zha et~al.(2025)]{zha2025tango}
 Kaiwen Zha et~al.
