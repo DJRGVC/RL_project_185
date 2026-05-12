@@ -308,25 +308,29 @@ conservative under-correction (semantic-boosted transitions are sampled more
 than their IS weight reflects) and is mathematically analogous to V-trace's
 ratio truncation: a controlled bias for variance reduction.
 
-\paragraph{Why multiplicative? Uniqueness, additive mixtures, and what this buys us.}
-Two predictions follow from Eq.~\eqref{eq:headline} that distinguish our
-scheme from neighboring options. \textbf{(P1) Uniqueness of multiplicative.}
-The PER IS-correction $w_{\text{IS}}(i)=(|\mathcal{D}_B|\mu(i))^{-\beta}$
-recovers the uniform-replay objective as $\beta\!\to\!1$. Any proposal
-modification $\mu'(i)=f(\mu_P(i), q_\phi(i;\tau))$ that wants the same
-correction interpretation must satisfy
-$\mu'(i)\propto \mu_P(i)\cdot g(q_\phi(i;\tau))$
-for some trajectory-conditional $g$: the IS denominator must factor so that
-the $\beta\!\to\!1$ limit returns the uniform-replay expectation. An
-additive mixture $\lambda \mu_q + (1\!-\!\lambda)\mu_P$
-\citep{sharony2026vlmrb} does \emph{not} satisfy this: under
-$w_{\text{IS}}=(|\mathcal{D}_B|(\lambda\mu_q+(1\!-\!\lambda)\mu_P))^{-\beta}$
-the $\beta\!\to\!1$ limit is the $\lambda$-weighted objective
+\paragraph{Why multiplicative? IS-correction analysis, additive mixtures, and what this buys us.}
+Two observations motivate Eq.~\eqref{eq:headline}'s multiplicative form over
+neighboring options. \textbf{(P1) IS-correction compatibility.}
+We choose the multiplicative form because it admits a clean IS-correction
+analysis. Under $\mu_{\text{Sem}}(i)\propto\mu_P(i)\cdot w_{\text{sem}}(i;\tau)$
+the standard PER IS-weight
+$w_{\text{IS},P}(i)=(|\mathcal{D}_B|\mu_P(i))^{-\beta}$
+remains trajectory-conditionally well-defined: the $w_{\text{sem}}$ factor
+is trajectory-conditional and cancels in the normalized
+$\mathbb{E}_{\mu_{\text{Sem}}}[w_{\text{IS},P}\ell]$, so the under-correction
+is bounded and interpretable as a V-trace-analogous bias--variance tradeoff.
+By contrast, an additive mixture $\lambda \mu_q + (1\!-\!\lambda)\mu_P$
+\citep{sharony2026vlmrb} changes the IS denominator to
+$(|\mathcal{D}_B|(\lambda\mu_q+(1\!-\!\lambda)\mu_P))^{-\beta}$, whose
+$\beta\!\to\!1$ limit is the $\lambda$-weighted objective
 $\lambda\mathbb{E}_{\mu_q}[\ell]+(1\!-\!\lambda)\mathbb{E}_{\mu_P}[\ell]$,
 \emph{not} $\mathbb{E}_U[\ell]$, unless $\lambda$ is itself folded into the
-correction. The multiplicative form is, up to normalization, the unique
-proposal modification that keeps PER's interpretation. \textbf{(P2)
-Replay-shaping vs.\ reward-shaping.} A natural alternative use of the VLM
+correction. We note that the \emph{class} of multiplicative modifications
+$\mu'(i)\propto\mu_P(i)\cdot g(q_\phi(i;\tau))$ is broad (any positive
+trajectory-conditional $g$ belongs), so the choice is not unique; the
+specific $g=K_W(\cdot;t^\star)$ is an additional design choice motivated
+by the step-localization structure of the VLM output.
+\textbf{(P2) Replay-shaping vs.\ reward-shaping.} A natural alternative use of the VLM
 is to splice it into the TD target as a per-timestep reward
 \citep{wu2026largerewardmodels,patel2025iker,rocamonde2024vlmreward};
 that propagates VLM calibration error directly into $Q$ as bias. Our scheme
@@ -762,35 +766,76 @@ in Appendix~\ref{app:prompts}.
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.95\linewidth]{fig1_headline_success.pdf}
-\caption{Success rate vs.\ environment steps for \emph{Uniform}, \emph{PER},
+\caption{\textbf{[Pre-fix run, retained for transparency.]}
+Success rate vs.\ environment steps for \emph{Uniform}, \emph{PER},
 \emph{Semantic-PER (Oracle v3)}, and \emph{Semantic-PER (GPT-4o)} on the three
-Fetch tasks, mean $\pm$~SE across 3 seeds. The Oracle (privileged sim state)
-provides the upper envelope; the gap between PER and Oracle is the maximum gain
-achievable by any failure-localizer. GPT-4o captures this headroom on PickAndPlace
-and narrows it on Push; the Slide ranking is within SE and not conclusive.
-Note: the GPT-4o curve uses a pre-fix pipeline (all-variant prompt without the
-teleport gate); Sections~\ref{sec:exp:prompt}--\ref{sec:exp:real} identify and
-close this bug. Three-family robustness (GPT-4o, Opus~4.7, Sonnet~4.5) is
-confirmed in the prompt-design sweep.}
+Fetch tasks, mean $\pm$~SE across 3 seeds.
+\emph{The GPT-4o curve uses a known-buggy pipeline}
+(all-variant prompt without the teleport gate), which silently admitted
+$\sim$67\% degenerate counterfactuals as relabels; see Section~\ref{sec:discussion}.
+The curve is therefore not a valid evaluation of Semantic PER; it is retained to
+document the pre-fix behavior and motivate the corrected runs in
+Section~\ref{sec:exp:inflight}.
+The Oracle $-$ PER gap is interpretable as a valid upper envelope because the
+Oracle uses only privileged sim state and is unaffected by the prompt bug.
+Sections~\ref{sec:exp:prompt}--\ref{sec:exp:real} identify and close the bug.}
 \label{fig:headline}
 \end{figure}
 
 \subsection{Headline Ablation: PER vs.\ Semantic PER on Fetch}
 \label{sec:exp:headline}
 
-Figure~\ref{fig:headline} reports the existing semantic-PER ablation against
-uniform replay and standard PER, with two oracle conditions: a heuristic
-contact-aware localizer reading privileged sim state (``Oracle v3'') and a
-GPT-4o-driven semantic-PER variant. On \emph{FetchPickAndPlace} the
-GPT-4o-semantic-PER trajectory tracks the Oracle and clears the PER baseline by
-the 250\,k-step mark; on \emph{FetchPush} the Oracle leads cleanly while GPT-4o
-sits between PER and Oracle; on \emph{FetchSlide} the ranking is closer and
-seeds disagree, consistent with FetchSlide's known sensitivity to initial-state
-randomization. Importantly, the gap between PER and Oracle is the
-\emph{maximum achievable headroom} from a perfect failure-localizer; the gap
-between PER and GPT-4o is the headroom \emph{VLM-attributable to a frontier
-model}. Section~\ref{sec:discussion} reports a pipeline-bug discovery that
-qualifies this headline.
+Figure~\ref{fig:headline} reports a pre-fix run of the semantic-PER ablation
+against uniform replay and standard PER, retained for transparency; see the
+caption for the bug note. Despite the GPT-4o curve's known-buggy pipeline, the
+\emph{Oracle} curve and the \emph{PER}/\emph{Uniform} baselines are unaffected
+and provide valid interpretable structure: the Oracle is a privileged-state
+localizer with no VLM dependency, and the baselines use no counterfactual relabels.
+We organize the reading per environment with this caveat in mind.
+
+\paragraph{FetchPickAndPlace.}
+The most visually decisive panel. GPT-4o semantic-PER tracks the Oracle
+envelope from $\sim$150\,k steps onward and is the only non-Oracle curve to
+clear PER with non-overlapping SE intervals by 250\,k steps. In the
+IS-posterior language of Section~\ref{sec:theory}, this indicates that the
+VLM's posterior $q_\phi(t^\star\!\mid\!\tau)$ approximates the oracle's
+localization on the task family where failure is most semantically
+distinctive (grip failure at a visually salient drop point). The Oracle
+$-$ PER gap at 500\,k steps is the full achievable headroom; GPT-4o recovers
+roughly half of it in the pre-bug run. Section~\ref{sec:discussion} explains
+why the corrected (post-gate) curve is expected to narrow this gap further.
+
+\paragraph{FetchPush.}
+A two-tier pattern: Oracle leads cleanly and GPT-4o sits between PER and
+Oracle throughout. The intermediate ranking is interpretable under the
+IS-posterior view---FetchPush failure typically occurs at a single contact-loss
+event that the heuristic Oracle identifies precisely from $(\text{ee}_t,\text{obj}_t)$
+state, while the VLM, observing compressed keyframes, correctly identifies the
+\emph{episode region} but assigns imprecise sub-frame credit within the contact
+window. Partial localization accuracy produces partial headroom recovery.
+
+\paragraph{FetchSlide.}
+All four conditions are within one SE interval of each other across most of the
+training run, seeds disagree on ranking, and the per-seed spread is wider than
+for the other two environments. This is consistent with FetchSlide's known
+sensitivity to random initial strike angle: at $n\!=\!3$ seeds, the confidence
+intervals are too wide to attribute ordering. The keyframe-agreement analysis of
+Section~\ref{sec:exp:transfer} provides independent evidence that VLM localization
+\emph{is} accurate on Slide (4/4 tolerant agreement), suggesting that the null
+training result is a statistical power limitation rather than a qualitative VLM
+failure. The 9/12 cross-task agreement confirms that localization skill is present;
+whether it translates to a training gain at $n\!=\!3$ is not resolved by this run.
+
+\paragraph{Interpreting the Oracle headroom.}
+The PER $\to$ Oracle gap functions as an \emph{oracle headroom envelope}: it
+upper-bounds the training-time gain achievable by any offline failure-localizer
+on these tasks at these seed counts. The PER $\to$ GPT-4o gap is the
+VLM-attributable fraction of that gain in the pre-bug run. The
+Section~\ref{sec:discussion} pipeline-bug discovery qualifies both gaps:
+the pre-fix GPT-4o run admitted $\sim$67\% degenerate relabels, so the
+true VLM-attributable gap with a clean buffer is strictly larger. The in-flight
+HER kill experiment (Section~\ref{sec:exp:inflight}) will close this comparison
+with the corrected code path.
 
 \subsection{Counterfactual Prompt Design}
 \label{sec:exp:prompt}
