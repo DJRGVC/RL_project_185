@@ -1670,6 +1670,30 @@ VLM-RB tunes a scalar $\lambda$ and a TD multiplier.  Both involve per-benchmark
 design choices of comparable complexity.  A genuine empirical differentiation
 requires head-to-head evaluation on a shared benchmark; we pre-register this as a
 camera-ready priority.
+(ix) \emph{Cold-start verifier-rejection regime.} The simulator-as-verifier
+gate is a precision-over-recall instrument by design: every accepted relabel is
+guaranteed sparse-reward-positive ($\varepsilon_{\text{cal}}\!=\!0$
+under A5; \S\ref{sec:method:verified}), but the acceptance rate is gated by the
+joint event that the VLM proposes a corrective action \emph{and} that
+action sequence crosses the 5\,cm goal threshold in $\le N\!=\!50$ verifier
+steps. Early in training---when the snapshot state $\sigma$ itself sits far
+from the goal, because the policy has not yet learned to approach the
+object---this joint event can have very low base rate. Our Phase~2
+in-flight FetchPickAndPlace run with the verified-CF variant (seed~42)
+hit a 100\% verifier-rejection rate over the first $\approx$80 VLM
+calls (steps 1.4k--2.8k of 100k), meaning that this run was operationally
+indistinguishable from a SAC+HER run with extra VLM-API overhead until
+the underlying policy improved enough to make corrective-action proposals
+reachable from $\sigma$. The framing in \S\ref{sec:method:verified}
+(``calibration is a throughput dial'') anticipates this in principle but
+understates the magnitude: at cold-start the throughput can be zero, in
+which case the verified-CF channel makes no contribution to credit
+assignment and the run reduces to a strictly costlier HER. Practical
+mitigations---a base-policy warm-up phase before enabling the
+verifier, a longer verifier rollout horizon $N$, or a soft-acceptance
+relaxation (e.g., $r\!\ge\!-\rho_r$ for some $\rho_r\!<\!\eta$,
+accepting near-misses as partial relabels)---are pre-registered for a
+follow-on study but not run here.
 
 \paragraph{Conclusion.}
 We re-frame VLM-guided experience replay as importance-sampled posterior
