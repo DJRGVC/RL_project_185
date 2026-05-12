@@ -39,18 +39,18 @@ trajectory effectively unprioritized. We make two contributions.
 \emph{importance-sampled posterior reweighting}: a frozen VLM emits an
 approximate posterior $q_\phi(t^\star\!\mid\!\tau)$ over which timestep caused
 an episode's outcome, and Semantic PER multiplies the standard TD-error
-priority by this posterior. The multiplicative form uniquely preserves PER's
-IS-correction; the additive mixture of the concurrent VLM-RB
+priority by this posterior. The multiplicative form admits a clean
+IS-correction analysis; the additive mixture of the concurrent VLM-RB
 \citep{sharony2026vlmrb} implicitly retargets the loss.
 \textbf{Second}, we introduce \textbf{VLM-Verified Counterfactual Hindsight},
 which closes the dominant failure mode of language-only counterfactuals:
 rather than asking for a hindsight goal (which teleport-collapses in 100\%
 of Opus 4.7 calls on FetchPush), we ask for a corrective action sequence and
 execute it in a simulator fork. Only simulator-verified relabels enter the
-buffer (confidence~1.0, zero modeling error). A three-family prompt sweep
-(GPT-4o / Opus~4.7 / Sonnet~4.5) on 16 Fetch episodes identifies
-\texttt{(GPT-4o, achieved\_goal + 5\,cm gate)} as strictly dominant (0\%
-collapse, 0.79 plausibility, 0.83 goal-progress), and a 12-episode
+buffer (confidence~1.0, zero modeling error). A two-vendor, three-model prompt sweep
+(GPT-4o / Opus~4.7 / Sonnet~4.5) on 6 synthetic and 10 real Fetch failures identifies
+\texttt{(GPT-4o, achieved\_goal + 5\,cm gate)} as the dominant configuration (0\%
+teleport-collapse, 0.79 plausibility, 0.83 goal-progress), and a 12-episode
 cross-task pilot achieves 12/12 annotations across Push, PickAndPlace, and
 Slide with a single template---evidence that a foundation-VLM
 credit-assignment oracle generalizes where a learned priority head would not.
@@ -90,13 +90,12 @@ This paper makes four contributions.
 \textbf{(1) An IS-posterior framing of VLM-guided replay} (Section~\ref{sec:theory}).
 We re-derive prioritized DQN \citep{schaul2016per}, retrace \citep{munos2016retrace},
 V-trace \citep{espeholt2018impala}, and Sharony~et~al.'s VLM-RB \citep{sharony2026vlmrb}
-inside a single off-policy-correction taxonomy, locating our scheme as
+inside a non-uniform-replay taxonomy, locating our scheme as
 \emph{proposal-shaping} with an exogenous foundation-model credit-assignment
-oracle. The multiplicative form of our update is the \emph{unique}
-proposal modification (up to trajectory-conditional normalization) that
-preserves the standard PER importance-sampling correction; the additive
-mixture used by VLM-RB \citep{sharony2026vlmrb} implicitly retargets the
-loss to a $\lambda$-weighted objective.
+oracle. We choose the multiplicative form because it admits a clean
+IS-correction analysis (the standard PER weight remains trajectory-conditionally
+well-defined); the additive mixture used by VLM-RB \citep{sharony2026vlmrb}
+implicitly retargets the loss to a $\lambda$-weighted objective.
 
 \textbf{(2) Semantic PER with a failure-direction signal}
 (Section~\ref{sec:method:sper}). Sharony~et~al.\ score 32-frame clips for
@@ -104,13 +103,17 @@ goal-satisfaction; we ask the VLM the strictly more informative
 question---\emph{which single timestep made this trajectory fail?}---and
 multiply the standard PER priority by a bounded boost over a window around
 that timestep. The scheme degenerates gracefully to PER when the VLM is
-uncommitted ($w_{\max}\!=\!1$), needs no $\lambda$-warm-up, and admits an
-unbiased IS-corrected interpretation. Crucially, unlike VLM-as-reward
+uncommitted ($w_{\max}\!=\!1$), needs no $\lambda$-warm-up, and supports a
+strictly-corrected IS estimator (Appendix~\ref{app:is-derivation},
+Eq.~\eqref{eq:sem-corrected}); our running implementation uses PER's IS weight
+as a controlled under-correction (V-trace-analogous), deferring the
+strictly-correct ablation to future work. Crucially, unlike VLM-as-reward
 approaches \citep{rocamonde2024vlmreward,wu2026largerewardmodels,patel2025iker}
 that splice the VLM signal into the TD target, our scheme leaves the target
 untouched: the env's true sparse reward is recomputed on every sampled
-transition. VLM miscalibration costs variance in the sampling distribution,
-not bias in the value function.
+transition. VLM miscalibration shifts the sampling distribution, not the value
+target; a mis-calibrated VLM increases variance rather than introducing
+Q-bias.
 
 \textbf{(3) VLM-Verified Counterfactual Hindsight} (Section~\ref{sec:method:verified}).
 A direct prompt for an alternative \emph{achieved goal} elicits a teleport-collapse
@@ -427,14 +430,19 @@ being outcome-causing). Standard PER uses only the first; uniform replay uses
 neither; Semantic PER multiplies the two. When $q_\phi$ is near-uniform,
 $w_{\text{sem}}\!\approx\!1$ and we degenerate to PER.
 
-\paragraph{Off-policy correction taxonomy.}
-Eq.~\eqref{eq:headline} sits inside a well-charted off-policy-correction
-taxonomy (Table~\ref{tab:taxonomy}). In our current implementation we use the
+\paragraph{Non-uniform replay taxonomy.}
+Eq.~\eqref{eq:headline} sits inside a non-uniform-replay taxonomy
+(Table~\ref{tab:taxonomy}); we also note the relationship to multi-step
+off-policy correction methods (Retrace, V-trace) that share the IS-ratio
+form but address policy mismatch rather than replay-distribution mismatch
+(Appendix~\ref{app:vtrace} gives the precise analogy and its limits).
+In our current implementation we use the
 PER IS-weight $w_{\text{IS},P}$ rather than the strictly-correct
 $w_{\text{IS},\text{Sem}}=(|\mathcal{D}_B|\mu_{\text{Sem}})^{-\beta}$. This is a
-conservative under-correction (semantic-boosted transitions are sampled more
-than their IS weight reflects) and is mathematically analogous to V-trace's
-ratio truncation: a controlled bias for variance reduction.
+conservative under-correction whose bias is bounded by
+Eq.~\eqref{eq:bias-bound} and controlled by $(w_{\max},W,\beta_t)$;
+it is analogous to V-trace's ratio truncation as a controlled bias--variance
+tradeoff (Appendix~\ref{app:vtrace}).
 
 \paragraph{Why multiplicative? IS-correction analysis, additive mixtures, and what this buys us.}
 Two observations motivate Eq.~\eqref{eq:headline}'s multiplicative form over
@@ -463,19 +471,28 @@ is to splice it into the TD target as a per-timestep reward
 \citep{wu2026largerewardmodels,patel2025iker,rocamonde2024vlmreward};
 that propagates VLM calibration error directly into $Q$ as bias. Our scheme
 keeps the env's true sparse reward intact in the TD target and uses the VLM
-only to modify $\mu$; VLM miscalibration shows up only as variance in the
-sampling distribution, corrected by $w_{\text{IS}}$. The framing forces a
-clean prediction: \emph{semantic-PER should track standard PER closely when
-the VLM is poorly calibrated, and pull ahead when the VLM is reliable;
-neither curve should diverge}---a prediction reward-shaping cannot make.
+only to modify $\mu$; VLM miscalibration shifts the sampling distribution
+but does not inject bias into the value function. Under the strictly-corrected
+estimator (Appendix~\ref{app:is-derivation}, Eq.~\eqref{eq:sem-corrected})
+miscalibration affects only variance; under our implemented under-corrected
+variant it additionally contributes a bounded sampling bias
+(Eq.~\eqref{eq:bias-bound}), controlled by $(w_{\max},W,\beta_t)$. The framing
+forces a clean prediction: \emph{semantic-PER should track standard PER
+closely when the VLM is poorly calibrated, and pull ahead when the VLM is
+reliable; neither curve should diverge}---a prediction reward-shaping cannot
+make.
 
 \begin{table}[t]
   \centering
   \scriptsize
   \setlength{\tabcolsep}{4pt}
-  \caption{Off-policy correction taxonomy. Semantic PER (this paper) is a
-  proposal-shaping scheme whose modifier is exogenous and trajectory-level
-  rather than policy-derived.}
+  \caption{Non-uniform replay and off-policy correction methods. Top two rows
+  (Retrace, V-trace) correct for \emph{policy mismatch} in multi-step returns;
+  bottom three rows (PER, VLM-RB, Sem.\ PER) are \emph{replay-distribution}
+  schemes over a fixed buffer. The shared IS-ratio form is the structural
+  connection; the correction targets differ (see Appendix~\ref{app:vtrace}).
+  Semantic PER (this paper) is the only replay scheme whose modifier is
+  exogenous and trajectory-level.}
   \label{tab:taxonomy}
   \begin{tabular}{p{0.19\linewidth} p{0.24\linewidth} p{0.22\linewidth} p{0.24\linewidth}}
     \toprule
@@ -1453,19 +1470,25 @@ camera-ready priority.
 
 \paragraph{Conclusion.}
 We re-frame VLM-guided experience replay as importance-sampled posterior
-reweighting, showing that the multiplicative update is the unique
-proposal modification that preserves PER's IS-correction interpretation.
+reweighting, showing that the multiplicative form is the principled choice
+for non-uniform replay because it admits a clean IS-correction analysis
+(the PER IS weight remains trajectory-conditionally well-defined), whereas
+the additive mixture of VLM-RB implicitly retargets the loss to a
+$\lambda$-weighted objective.
 We introduce VLM-Verified Counterfactual Hindsight, which closes the
 dominant failure mode of language-only counterfactuals by construction:
 the VLM generates corrective actions, the ground-truth simulator verifies
-them, and only physics-consistent relabels enter the buffer.
-A three-family (GPT-4o, Opus~4.7, Sonnet~4.5) prompt sweep on 16 real
-and synthetic Fetch failures identifies the teleport-collapse failure as
-prompt-architectural---not model-specific---and a single prompt template
-achieves 12/12 cross-task annotations.
-The in-flight HER kill experiment (\S\ref{sec:exp:inflight}) will determine
-whether Oracle-CF provides sufficient empirical headroom to motivate the full
-VLM-CF sweep; the IS-posterior framing stands regardless of that outcome.
+them, and only physics-consistent relabels enter the buffer---eliminating
+modeling error entirely.
+A two-vendor, three-model (GPT-4o, Opus~4.7, Sonnet~4.5) prompt sweep on
+6 synthetic and 10 real Fetch failures identifies the teleport-collapse failure
+as prompt-architectural and task-conditioned, not model-specific; critically,
+the prompt-design experiment is not a stand-alone engineering ablation but a
+precondition for the IS-posterior framing: a position-copying $q_\phi$ breaks
+the trajectory-conditional structure of Eq.~\eqref{eq:headline}.
+A single prompt template achieves 12/12 cross-task annotations.
+The IS-posterior framing, the precondition argument, and the simulator-as-verifier
+guarantee stand independently of the in-flight training outcomes.
 
 \bibliographystyle{plainnat}
 \bibliography{refs}

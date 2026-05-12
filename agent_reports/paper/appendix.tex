@@ -504,34 +504,81 @@ continuity) on the support of the buffer.
 \item[(A2)] \textbf{Strict IS correction.} $\beta_t=1$ is used in
 Equation~\eqref{eq:sem-corrected} (rather than the annealed value). For
 $\beta_t<1$ the estimator is biased; the bias decays as $\beta_t\to 1$.
-\item[(A3)] \textbf{Posterior independence of} $\theta$. $q_\phi$ does
-\emph{not} depend on the current critic parameters $\theta$. In our
-setting $q_\phi$ is conditioned on rendered keyframes from the
-trajectory; the trajectory was collected under the policy at some prior
-parameter value $\theta_{\text{collect}}\neq\theta_{\text{train}}$, but
-$q_\phi$ itself is a frozen function of inputs. Assumption (A3) is
-satisfied as long as the renderer does not depend on the critic.
-\item[(A4)] \textbf{Posterior support.} $q_\phi(t^\star\!\mid\!\tau) > 0$
-for every $t^\star\in\{0,\dots,T-1\}$ on which the VLM's argmax could
-fall (in our window-based implementation, $q_\phi$ is automatically
-non-zero everywhere because $w_{\text{sem}}\ge 1$ uniformly).
+\item[(A3)] \textbf{Stop-gradient on the proposal.} The proposal
+$\mu_{\text{Sem}}(i)=\mu_P(i)\cdot w_{\text{sem}}(i;\tau_i)/Z$ is
+treated as a \emph{fixed} sampling weight when computing the loss gradient:
+$\partial\mu_{\text{Sem}}/\partial\theta=0$. This stop-gradient
+is the standard practice in PER \citep{schaul2016per} and is equivalent
+to requiring that the gradient $\nabla_\theta\mathcal{L}$ is estimated
+under $\mu_{\text{Sem}}$ held fixed at its current value.
+Note: $\mu_P(i)\propto(|\delta_i(\theta)|+\varepsilon)^\alpha$ does depend
+on the current critic $\theta$ through $\delta_i$, but the stop-gradient
+operator (which practical PER applies by detaching the sampling distribution
+from the computational graph) makes this dependence irrelevant for the IS
+interpretation. The frozen-VLM property of $q_\phi$ (a function of rendered
+keyframes, not of $\theta$) ensures that $w_{\text{sem}}$ is itself
+$\theta$-independent; the $\theta$-dependence of $\mu_{\text{Sem}}$ enters
+only through $\mu_P$, which is stopped.
+\item[(A4)] \textbf{Buffer full-support.} $\mu_{\text{Sem}}(i)>0$ for
+every $i\in\{0,\dots,|\mathcal{D}_B|-1\}$. Since $p_i=(|\delta_i|+\varepsilon)^\alpha
+\cdot w_i \ge \varepsilon^\alpha>0$ by construction (priority floor $\varepsilon>0$
+and $w_i\ge 1$), this is satisfied for every buffer configuration.
+\item[(A5)] \textbf{Approximate calibration.}
+$\|q_\phi(\cdot\!\mid\!\tau) - p_{\text{true}}(\cdot\!\mid\!\tau)\|_{\text{TV}}
+\le \varepsilon_{\text{cal}}$ for some $\varepsilon_{\text{cal}}\in[0,1]$.
+This condition bounds the variance amplification due to VLM miscalibration.
+When $\varepsilon_{\text{cal}}=0$ (perfect calibration) the IS variance
+is minimized; when $\varepsilon_{\text{cal}}=1$ the VLM is ignored
+($w_{\text{sem}}\equiv 1$ in expectation) and we recover PER variance.
 \end{enumerate}
 
-The condition the framing does \emph{not} require is calibration of
-$q_\phi$. Even an arbitrarily mis-calibrated VLM yields an unbiased
-estimator of $\mathcal{L}_U$ provided (A1)--(A4) hold. Mis-calibration
-affects \emph{variance}, not bias: an extremely concentrated $q_\phi$ at
-a non-informative timestep would still give an unbiased estimator but
-with very high variance (low effective sample size).
+\textbf{Unbiasedness and miscalibration for the strictly-corrected estimator.}
+For Eq.~\eqref{eq:sem-corrected} with $\beta_t=1$ (the strictly-corrected
+variant), (A1)--(A4) are sufficient for unbiasedness: the IS ratio
+$\mu_U/\mu_{\text{Sem}} = (|\mathcal{D}_B|\,\mu_{\text{Sem}})^{-1}$ is a
+valid IS weight, and (A4) ensures the ratio is finite everywhere.
+In this regime miscalibration of $q_\phi$ (assumption A5 with $\varepsilon_{\text{cal}}>0$)
+affects \emph{variance} but not bias: any non-zero proposal with $\mu_{\text{Sem}}\ll\mu_U$
+yields an unbiased estimator of $\mathcal{L}_U$, with variance inversely proportional
+to the quality of the proposal.
 
-\paragraph{What our implementation gives up.}
-In practice we use $\beta_t<1$ early in training (variance reduction)
-and $w_{\text{IS},P}$ rather than $w_{\text{IS},\text{Sem}}$
-(simpler implementation). This violates (A2) and yields a biased
-estimator of $\mathcal{L}_U$. The bias points toward up-weighting the
-failure window --- precisely the direction we want for credit
-assignment. We frame this as a feature, not a bug, in line with
-V-trace's truncation tolerance.
+\paragraph{Bias of the implemented under-corrected estimator.}
+Our running implementation uses $w_{\text{IS},P}(i)=(|\mathcal{D}_B|\,\mu_P(i))^{-\beta_t}$
+rather than $w_{\text{IS},\text{Sem}}(i)=(|\mathcal{D}_B|\,\mu_{\text{Sem}}(i))^{-\beta_t}$.
+The ratio between the two IS weights at any slot $i$ is:
+\[
+  \frac{w_{\text{IS},P}(i)}{w_{\text{IS},\text{Sem}}(i)}
+  \;=\;
+  \left(\frac{\mu_{\text{Sem}}(i)}{\mu_P(i)}\right)^{\beta_t}
+  \;=\;
+  \bigl(w_{\text{sem}}(i;\tau_i)\bigr)^{\beta_t}\,
+  \Bigl(\sum_j \mu_P(j)/\text{Z}\Bigr)^{-\beta_t},
+\]
+where $Z$ is the normalizing constant of $\mu_{\text{Sem}}$.
+The per-slot bias of the implemented estimator relative to $\mathcal{L}_U$ is
+bounded:
+\begin{equation}
+  \bigl|\widehat{\mathcal{L}}_{\text{under}} - \mathcal{L}_U\bigr|
+  \;\le\;
+  C\,\bigl(w_{\max}^{\,\beta_t} - 1\bigr)\,\frac{2W+1}{T}
+  \;\|\ell\|_\infty,
+  \label{eq:bias-bound}
+\end{equation}
+where $C$ is a constant depending on $|\mathcal{D}_B|$ and the PER normalization,
+$w_{\max}^{\,\beta_t}-1$ measures the under-correction strength (goes to 0 at
+$w_{\max}=1$ or $\beta_t=0$, and is maximized at $w_{\max}\!=\!10$, $\beta_t\!=\!1$),
+and $(2W+1)/T=11/50\approx 0.22$ is the fractional window size at our defaults.
+At the end of training ($\beta_t\to 1$), the bias is largest; the strictly-correct
+ablation (run $w_{\text{IS},\text{Sem}}$) removes this bias entirely at the
+cost of maintaining the $\mu_{\text{Sem}}$ normalization constant.
+Under (A5) with $\varepsilon_{\text{cal}}>0$, the implemented estimator's bias
+also has a $q_\phi$-dependent component: when $q_\phi$ concentrates on a wrong
+$t^\star$, the window boost amplifies the wrong slots, and the under-correction
+amplifies that effect rather than compensating for it. The honest framing is
+therefore: \emph{the implemented Semantic PER is a non-uniform replay scheme
+whose bias is bounded by Eq.~\eqref{eq:bias-bound} and controlled by
+$(w_{\max}, W, \beta_t)$; it delivers an unbiased estimator in the limit
+$\beta_t\to 1$ with $w_{\text{IS},\text{Sem}}$, deferred to a future ablation.}
 
 \section{Experimental Details}
 \label{app:experiments}
