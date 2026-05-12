@@ -249,29 +249,58 @@ contrast in Table~\ref{tab:taxonomy} and in
 Section~\ref{sec:method:sper}.
 
 \paragraph{Foundation models in RL.}
-VLMs have been used as reward sources \citep{rocamonde2024vlmreward,venuto2024car,wang2024rlvlmf},
-affordance-guided shaping signals \citep{lee2025kagi}, promptable feature
-encoders \citep{chen2024promptable}, counterfactual data labelers
-\citep{glossop2025cast}, token-level counterfactual critics \citep{feng2025coso},
-hindsight rewriters for LM agents \citep{hu2026echo,ding2026agentHER}, and
-online per-timestep reward models for manipulation
-\citep{wu2026largerewardmodels,patel2025iker}. \citet{duan2025aha} fine-tune a
-VLM (AHA) on synthetic robotic failures and produce natural-language failure
-explanations that downstream-refine LLM-generated reward code (Eureka pipeline);
-our system differs in three orthogonal ways. (i)~AHA \emph{describes} a failure;
-we \emph{localize} it to a single timestep usable as a credit-assignment signal.
+The 2024--2026 literature on foundation models in RL is best understood through
+\emph{where in the training loop} the VLM/LLM output is consumed.
+\textbf{TD-target integration} couples the VLM output directly to the Q-regression
+target: per-timestep reward models \citep{wu2026largerewardmodels,patel2025iker},
+affordance-shaped potential functions \citep{lee2025kagi}, and pairwise-preference
+reward models \citep{rocamonde2024vlmreward,venuto2024car,wang2024rlvlmf}
+all inject VLM calibration error into $Q$, propagating it into every downstream
+value estimate. \citet{duan2025aha} fine-tune a VLM (AHA) on synthetic robotic
+failures and downstream-refine LLM-generated reward code (Eureka pipeline);
+AHA integrates via the TD target too.
+\textbf{Data-stream integration} instead modifies \emph{which} transitions enter
+the buffer or are prioritized for sampling---leaving the TD target untouched.
+CAST~\citep{glossop2025cast} and ECHO~\citep{hu2026echo} relabel failed
+trajectories; CoSo~\citep{feng2025coso} re-weights per-token counterfactual
+credits; AgentHER~\citep{ding2026agentHER} adds a VLM verification gate on
+relabeled LM-agent episodes.
+Promptable feature encoders~\citep{chen2024promptable} operate earlier still,
+in the perception stack.
+
+Our system is data-stream integration: we use the frozen VLM output
+\emph{only} to reshape the replay-sampling distribution $\mu$; the TD target
+retains the environment's true sparse reward. VLM miscalibration therefore
+appears only as sampling-distribution variance---correctable by the IS weight
+(Section~\ref{sec:theory})---not as Q-target bias. This is the clean
+prediction P2 of Section~\ref{sec:theory} makes explicit:
+\emph{semantic-PER tracks standard PER when the VLM is poorly calibrated
+and pulls ahead when it is reliable, without diverging.}
+TD-target methods cannot make this prediction.
+
+We differ from AHA along three orthogonal axes beyond integration point:
+(i)~AHA \emph{describes} failures; we \emph{localize} to a single timestep as
+a credit-assignment signal.
 (ii)~AHA proposes no corrective actions; we do, and gate them on simulator
-verification. (iii)~AHA's RL integration is reward-refinement (modifies the TD
-target); ours is replay-prioritization (modifies only the sampling
-distribution). An AHA-fine-tuned VLM could plausibly replace zero-shot GPT-4o
-inside our protocol. Foundation-model credit assignment is itself a young
-thread: \citet{khandoga2026causalcredit} mask reasoning spans in an LLM policy
-to identify causally-influential tokens, in the lineage of \citet{mesnard2021cca}
+verification.
+(iii)~AHA uses a fine-tuned VLM on a supervised failure corpus; we query a
+frozen general-purpose VLM zero-shot, requiring no failure annotations.
+An AHA-fine-tuned VLM could plausibly replace zero-shot GPT-4o inside our
+protocol as a drop-in module.
+
+Foundation-model credit assignment is an emerging sub-thread:
+\citet{khandoga2026causalcredit} mask reasoning spans in an LLM policy to
+identify causally-influential tokens, in the lineage of \citet{mesnard2021cca}
 and the credit-assignment survey by \citet{pignatelli2023survey}.
-Concurrently, \citet{pignatelli2024calm} introduce CALM, which uses an LLM to
-decompose tasks into subgoals and evaluate their achievement zero-shot, providing
-shaped credit in text-based environments without hand-designed rewards---an
-independent instantiation of the FM-as-credit-oracle idea in language game settings.
+\citet{pignatelli2024calm} show that an LLM can serve as a zero-shot credit
+oracle via subgoal decomposition in text-based environments---confirming
+foundation-model-as-credit-oracle as a direction beyond our domain.
+\emph{Our semantic-PER introduces an exogenous foundation-model credit-assignment
+oracle}: pre-trained on web-scale data, queried zero-shot at episode granularity,
+combined with verifiable counterfactual hindsight as the acceptance gate.
+This is a strictly stronger framing than ``VLM in replay'' and places our
+contribution inside the emerging causal-credit-assignment family rather
+than the reward-shaping family.
 
 \paragraph{Generator--verifier and verified counterfactual reasoning.}
 Our verification protocol (Section~\ref{sec:method:verified}) sits inside the
