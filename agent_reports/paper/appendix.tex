@@ -1144,6 +1144,71 @@ firing the sparse reward, and the counterfactual is rejected as
 diagnostic and a pre-filter to save the verifier's 17.6\,ms per call;
 on the production pipeline the verifier alone suffices.
 
+\subsection{VLM API rate-limit at high parallelism (C1v2-C)}
+\label{app:ratelimit}
+
+\paragraph{Phenomenon.}
+When running 18 parallel SAC+HER+Verified-CF seeds on Modal A10G
+instances with \texttt{vlm\_call\_interval}=1 (every failed episode)
+and model \texttt{claude-sonnet-4-5}, the Verified-CF mechanism
+silently degrades: $73$\% of VLM calls return \texttt{None} after
+retry exhaustion rather than a usable counterfactual.
+Modal logs confirm the cause is HTTP~429 errors from Anthropic's
+Tier~1 rate limits ($5$~req/min and $10{,}000$~tokens/min for
+\texttt{claude-sonnet-4-5}).  The burst arrival rate of
+$18~\text{seeds} \times \sim 1~\text{call/episode-end}$ easily
+saturates both ceilings; the retry logic exhausts its budget
+and increments the \texttt{buffer/cf\_vlm\_returned\_none} counter
+rather than raising an exception, so the degradation is invisible
+without explicit monitoring.
+
+\paragraph{Why this is structural, not method-specific.}
+Any VLM-in-replay scheme in which VLM calls are triggered
+\emph{per failed episode} has a call rate that scales linearly
+with the number of parallel training runs: $\lambda_{\text{VLM}}
+\propto P \cdot \rho_{\text{fail}}$ where $P$ is run parallelism
+and $\rho_{\text{fail}}$ is the per-step failure rate.  For
+FetchPickAndPlace during the first $200{,}000$ steps,
+$\rho_{\text{fail}} \approx 0.95$, so even a single run at
+\texttt{vlm\_call\_interval}=1 makes $\sim 0.3$--$0.5$~calls/sec
+wall-clock.  At $P=18$ this is $\sim 5$--$9$~calls/sec, an order
+of magnitude above the Tier~1 RPM ceiling.
+
+\paragraph{Mitigations for practitioners.}
+Three strategies are effective in isolation; in practice a combination
+is recommended:
+\begin{enumerate}\itemsep0pt
+  \item \textbf{Upgrade API tier.}  Anthropic Tier~2+ raises RPM
+    to $\geq 50$~req/min, sufficient for $P \leq 6$ at
+    \texttt{vlm\_call\_interval}=1. This is the simplest fix for
+    large sweeps.
+  \item \textbf{Dilute call rate via \texttt{cf\_call\_interval}.}
+    Setting \texttt{cf\_call\_interval}$= k$ calls the VLM only on
+    every $k$-th failed episode, reducing $\lambda_{\text{VLM}}$ by
+    factor $k$.  For $k=8$ and $P=18$ the burst rate drops to
+    $\sim 0.06$--$0.11$~calls/sec, well within Tier~1 limits.
+    The trade-off is reduced counterfactual data density; empirically
+    $k=4$--$8$ retains acceptable relabeling frequency.
+  \item \textbf{Split VLM providers across runs.}  Routing half the
+    seeds to GPT-4o (OpenAI) and half to a Claude model distributes
+    the call load across independent rate-limit pools.  For our
+    production pipeline, GPT-4o at \texttt{vlm\_call\_interval}=1
+    remains within OpenAI Tier~1 limits up to $P \approx 12$.
+\end{enumerate}
+A batch-API approach (collecting failed episodes across a full epoch,
+then submitting a single bulk request) is a fourth option for
+offline or non-latency-critical replay augmentation, but it is
+incompatible with the online episode-triggered call pattern used here.
+
+\paragraph{Implications for reported experiments.}
+Phase~2 attempts~3 and~4 of our in-flight Verified-CF sweep were
+stopped after health checks revealed $73$\% none-rates.  Affected
+runs are excluded from all quantitative comparisons.  The Phase~1
+ablation (Section~\ref{sec:exp:headline}) uses \texttt{cf\_call\_interval}=8
+throughout and was not affected; the Semantic-PER results reported there
+use GPT-4o as provider and were collected before the claude-sonnet-4-5
+switch, so no runs in Figure~\ref{fig:headline} are contaminated.
+
 \section{Reproducibility commands}
 \label{app:commands}
 
