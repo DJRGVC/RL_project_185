@@ -92,6 +92,14 @@ def train_remote(config_path: str, overrides: Optional[List[str]] = None):
     os.environ["WANDB_PROJECT"] = "RL_project"
     os.environ["WANDB_ENTITY"] = "d-grant-uc-berkeley"
 
+    # Force OSMesa rendering on Modal containers. The Modal secret is built
+    # from local .env which has MUJOCO_GL=egl (for the local 5070 Ti) — but
+    # Modal containers have no display and no EGL libs, so we override back
+    # to osmesa (matching the image env). Must come before any env.reset()
+    # in train.py triggers MuJoCo's renderer initialization.
+    os.environ["MUJOCO_GL"] = "osmesa"
+    os.environ["PYOPENGL_PLATFORM"] = "osmesa"
+
     overrides = list(overrides or [])
     # Redirect outputs to the persistent volume so data survives container restarts
     overrides += [
