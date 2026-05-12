@@ -18,109 +18,160 @@
 We provide complete pseudocode for the two algorithmic contributions of
 the paper: Semantic PER with the failure-direction signal
 (Algorithm~\ref{alg:sem-per}) and VLM-Verified Counterfactual Hindsight
-(Algorithm~\ref{alg:verified-cf}).
+(Algorithm~\ref{alg:verified-cf}). Both are presented in
+numbered-line form with the SAC training loop made explicit; the
+companion symbol glossary (Table~\ref{tab:notation}) lists every variable
+used. We have intentionally written the two algorithms so that
+Algorithm~\ref{alg:verified-cf} is a drop-in replacement for the
+\emph{HER relabel step} of any SAC+HER trainer --- a reimplementer only
+needs to (a) maintain a forkable second env instance and (b) gate the
+hindsight-goal channel behind the simulator-rollout test of
+lines~5--10 below.
+
+% Local algorithm counter so the two pseudocode figures are numbered
+% "Algorithm 1" and "Algorithm 2" rather than "Figure 9" and "Figure 10".
+\newcounter{algctr}
+\setcounter{algctr}{0}
 
 \begin{figure}[t]
+\stepcounter{algctr}%
+\renewcommand{\figurename}{Algorithm}%
+\renewcommand{\thefigure}{\arabic{algctr}}%
 \centering
-\fbox{\parbox{0.95\linewidth}{
-\textbf{Algorithm 1: Semantic PER with the failure-direction signal.}\\[2pt]
-\textbf{Input.} Buffer $\mathcal{D}_B$ with sum-tree priorities $\{p_i\}$;
-TD-error array $\{\delta_i\}$; semantic-weight array $\{w_i\}$ (init $1$);
-SAC critic $Q_\theta$; PER exponent $\alpha$; IS exponent $\beta_t$; window
-half-width $W$; cap $w_{\max}$; VLM $q_\phi$; localizer
-$\mathrm{Loc}_\phi$.\\[2pt]
-\textbf{1. Episode collection.} For step $t=0,\dots,T-1$: act
-$a_t\!\sim\!\pi_\theta(\cdot\mid s_t)$, observe $(r_t,s_{t+1})$, push
-$(s_t,a_t,r_t,s_{t+1})$ to $\mathcal{D}_B$ at index
-$i_t\!\in\!\{0,\dots,|\mathcal{D}_B|\!-\!1\}$ with priority
-$p_{i_t}=\max_j p_j$ (PER's max-priority initialization).\\[2pt]
-\textbf{2. Failure check.} If episode ended without success ($r_T<0$): goto~3;
-else skip to step~5.\\[2pt]
-\textbf{3. VLM failure localization.} Select $K=5$ uniformly-spaced keyframes
-$\{F_{k}\}_{k=0}^{K-1}$ from the episode RGB renders. Build
-\texttt{frame\_index\_map}. Query
-$t_{\text{fail}} \leftarrow \mathrm{Loc}_\phi(\{F_k\}, \text{task\_desc},
-T)$ (returns keyframe index $\hat k$; map to timestep
-$t_{\text{fail}}\leftarrow$ keyframe-timestep$(\hat k)$).\\[2pt]
-\textbf{4. Apply semantic weight.} For each in-episode slot $i$ with episode-local
-timestep $\tau_i\in\{0,\dots,T-1\}$:
-$w_i \leftarrow w_{\max}$ if $|\tau_i - t_{\text{fail}}|\le W$ else $1$.
-Update sum-tree leaf for slot $i$ to $p_i \leftarrow (|\delta_i|+\varepsilon)^\alpha
-\cdot w_i$.\\[2pt]
-\textbf{5. Critic update.} Sample minibatch $\{i_j\}_{j=1}^{B}$ from
-$\mu(i)\propto p_i$. Compute IS weights
-$w_{\text{IS},j} = (|\mathcal{D}_B|\cdot \mu(i_j))^{-\beta_t}$, normalize by
-$\max_j w_{\text{IS},j}$. Compute TD-errors
-$\delta_{i_j} = r_{i_j} + \gamma Q_{\bar\theta}(s_{i_j+1},
-\pi_\theta(s_{i_j+1})) - Q_\theta(s_{i_j},a_{i_j})$, take loss
-$\mathcal{L} = \frac{1}{B}\sum_j w_{\text{IS},j}\,\delta_{i_j}^2$.
-Backprop; update $\theta$.\\[2pt]
-\textbf{6. Priority update.} For each $j$: $\delta_{i_j}\!\to\!\text{stored TD}$,
-set $p_{i_j} \leftarrow (|\delta_{i_j}|+\varepsilon)^\alpha \cdot w_{i_j}$.\\[2pt]
-\textbf{7. Goto~1 until total\_steps reached.}\\[2pt]
-\textbf{Output.} Trained policy $\pi_\theta$.
+\fbox{\parbox{0.95\linewidth}{\small
+\textbf{Semantic PER with the failure-direction signal.}\\[2pt]
+\textbf{Inputs (constants).}
+buffer capacity $|\mathcal{D}_B|\!=\!10^6$;
+PER exponent $\alpha\!=\!0.6$;
+IS schedule $\beta_t\colon 0.4\!\to\!1$ over 500k steps;
+priority floor $\varepsilon\!=\!10^{-6}$;
+window half-width $W\!=\!5$;
+boost cap $w_{\max}\!=\!10$;
+keyframes per episode $K\!=\!5$;
+minibatch $B\!=\!256$.\\[1pt]
+\textbf{Inputs (functions/objects).}
+env $E$;
+SAC actor/critic $\pi_\theta, Q_\theta$ with target $Q_{\bar\theta}$;
+sum-tree-backed replay $\mathcal{D}_B$ with leaves
+$p_i\!=\!(|\delta_i|+\varepsilon)^\alpha\!\cdot\!w_i$;
+per-slot semantic weight $w_i$ (init~1);
+frozen VLM localizer $\mathrm{Loc}_\phi$.\\[1pt]
+\textbf{State mutated.}
+$\theta, \bar\theta$; sum-tree priorities $\{p_i\}$;
+weight array $\{w_i\}$;
+buffer slots.\\[3pt]
+\textbf{Main loop.}\\
+\quad\textsc{1:}\;\textbf{for} env-step $n\!=\!1,\dots,n_{\max}$ \textbf{do}\\
+\quad\textsc{2:}\quad\;$a_t\!\sim\!\pi_\theta(\cdot\!\mid\!s_t)$;
+$(r_t,s_{t+1})\!\leftarrow\!E.\texttt{step}(a_t)$\\
+\quad\textsc{3:}\quad\;Push $(s_t,a_t,r_t,s_{t+1})$ at slot $i_t$ with
+$p_{i_t}\!\leftarrow\!\max_j p_j$, $w_{i_t}\!\leftarrow\!1$ \hfill\textit{(PER max-prio init)}\\
+\quad\textsc{4:}\quad\;\textbf{if} episode ends at step $t$ \textbf{then}\\
+\quad\textsc{5:}\quad\quad\;\textbf{if} $r_t\!<\!0$ \textit{(failed episode)} \textbf{then}\\
+\quad\textsc{6:}\quad\quad\quad\;$\{F_k\}_{k=0}^{K-1}\!\leftarrow\!$\textsc{KeyframeSample}(episode RGB, $K$)\\
+\quad\textsc{7:}\quad\quad\quad\;$\hat k\!\leftarrow\!\mathrm{Loc}_\phi(\{F_k\},\,\text{task\_desc},\,T)$;
+$\;t_{\text{fail}}\!\leftarrow\!\lfloor \hat k\cdot(T\!-\!1)/(K\!-\!1)\rfloor$ \hfill\textit{(frame$\to$step map; linear interp.\ $[0,K\!-\!1]\!\to\![0,T\!-\!1]$)}\\
+\quad\textsc{8:}\quad\quad\quad\;\textbf{for} each in-episode slot $i$ with local step $\tau_i$ \textbf{do}\\
+\quad\textsc{9:}\quad\quad\quad\quad\;$w_i\!\leftarrow\!w_{\max}$ \textbf{if} $|\tau_i\!-\!t_{\text{fail}}|\!\le\!W$ \textbf{else} $1$\\
+\quad\textsc{10:}\quad\quad\quad\quad\;$p_i\!\leftarrow\!(|\delta_i|+\varepsilon)^\alpha\!\cdot\!w_i$;
+write to sum-tree leaf $i$\\
+\quad\quad\quad\;\textbf{end for} \hfill\textit{(closes line~8 loop)}\\
+\quad\quad\;\textbf{end if} \hfill\textit{(closes line~5 failed-episode branch)}\\
+\quad\;\textbf{end if} \hfill\textit{(closes line~4 episode-end check)}\\
+\quad\textsc{11:}\quad\;\textbf{if} $n>n_{\text{warm-up}}$ \textbf{and} $n \bmod n_{\text{update}}\!=\!0$ \textbf{then}\\
+\quad\textsc{12:}\quad\quad\;Sample $\{i_j\}_{j=1}^{B}\!\sim\!\mu(i)\!\propto\!p_i$ via sum-tree\\
+\quad\textsc{13:}\quad\quad\;$w_{\text{IS},j}\!\leftarrow\!(|\mathcal{D}_B|\!\cdot\!\mu(i_j))^{-\beta_t}\big/\max_{j'}(\cdot)$\\
+\quad\textsc{14:}\quad\quad\;$\delta_{i_j}\!\leftarrow\!r_{i_j}\!+\!\gamma\,Q_{\bar\theta}(s_{i_j+1},\pi_\theta(s_{i_j+1}))\!-\!Q_\theta(s_{i_j},a_{i_j})$\\
+\quad\textsc{15:}\quad\quad\;$\mathcal{L}_Q\!\leftarrow\!\tfrac{1}{B}\!\sum_j w_{\text{IS},j}\,\delta_{i_j}^{2}$;
+update $\theta$ via Adam\\
+\quad\textsc{16:}\quad\quad\;Update $\pi_\theta$ and $\bar\theta$ per standard SAC \hfill\textit{(actor + Polyak)}\\
+\quad\textsc{17:}\quad\quad\;\textbf{for} $j\!=\!1,\dots,B$ \textbf{do}
+$\;p_{i_j}\!\leftarrow\!(|\delta_{i_j}|\!+\!\varepsilon)^\alpha\!\cdot\!w_{i_j}$;
+write to sum-tree leaf $i_j$ \hfill\textit{(TD-driven refresh of sampled slots)}\\
+\quad\quad\quad\;\textbf{end for} \hfill\textit{(closes line~17 priority refresh)}\\
+\quad\quad\;\textbf{end if} \hfill\textit{(closes line~11 update check)}\\
+\quad\textsc{18:}\;\textbf{end for} \hfill\textit{(closes line~1 main training loop)}\\[2pt]
+\textbf{Output.} Trained policy $\pi_\theta$ and critic $Q_\theta$.
 }}
-\caption{Semantic PER with the failure-direction signal. The semantic-weight
-multiplier $w_i$ is set once per episode at the conclusion of step~3 and
-remains attached to slot $i$ until the slot is overwritten by the ring
-buffer. Step~5's IS weights use the PER proposal $\mu_P$, not the full
-$\mu_{\text{Sem}}$; see Section~\ref{sec:theory} and
-Appendix~\ref{app:is-derivation} for the under-correction discussion.}
+\caption{Semantic PER with the failure-direction signal. The
+semantic weight $w_i$ is set once per slot at line~9 and persists until
+the slot is overwritten by the ring buffer. Line~13's IS weights use
+the PER proposal $\mu_P$ (i.e., the sum-tree's $\mu(i_j)$), \emph{not}
+the strictly-correct $\mu_{\text{Sem}}$ that includes $w_{\text{sem}}$
+in the denominator; see Section~\ref{sec:theory} and
+Appendix~\ref{app:is-derivation} for the under-correction analysis and
+the bias bound of Eq.~\eqref{eq:bias-bound}. The two-pass priority update
+(lines~10 and 17) is necessary because line~17 refreshes only the slots
+seen in the current minibatch, whereas line~10 must touch every slot
+whose semantic weight changed. The frame-to-step formula at line~7 is a
+linear interpolation $\hat k/(K\!-\!1)\times(T\!-\!1)$; with $K\!=\!5$
+keyframes and $T\!=\!50$ steps, keyframe~0 maps to step~0 and
+keyframe~4 maps to step~49.}
 \label{alg:sem-per}
 \end{figure}
 
 \begin{figure}[t]
+\stepcounter{algctr}%
+\renewcommand{\figurename}{Algorithm}%
+\renewcommand{\thefigure}{\arabic{algctr}}%
 \centering
-\fbox{\parbox{0.95\linewidth}{
-\textbf{Algorithm 2: VLM-Verified Counterfactual Hindsight.}\\[2pt]
-\textbf{Input.} Training env $E_{\text{train}}$; verifier env
-$E_{\text{verify}}$ (separate \texttt{gym.make} instance, same env\_name);
-VLM counterfactual function $\mathrm{CF}_\phi$; failure timestep $K$;
-horizon $N\!=\!50$; success threshold $\eta\!=\!0.05$ m; reject-teleport
-radius $\rho\!=\!0.05$ m; HER replay $\mathcal{D}_B$.\\[2pt]
-\textbf{1. Trigger condition.} After a failed episode terminating at step
-$T$ with $\|\text{ag}_T - g\| > \eta$.\\[2pt]
-\textbf{2. Snapshot.} Capture
-$s_K = (\text{qpos}_K, \text{qvel}_K, t_K, \text{mocap\_pos}_K, \text{mocap\_quat}_K, g)$
-from $E_{\text{train}}$ at the localized failure timestep $K$ (from
-$\mathrm{Loc}_\phi$ or oracle).\\[2pt]
-\textbf{3. VLM counterfactual.} Query
-$\text{out}\leftarrow \mathrm{CF}_\phi(\{F_k\}, K, g,
-\text{task\_desc}, \text{variant}=\textsc{achieved\_goal})$ to receive
-candidate corrective position $p_{\text{cf}}\in\mathbb{R}^3$ and (in the
-\textsc{all} variant) corrective action $a_{\text{cf}}\in\mathbb{R}^4$.\\[2pt]
-\textbf{4. Teleport gate.} If
-$\|p_{\text{cf}}-g\|<\rho$: reject (reason=\texttt{teleport\_collapse});
-fall back to standard HER and return.\\[2pt]
-\textbf{5. Inverse-kinematic action (when needed).} If \textsc{achieved\_goal}
-variant: synthesize $a_{\text{cf}}$ by a simple proportional controller
-$a_{\text{cf}} = \mathrm{clip}((p_{\text{cf}}-\text{ee}_K)/0.05, -1, 1)$
-appended with \texttt{grip}$=-1$ (close). If \textsc{action}/\textsc{all}:
-use the VLM's $a_{\text{cf}}$ directly, clipped to $[-1,1]^4$.\\[2pt]
-\textbf{6. Restore.} On $E_{\text{verify}}$: write back \texttt{qpos},
-\texttt{qvel}, \texttt{time}, \texttt{mocap}; call
-\texttt{mujoco.mj\_forward(model, data)} to propagate kinematic
-derivatives. Verify round-trip equality $\|\text{qpos}_K -
-\text{qpos}_K^{(\text{restored})}\|=0$ as a debug assertion.\\[2pt]
-\textbf{7. Rollout.} For $j=0,\dots,N-1$: step
-$(s', r_j)\leftarrow E_{\text{verify}}.\texttt{step}(a_{\text{cf}})$
-under the env's \emph{unmodified} sparse reward
-$r_j=E_{\text{verify}}.\texttt{compute\_reward}(\text{ag}_j, g)$.\\[2pt]
-\textbf{8. Acceptance.} If $\exists j: r_j\ge 0$: VERIFIED. Set
-$\text{ag}^\star\leftarrow\text{ag}_{j^\star}$. Append
-$(s_K, a_K, \dots, s_{K+j^\star})$ to $\mathcal{D}_B$ with env's sparse
-rewards \emph{and} a hindsight-relabeled copy with
-$g'\leftarrow\text{ag}^\star$, both marked confidence$=$1.0. Else:
-reject (\texttt{goal\_not\_reached}); fall back to standard HER.\\[2pt]
-\textbf{Output.} (optional) verified trajectory $\tau_v$ appended to
-buffer; verification flag $\in\{\text{ACCEPT},\text{REJECT}\}$.
+\fbox{\parbox{0.95\linewidth}{\small
+\textbf{VLM-Verified Counterfactual Hindsight (\textsc{Verify-CF}).}\\[2pt]
+\textbf{Inputs (constants).}
+verifier horizon $N\!=\!50$;
+success threshold $\eta\!=\!0.05$\,m;
+teleport-reject radius $\rho\!=\!0.05$\,m;
+keyframes $K\!=\!5$;
+proportional-control gain $g_P\!=\!0.05$.\\[1pt]
+\textbf{Inputs (objects).}
+\emph{training} env $E_{\text{train}}$;
+\emph{verifier} env $E_{\text{verify}}$ --- a separate
+\texttt{gym.make(env\_name)} instance, identical model/XML, never advanced by
+the policy;
+VLM counterfactual function $\mathrm{CF}_\phi$ (variant $v\!\in\!\{$\textsc{achieved\_goal}, \textsc{action}, \textsc{all}, \textsc{joint}$\}$);
+HER buffer $\mathcal{D}_B$;
+failure-step localizer $\mathrm{Loc}_\phi$ (Alg.~\ref{alg:sem-per} line~7).\\[1pt]
+\textbf{Returns.} verification flag $\in\!\{\textsc{accept},\textsc{reject}\}$;
+optionally a verified trajectory $\tau_v$ appended to $\mathcal{D}_B$.\\[3pt]
+\textbf{Procedure} \textsc{Verify-CF}(failed episode $\tau$, desired goal $g$):\\
+\quad\textsc{1:}\;\textbf{if} $\|\text{ag}_T\!-\!g\|\!\le\!\eta$ \textbf{return} \textsc{reject} \hfill\textit{(episode succeeded; no CF needed)}\\
+\quad\textsc{2:}\;$\hat k\!\leftarrow\!\mathrm{Loc}_\phi(\{F_k\},\,\text{task\_desc},\,T)$;
+$\;K^\star\!\leftarrow\!\lfloor \hat k\cdot(T\!-\!1)/(K\!-\!1)\rfloor$ \hfill\textit{(failure step; same linear interp.\ as Alg.~\ref{alg:sem-per} line~7)}\\
+\quad\textsc{3:}\;Snapshot $\sigma\!\leftarrow\!(\texttt{qpos}_{K^\star},\,\texttt{qvel}_{K^\star},\,t_{K^\star},\,\texttt{mocap\_pos}_{K^\star},\,\texttt{mocap\_quat}_{K^\star},\,g)$ from $E_{\text{train}}$\\
+\quad\textsc{4:}\;$\text{out}\!\leftarrow\!\mathrm{CF}_\phi(\{F_k\},\,K^\star,\,g,\,\text{task\_desc},\,\text{variant}\!=\!v)$
+\hfill\textit{(returns $p_{\text{cf}}\!\in\!\mathbb{R}^3$ and/or $a_{\text{cf}}\!\in\!\mathbb{R}^4$)}\\
+\quad\textsc{5:}\;\textbf{if} $v\!\in\!\{$\textsc{achieved\_goal},\textsc{all},\textsc{joint}$\}$ \textbf{and} $\|p_{\text{cf}}\!-\!g\|\!<\!\rho$ \textbf{then}\\
+\quad\quad\;\textbf{return} \textsc{reject} (reason: \texttt{teleport\_collapse}) \hfill\textit{(see Sec.~\ref{sec:exp:prompt})}\\
+\quad\textsc{6:}\;\textbf{if} $v\!=\!$\textsc{achieved\_goal} \textbf{then} \hfill\textit{(IK from position target)}\\
+\quad\quad\;$a_{\text{cf}}\!\leftarrow\!\mathrm{clip}\bigl((p_{\text{cf}}\!-\!\texttt{ee}_{K^\star})/g_P,\,-1,\,1\bigr)$
+concat $[\texttt{grip}\!=\!-1]$\\
+\quad\textsc{7:}\;\textbf{else} $a_{\text{cf}}\!\leftarrow\!\mathrm{clip}(\text{out}.a_{\text{cf}},\,-1,\,1)$ \hfill\textit{(use VLM's action directly)}\\
+\quad\textsc{8:}\;Write $\sigma$ into $E_{\text{verify}}$ (\texttt{qpos},\,\texttt{qvel},\,\texttt{time},\,\texttt{mocap});
+call \texttt{mj\_forward(model,data)}; assert $\|\texttt{qpos}\!-\!\texttt{qpos}^{(\sigma)}\|\!=\!0$\\
+\quad\textsc{9:}\;\textbf{for} $j\!=\!0,\dots,N\!-\!1$ \textbf{do}\\
+\quad\quad\;$(s'_j, r_j)\!\leftarrow\!E_{\text{verify}}.\texttt{step}(a_{\text{cf}})$ \hfill\textit{(under env's unmodified sparse reward)}\\
+\quad\quad\;$r_j\!\leftarrow\!E_{\text{verify}}.\texttt{compute\_reward}(\text{ag}_j, g)$\\
+\quad\textsc{10:}\;\textbf{if} $\max_j r_j\!\ge\!0$ \textbf{then} \hfill\textit{(verifier reached the goal)}\\
+\quad\quad\;$j^\star\!\leftarrow\!\arg\min\{j\,:\,r_j\!\ge\!0\}$;
+$\;\text{ag}^\star\!\leftarrow\!\text{ag}_{j^\star}$\\
+\quad\quad\;Append $\{(s_{K^\star},a_{\text{cf}},r_0,s'_0),\dots,(s'_{j^\star-1},a_{\text{cf}},r_{j^\star},s'_{j^\star})\}$ to $\mathcal{D}_B$ with $\text{conf}\!=\!1.0$\\
+\quad\quad\;Append hindsight copy with $g'\!\leftarrow\!\text{ag}^\star$ \hfill\textit{(verified HER relabel)}\\
+\quad\quad\;\textbf{return} \textsc{accept}\\
+\quad\textsc{11:}\;\textbf{return} \textsc{reject} (reason: \texttt{goal\_not\_reached}) \hfill\textit{(fall back to standard HER)}
 }}
-\caption{VLM-Verified Counterfactual Hindsight. The teleport gate
-(step~4) is empirically necessary on planar tasks (FetchPush) but
-structurally redundant on \textsc{action}-only variants where no
-position field is emitted. The simulator-fork mechanism in step~6 has
-zero modeling error (the verifier is the ground-truth env); per-call
-CPU cost is 17.6\,ms.}
+\caption{VLM-Verified Counterfactual Hindsight (Verify-CF). The
+teleport gate (line~5) is empirically necessary on planar tasks
+(FetchPush, 67\% teleport rate pre-gate on GPT-4o)
+but structurally redundant on the \textsc{action} variant, which emits
+no position field --- a structural design choice we make explicit in
+line~5's variant check. Lines~3 and 8 implement the
+``simulator-fork'' that gives the verifier zero modeling error: the
+verifier env's transition is the ground-truth env's transition by
+construction. Per-call CPU cost is 17.6\,ms (lines~3 + 8 + 9
+together); the dominant cost is the VLM call at line~4
+($\approx\!4$\,s for GPT-4o, $\approx\!11$\,s for Opus~4.7). The
+procedure is invoked at the HER relabel step of any SAC+HER trainer
+once per failed episode.}
 \label{alg:verified-cf}
 \end{figure}
 
