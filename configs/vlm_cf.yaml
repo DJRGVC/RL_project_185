@@ -18,8 +18,8 @@ replay:
   reject_teleport_radius_m: 0.05
 
   # VLM provider config
-  vlm_provider: openai            # openai | anthropic
-  vlm_model: gpt-4o-mini          # gpt-4o-mini for cheap training-time CF
+  vlm_provider: anthropic         # openai | anthropic
+  vlm_model: claude-sonnet-4-5    # Phase 2 retry: gpt-4o-mini hit OpenAI RPD cap; Sonnet 4.5 proved stable at scale.
   vlm_keyframes: 5
   vlm_variant: achieved_goal      # C1v2-A bake-off winner
   vlm_task_description: ""        # filled per env in train.py

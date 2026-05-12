@@ -18,8 +18,8 @@ replay:
   cf_window: 4
   reject_teleport_radius_m: 0.05
 
-  vlm_provider: openai
-  vlm_model: gpt-4o-mini
+  vlm_provider: anthropic
+  vlm_model: claude-sonnet-4-5    # Phase 2 retry: switched off gpt-4o-mini after OpenAI RPD cap exhaustion.
   vlm_keyframes: 5
   vlm_variant: all                 # need corrective_action for verification
 
