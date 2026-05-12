@@ -1001,6 +1001,22 @@ because we recompute the env's own sparse reward, not a VLM-derived surrogate.
 \subsection{Setup}
 \label{sec:exp:setup}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_envs.pdf}
+\caption{The three Gymnasium-Robotics Fetch tasks used in our experiments
+(columns: \texttt{FetchPush}, \texttt{FetchPickAndPlace}, \texttt{FetchSlide}),
+rendered at three timesteps of a deterministic scripted rollout (rows: $t\!=\!0$
+/ $t\!=\!24$ / $t\!=\!49$) from seed 42. Each task has a 50-step horizon,
+4-dimensional continuous action (end-effector $\Delta x,\Delta y,\Delta z$ plus
+gripper open/close), and sparse reward (binary, success threshold 5\,cm to
+the red target marker). FetchPush requires pushing a block to a target on
+the table; FetchPickAndPlace adds grasping and 3D placement (target may be
+in the air); FetchSlide tests ballistic release on a frictionless surface,
+with the target outside arm reach.}
+\label{fig:envs}
+\end{figure}
+
 We use Gymnasium-Robotics \texttt{FetchPush-v4}, \texttt{FetchPickAndPlace-v4},
 and \texttt{FetchSlide-v4}---each exposing a 25-dimensional goal-conditioned
 observation $(\text{obs},\text{ag},\text{dg})\in\mathbb{R}^{10}\times\mathbb{R}^3\times\mathbb{R}^3$,

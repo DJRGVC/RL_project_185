@@ -1,0 +1,10 @@
+Figure X. The three Gymnasium-Robotics Fetch tasks used in our experiments
+(columns: FetchPush, FetchPickAndPlace, FetchSlide), rendered at three
+timesteps of a deterministic scripted rollout (rows: t=0 / t=24 / t=49) from
+seed 42. Each task has a 50-step horizon, 4-dimensional continuous action
+(end-effector dx,dy,dz plus gripper open/close), and sparse reward (binary,
+success threshold 5 cm to the red target marker). FetchPush requires pushing
+a block to a target on the table; FetchPickAndPlace adds grasping and 3D
+placement (target may be in the air); FetchSlide tests ballistic release on
+a frictionless surface, with the target outside arm reach. Rendered via
+MuJoCo through gymnasium-robotics==1.4.x.
