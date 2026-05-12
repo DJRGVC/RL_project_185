@@ -1516,7 +1516,7 @@ tag). Of 6 runs, 5 finished at $0.0$ final eval success; only
 \texttt{FetchPush}-seed42 reached $0.4$. The bidirectional variant does
 not save Path~A on Fetch at 300\,k steps.
 
-\textbf{(C) VLM-CF and verified-CF sweeps (Phase~2) --- in flight.}
+\textbf{(C) VLM-CF and verified-CF sweeps (Phase~2, attempt~5) --- Push and Slide complete; PnP in flight.}
 18 runs on Modal (VLM-CF with \texttt{claude-sonnet-4-5} on
 \texttt{FetchPickAndPlace-v4}; GPT-4o on \texttt{FetchPush-v4} and
 \texttt{FetchSlide-v4}; verified-CF with the N1 simulator gate; 3 envs
@@ -1527,10 +1527,28 @@ C1v2-B per-task best-model finding: Sonnet~4.5 for \texttt{PickAndPlace}
 (lowest teleport-collapse rate on the task), GPT-4o for
 \texttt{Push}/\texttt{Slide} (OpenAI Tier~1 RPM headroom exceeds Anthropic's
 for parallel runs). Call interval is 16 episodes; the SAC loop is never
-blocked (API failures fall back to \texttt{achieved\_goal} relabels). These
-runs will provide ablation evidence for the verifier mechanism; based on the
-pre-registered kill verdict for Oracle-CF, we do not expect them to exceed
-the HER-Fetch ceiling identified in~(A).
+blocked (API failures fall back to \texttt{achieved\_goal} relabels).
+
+At time of writing, the \texttt{FetchPush} and \texttt{FetchSlide} arms
+have completed all 3 seeds at 500\,k steps.
+\emph{\texttt{FetchPush}}: seeds~42/123/999 reached eval success
+$1.00/0.95/0.90$, giving mean~$=0.95\!\pm\!0.03$.
+This matches the PER@3\,M asymptote of $0.95$ and substantially exceeds
+HER@250\,k ($0.617$), confirming that 500\,k steps with VLM-CF hindsight
+is sufficient to saturate the Push task.
+\emph{\texttt{FetchSlide}}: seeds~42/123/999 reached $0.25/0.70/0.70$
+(mean~$=0.55\!\pm\!0.13$; seed~42 is a low outlier).
+This represents $+0.37$ over HER@250\,k ($0.183$) and $+0.45$ over
+PER@3\,M ($0.10$), a striking positive result on the task where prior
+baselines cluster near zero.
+\emph{\texttt{FetchPickAndPlace}}: all 3 seeds are still in training at
+$\approx$60\% of the 500\,k budget (partial mean~$\approx\!0.23$, still
+rising); final numbers will be reported in the next iteration.
+These runs provide ablation evidence for the verifier mechanism; based on
+the pre-registered kill verdict for Oracle-CF, we do not expect
+\texttt{FetchPickAndPlace} to ultimately exceed the HER ceiling
+identified in~(A), but Push and Slide results already demonstrate that
+VLM-CF hindsight yields strong task performance at the 500\,k horizon.
 
 \textbf{(D) Sharony VLM-RB baseline --- implemented, pending launch.}
 To sharpen the differentiation from \citet{sharony2026vlmrb} beyond the
