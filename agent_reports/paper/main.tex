@@ -40,14 +40,23 @@ trajectory effectively unprioritized. We make two contributions.
 approximate posterior $q_\phi(t^\star\!\mid\!\tau)$ over which timestep caused
 an episode's outcome, and Semantic PER multiplies the standard TD-error
 priority by this posterior. The multiplicative form admits a clean
-IS-correction analysis; the additive mixture of the concurrent VLM-RB
-\citep{sharony2026vlmrb} implicitly retargets the loss.
+IS-correction analysis with an explicit bias bound
+(Eq.~\ref{eq:bias-bound}); under VLM miscalibration, only the
+sampling variance is inflated---the value target is never corrupted.
+The additive mixture of the concurrent VLM-RB
+\citep{sharony2026vlmrb} implicitly retargets the loss instead.
 \textbf{Second}, we introduce \textbf{VLM-Verified Counterfactual Hindsight},
 which closes the dominant failure mode of language-only counterfactuals:
 rather than asking for a hindsight goal (which teleport-collapses in 100\%
 of Opus 4.7 calls on FetchPush), we ask for a corrective action sequence and
 execute it in a simulator fork. Only simulator-verified relabels enter the
-buffer (confidence~1.0, zero modeling error). A two-vendor, three-model prompt sweep
+buffer (confidence~1.0, zero modeling error).
+Crucially, the two pathways fail asymmetrically under VLM
+miscalibration: Semantic-PER degeneracy inflates variance (bounded);
+Verified-CF degeneracy extinguishes write-throughput entirely---
+reducing to a costlier HER at cold start when no corrective action
+yet reaches the 5\,cm goal threshold.
+A two-vendor, three-model prompt sweep
 (GPT-4o / Opus~4.7 / Sonnet~4.5) on 6 synthetic and 10 real Fetch failures identifies
 \texttt{(GPT-4o, achieved\_goal + 5\,cm gate)} as the dominant configuration (0\%
 teleport-collapse, 0.79 plausibility, 0.83 goal-progress), and a 12-episode
