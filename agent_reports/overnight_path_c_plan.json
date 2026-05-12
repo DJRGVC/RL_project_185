@@ -125,5 +125,26 @@
       "logging.use_wandb=true"
     ],
     "shell_script": "scripts/run_ablation_vlmtier.sh"
+  },
+  "phase1_rerun_push": {
+    "_target_runtime_minutes": 90,
+    "_target_total_steps": 250000,
+    "_concurrency_local": 1,
+    "_gpu": "local-5070ti",
+    "_depends_on": ["phase1_complete"],
+    "_purpose": "Re-run FetchPush OCF after the oracle_cf_push midpoint bugfix (commit ccb63d4, 2026-05-12). The original Phase 1 KILL OCF Push runs used midpoint(ee[k], goal) which placed CFs in random workspace regions whenever the agent had lost the block. Fixed version uses midpoint(block_pos[k], goal). Morning agent should re-evaluate the KILL verdict using these corrected numbers for Push, alongside the original PnP and Slide.",
+    "_shell_script": "scripts/run_corrected_push_ocf.sh",
+    "runs": [
+      {"id": "ocf_push_fix_s42",  "config": "configs/oracle_cf.yaml", "env": "FetchPush-v4", "seed": 42,  "run_name": "path_c_kill_ocf_push_fix_s42",  "tags": ["path_c_kill_2026-05-11","oracle_cf_pushfix","oracle_cf","FetchPush-v4"]},
+      {"id": "ocf_push_fix_s123", "config": "configs/oracle_cf.yaml", "env": "FetchPush-v4", "seed": 123, "run_name": "path_c_kill_ocf_push_fix_s123", "tags": ["path_c_kill_2026-05-11","oracle_cf_pushfix","oracle_cf","FetchPush-v4"]},
+      {"id": "ocf_push_fix_s999", "config": "configs/oracle_cf.yaml", "env": "FetchPush-v4", "seed": 999, "run_name": "path_c_kill_ocf_push_fix_s999", "tags": ["path_c_kill_2026-05-11","oracle_cf_pushfix","oracle_cf","FetchPush-v4"]}
+    ],
+    "common_overrides": [
+      "training.total_steps=250000",
+      "training.eval_interval=10000",
+      "training.save_interval=50000",
+      "training.log_interval=1000",
+      "logging.use_wandb=true"
+    ]
   }
 }
