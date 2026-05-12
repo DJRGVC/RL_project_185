@@ -1,0 +1,35 @@
+defaults: base
+
+# cf_window ablation — v1: cf_window = 4  (current default in 12 configs).
+#
+# This is the production default after the 02:47 fix (commit 539211c).
+# A CF at frame K is eligible only for transitions in [t, t + 4]; combined
+# with the causal K >= t constraint, the effective relabel window is
+# [K - 4, K]. This is the reference cell of the sweep — every other cell
+# is interpreted relative to v1.
+#
+# Sweep grid (configs/ablation_cfwindow_v{0,1,2,3}.yaml):
+#   v0: cf_window = 0   (disabled; pre-02:47 behavior)
+#   v1: cf_window = 4   (current default in 12 configs)            ← THIS FILE
+#   v2: cf_window = 10  (loose locality; broader credit horizon)
+#   v3: cf_window = 25  (~half-episode at T=50; near-disabled)
+#
+# This config is identical to configs/oracle_cf.yaml except for the
+# logging.run_name; running it under the cf_window tag re-establishes the
+# v1 reference under the cfwindow ablation tag.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: oracle
+  cf_input_kind: state
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 1
+  cf_window: 4                    # ← sweep variable: DEFAULT
+
+logging:
+  run_name: ablation_cfwindow_v1

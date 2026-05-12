@@ -126,6 +126,44 @@
     ],
     "shell_script": "scripts/run_ablation_vlmtier.sh"
   },
+  "phase3_ablation_cfwindow": {
+    "_target_runtime_minutes": 30,
+    "_target_total_steps": 250000,
+    "_concurrency_local": 3,
+    "_gpu": "local-5070ti",
+    "_depends_on": ["phase1_complete"],
+    "_design_doc": "agent_reports/ablation_cfwindow_design.md",
+    "_hypothesis": "cf_window: 4 (current default in 12 production configs after 02:47 commit 539211c) is at or near the optimum on FetchPickAndPlace; v0 (disabled) and v3 (cf_window=25, ~half-episode) sit below v1 and v2.",
+    "_falsification": "if v0 (cf_window=0, disabled) beats v1 (cf_window=4) by >= 0.10 mean success at 250k steps on FetchPickAndPlace, the 02:47 locality-bound fix was the wrong default and the 12 production configs must be re-tuned.",
+    "_estimated_cost_usd": 0,
+    "_estimated_gpu_hours": 6,
+    "_dollar_breakdown": {
+      "vlm_api": 0.00,
+      "note": "oracle CF provider is hand-coded, no API exposure"
+    },
+    "runs": [
+      {"id": "cfw_v0_pp_s42",  "config": "configs/ablation_cfwindow_v0.yaml", "env": "FetchPickAndPlace-v4", "seed": 42,  "run_name": "path_c_ablation_cfwindow_pp_w0_s42",  "tags": ["path_c_ablation_cfwindow_2026-05-12","cfwindow","w0","FetchPickAndPlace-v4"]},
+      {"id": "cfw_v0_pp_s123", "config": "configs/ablation_cfwindow_v0.yaml", "env": "FetchPickAndPlace-v4", "seed": 123, "run_name": "path_c_ablation_cfwindow_pp_w0_s123", "tags": ["path_c_ablation_cfwindow_2026-05-12","cfwindow","w0","FetchPickAndPlace-v4"]},
+      {"id": "cfw_v0_pp_s999", "config": "configs/ablation_cfwindow_v0.yaml", "env": "FetchPickAndPlace-v4", "seed": 999, "run_name": "path_c_ablation_cfwindow_pp_w0_s999", "tags": ["path_c_ablation_cfwindow_2026-05-12","cfwindow","w0","FetchPickAndPlace-v4"]},
+      {"id": "cfw_v1_pp_s42",  "config": "configs/ablation_cfwindow_v1.yaml", "env": "FetchPickAndPlace-v4", "seed": 42,  "run_name": "path_c_ablation_cfwindow_pp_w4_s42",  "tags": ["path_c_ablation_cfwindow_2026-05-12","cfwindow","w4","FetchPickAndPlace-v4"]},
+      {"id": "cfw_v1_pp_s123", "config": "configs/ablation_cfwindow_v1.yaml", "env": "FetchPickAndPlace-v4", "seed": 123, "run_name": "path_c_ablation_cfwindow_pp_w4_s123", "tags": ["path_c_ablation_cfwindow_2026-05-12","cfwindow","w4","FetchPickAndPlace-v4"]},
+      {"id": "cfw_v1_pp_s999", "config": "configs/ablation_cfwindow_v1.yaml", "env": "FetchPickAndPlace-v4", "seed": 999, "run_name": "path_c_ablation_cfwindow_pp_w4_s999", "tags": ["path_c_ablation_cfwindow_2026-05-12","cfwindow","w4","FetchPickAndPlace-v4"]},
+      {"id": "cfw_v2_pp_s42",  "config": "configs/ablation_cfwindow_v2.yaml", "env": "FetchPickAndPlace-v4", "seed": 42,  "run_name": "path_c_ablation_cfwindow_pp_w10_s42", "tags": ["path_c_ablation_cfwindow_2026-05-12","cfwindow","w10","FetchPickAndPlace-v4"]},
+      {"id": "cfw_v2_pp_s123", "config": "configs/ablation_cfwindow_v2.yaml", "env": "FetchPickAndPlace-v4", "seed": 123, "run_name": "path_c_ablation_cfwindow_pp_w10_s123","tags": ["path_c_ablation_cfwindow_2026-05-12","cfwindow","w10","FetchPickAndPlace-v4"]},
+      {"id": "cfw_v2_pp_s999", "config": "configs/ablation_cfwindow_v2.yaml", "env": "FetchPickAndPlace-v4", "seed": 999, "run_name": "path_c_ablation_cfwindow_pp_w10_s999","tags": ["path_c_ablation_cfwindow_2026-05-12","cfwindow","w10","FetchPickAndPlace-v4"]},
+      {"id": "cfw_v3_pp_s42",  "config": "configs/ablation_cfwindow_v3.yaml", "env": "FetchPickAndPlace-v4", "seed": 42,  "run_name": "path_c_ablation_cfwindow_pp_w25_s42", "tags": ["path_c_ablation_cfwindow_2026-05-12","cfwindow","w25","FetchPickAndPlace-v4"]},
+      {"id": "cfw_v3_pp_s123", "config": "configs/ablation_cfwindow_v3.yaml", "env": "FetchPickAndPlace-v4", "seed": 123, "run_name": "path_c_ablation_cfwindow_pp_w25_s123","tags": ["path_c_ablation_cfwindow_2026-05-12","cfwindow","w25","FetchPickAndPlace-v4"]},
+      {"id": "cfw_v3_pp_s999", "config": "configs/ablation_cfwindow_v3.yaml", "env": "FetchPickAndPlace-v4", "seed": 999, "run_name": "path_c_ablation_cfwindow_pp_w25_s999","tags": ["path_c_ablation_cfwindow_2026-05-12","cfwindow","w25","FetchPickAndPlace-v4"]}
+    ],
+    "common_overrides": [
+      "training.total_steps=250000",
+      "training.eval_interval=10000",
+      "training.save_interval=50000",
+      "training.log_interval=1000",
+      "logging.use_wandb=true"
+    ],
+    "shell_script": "scripts/run_ablation_cfwindow.sh"
+  },
   "phase1_rerun_push": {
     "_target_runtime_minutes": 90,
     "_target_total_steps": 250000,

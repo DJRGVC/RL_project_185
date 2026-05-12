@@ -1,0 +1,36 @@
+defaults: base
+
+# cf_window ablation — v2: cf_window = 10  (loose locality).
+#
+# Doubles the production default. A CF at frame K is now eligible for
+# transitions in [t, t + 10]. On a 50-step max-episode, the effective
+# horizon is one-fifth of the trajectory length — broad enough to cover
+# the grasp-to-lift phase on PickAndPlace but still excluding the early
+# reach phase from being relabeled with a late drop CF.
+#
+# Sweep grid (configs/ablation_cfwindow_v{0,1,2,3}.yaml):
+#   v0: cf_window = 0   (disabled; pre-02:47 behavior)
+#   v1: cf_window = 4   (current default in 12 configs)
+#   v2: cf_window = 10  (loose locality; broader credit horizon)   ← THIS FILE
+#   v3: cf_window = 25  (~half-episode at T=50; near-disabled)
+#
+# Pre-registered prediction: v2 ≈ v1 within ±0.05 SE. If v2 strictly
+# improves on v1, the production default is too tight and should be
+# relaxed. If v2 strictly underperforms v1, locality is more important
+# than the 02:47 commit message claims.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: oracle
+  cf_input_kind: state
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 1
+  cf_window: 10                   # ← sweep variable: LOOSE
+
+logging:
+  run_name: ablation_cfwindow_v2

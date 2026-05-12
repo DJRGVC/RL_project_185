@@ -1,0 +1,43 @@
+defaults: base
+
+# cf_window ablation — v0: cf_window = 0  (locality bound DISABLED).
+#
+# At cf_window <= 0 the relabel eligibility shrinks to the unbounded forward
+# condition "K >= t" (the pre-02:47-fix behavior). A CF identified at frame
+# K = 40 is then eligible to relabel a transition at t = 0, a very-long-
+# horizon credit assignment that washes out the local HER signal. This run
+# answers: how much does the locality bound actually matter?
+#
+# Sweep grid (configs/ablation_cfwindow_v{0,1,2,3}.yaml):
+#   v0: cf_window = 0   (disabled; pre-02:47 behavior)           ← THIS FILE
+#   v1: cf_window = 4   (current default in 12 configs)
+#   v2: cf_window = 10  (loose locality; broader credit horizon)
+#   v3: cf_window = 25  (~half-episode at T=50; near-disabled)
+#
+# Pre-registered hypothesis: cf_window = 4 (the current default) is at or
+# near the optimum on FetchPickAndPlace. Falsification: if v0 (unbounded)
+# or v3 (~half-episode) beats v1 by >=0.10 mean eval success at 250k, the
+# 02:47 locality fix was the wrong default and 12 configs need re-tuning.
+#
+# Provider is the oracle, not the VLM. Reason: we want to isolate the
+# locality bound's mechanical effect on relabel credit-horizon, free of
+# VLM-quality noise and free of $ cost. Oracle CFs come from a verified
+# state-space midpoint heuristic (see src/buffers/counterfactual_buffer.py
+# _build_trajectory_dict path), so the only knob that varies across the
+# 4 cells of this sweep is `cf_window`.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: oracle
+  cf_input_kind: state
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 1
+  cf_window: 0                    # ← sweep variable: DISABLED
+
+logging:
+  run_name: ablation_cfwindow_v0

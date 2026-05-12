@@ -1,0 +1,38 @@
+defaults: base
+
+# cf_window ablation — v3: cf_window = 25  (~half-episode; near-disabled).
+#
+# A CF at frame K is eligible for transitions in [t, t + 25]. On a 50-step
+# max-episode this approaches v0's unbounded-forward behavior: for any t in
+# the first half of the episode, any CF at K in [t, t+25] is admissible,
+# which covers most of the late episode. Designed as the "soft v0" — checks
+# whether the v0 result (if any) is driven by the literal "K >= t only"
+# logic or by the broad effective horizon it produced.
+#
+# Sweep grid (configs/ablation_cfwindow_v{0,1,2,3}.yaml):
+#   v0: cf_window = 0   (disabled; pre-02:47 behavior)
+#   v1: cf_window = 4   (current default in 12 configs)
+#   v2: cf_window = 10  (loose locality; broader credit horizon)
+#   v3: cf_window = 25  (~half-episode at T=50; near-disabled)     ← THIS FILE
+#
+# Pre-registered prediction: v3 ≈ v0 within ±0.05 SE. If v3 ≠ v0 by
+# >=0.10 success, the unbounded-forward edge case is doing something
+# qualitatively different from a broad window (likely: it's preferentially
+# selecting the latest available CF, which is a different bias than a
+# uniform draw over the eligibility set).
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: oracle
+  cf_input_kind: state
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 1
+  cf_window: 25                   # ← sweep variable: NEAR-DISABLED
+
+logging:
+  run_name: ablation_cfwindow_v3
