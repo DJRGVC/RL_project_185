@@ -1597,6 +1597,50 @@ the Oracle-CF--HER gap narrows, widens, or crosses the $+0.10$ threshold.
 Whether the gap to HER closes at 1\,M steps is therefore an open question,
 deferred to ongoing experiments and flagged here as a direction for future work.
 
+\textbf{(F) Prompt-design ablation matrix --- pre-registered, in flight.}
+The Phase~2 runs (Part~C above) use the \texttt{achieved\_goal} prompt variant,
+which exposes \texttt{desired\_goal}~$= [x,y,z]$ as a literal numeric triplet
+in the prompt body.
+Section~\ref{sec:exp:prompt} identifies this as a structural teleport-collapse
+risk: the lowest-perplexity numeric continuation is to copy the in-context goal
+coordinate, which is exactly what Opus~4.7 does in $4/4$ calls.
+GPT-4o's immunity on \texttt{achieved\_goal} (0/6 collapse) holds at 500\,k
+steps (Part~C), but it remains \emph{untested} whether that immunity persists
+when the VLM also lacks knowledge of the target coordinate entirely.
+To decouple these two effects, we are launching a $2\!\times\!2$ grid of prompt
+variants that crosses two independent axes:
+(a)~\emph{goal-visibility}: whether the prompt reveals the \texttt{desired\_goal}
+coordinates (\emph{knows-goal}) or withholds them entirely (\emph{blind}), and
+(b)~\emph{trajectory-context}: whether numerical per-keyframe block positions
+and end-effector coordinates are appended alongside the visual frames
+(\emph{visual+numeric}) or only the rendered frames are provided
+(\emph{visual-only}).
+The four cells correspond to $\mathtt{vlm\_variant}$ taking values
+\texttt{achieved\_goal} (baseline),
+\texttt{achieved\_goal\_blind},
+\texttt{achieved\_goal\_numeric}, and
+\texttt{achieved\_goal\_blind\_numeric},
+where \texttt{achieved\_goal\_blind} was shipped in commit \texttt{a23998b} and
+the two numeric variants are in flight.
+We pre-register the hypothesis that the \emph{blind+numeric} cell
+(\texttt{achieved\_goal\_blind\_numeric}) maximizes CF plausibility while
+minimizing teleport-collapse: withholding the goal coordinate removes the
+direct copy attractor, while providing explicit trajectory geometry forces the
+VLM to reason about what position the object \emph{should have reached at this
+frame}, rather than defaulting to the teleport target or the last observed position.
+The diagnostic is the new W\&B key
+\texttt{buffer/cf\_corrective\_pos\_to\_desired\_dist}
+(running mean of $\|\hat{p} - g\|_2$ for accepted CFs), introduced in
+commit \texttt{a23998b}: under \texttt{achieved\_goal} we observe a spike near
+zero (teleport collapse); under a successful blind variant we predict a
+broader distribution well above the 5\,cm teleport gate.
+Companion metrics
+\texttt{buffer/cf\_corrective\_pos\_to\_achieved\_dist} (guards against
+``stay-the-course'' degeneracy) and
+\texttt{buffer/cf\_corrective\_pos\_in\_workspace} (in-bounds rate) complete the
+diagnostic panel. Cell-level results will be reported in the camera-ready version;
+we pre-register them here so the comparison is not selected post hoc.
+
 \section{Discussion and Limitations}
 \label{sec:discussion}
 
