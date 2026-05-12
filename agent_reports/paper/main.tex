@@ -147,26 +147,86 @@ caveats, and limitations.
 \paragraph{HER and goal-conditioned RL.}
 Hindsight Experience Replay~\citep{andrychowicz2017her} is the dominant
 solution to sparse-reward goal-conditioned manipulation; the \texttt{future}
-relabel strategy with $k\!=\!4$ remains a strong baseline a decade later. Recent
-sample-efficiency improvements include single-step relabeling
-(Next-Future)~\citep{ozgur2025nextfuture}, contact-energy
-prioritization (CEBP)~\citep{sayar2023cebp}, hindsight regularization
-(GCHR)~\citep{lei2025gchr}, and null-counterfactual interaction inference
-(HInt/NCII)~\citep{chuck2025hint}. HInt is the closest in spirit to our verified
-counterfactuals: it asks ``would the target object's dynamics change if the cause
-object were removed?'' using a learned dynamics model. We use a frozen VLM rather
-than a learned model and verify in the real simulator.
+relabel strategy with $k\!=\!4$ remains a strong baseline a decade later.
+HER's core move is to convert a failed trajectory $\tau$ into a positive
+demonstration for some achieved goal $g'\!\in\!\{\text{ag}_t\}_{t=0}^{T}$
+on the trajectory itself, exploiting the fact that the sparse reward
+function $r(s,a,g)\!=\!-\mathbb{1}[\|\text{ag}-g\|\!>\!d_{\text{th}}]$
+admits cheap re-evaluation under a swapped goal. We organize the recent
+HER-family literature along three orthogonal extensions of this move---the
+\emph{relabel target}, the \emph{relabel proposal}, and the \emph{relabel
+verification step}---and place our work in the third.
+\textbf{Relabel-target extensions} change \emph{which} alternative goals are
+considered. Single-step Next-Future~\citep{ozgur2025nextfuture} restricts
+relabel candidates to $\text{ag}_{t+1}$ for sample-efficiency. Contact-Energy
+Hindsight Prioritization~\citep{sayar2023cebp} uses privileged
+end-effector/object state to upweight transitions whose contact-energy
+correlates with goal achievement---a state-geometry analogue of our
+heuristic Oracle v3 (\S\ref{sec:method:sper}).
+\textbf{Relabel-proposal extensions} change \emph{how} alternative goals or
+trajectories are synthesized rather than read off the agent's own data.
+Causal Action Influence Counterfactual Augmentation~\citep{urpi2024caiac}
+generates additional transitions on Fetch and Franka-Kitchen by counterfactually
+intervening on object positions under a learned causal-influence proxy. The
+HER-for-LM-agents line~\citep{hu2026echo,ding2026agentHER} re-writes failed
+trajectories as language-instruction relabels, with AgentHER explicitly
+adding multi-judge VLM verification to reduce relabel noise (5.9\%~$\to$~2.3\%),
+an early acknowledgment that language-only counterfactuals require an
+external acceptance test.
+\textbf{Relabel-verification extensions} add an explicit gate between the
+proposed relabel and the buffer. HInt/NCII~\citep{chuck2025hint} asks
+``would the target object's dynamics change if the cause object were
+removed?'' using a \emph{learned} dynamics model as the verifier;
+GCHR~\citep{lei2025gchr} regularizes the relabel proposal via a
+hindsight-conditioned policy term. Our verified-counterfactual mechanism
+(\S\ref{sec:method:verified}) sits in this third family but verifies in
+the \emph{exact training simulator} (zero modeling error) and verifies an
+\emph{action sequence} rather than a hindsight goal---a stricter test
+because it requires physics-consistent execution under the original
+dynamics, not merely a dynamics-model consistency check.
 
 \paragraph{Prioritized replay and off-policy correction.}
 Prioritized DQN~\citep{schaul2016per} samples in proportion to
-$(|\delta|+\varepsilon)^\alpha$ with an annealed importance-sampling weight
-$w_{\text{IS}}=(|\mathcal{D}|\cdot\mu_P)^{-\beta}$. Retrace~\citep{munos2016retrace}
-and V-trace~\citep{espeholt2018impala} extend off-policy correction to multi-step
-returns and distributed actor-learner setups, respectively, via clipped per-step
-IS ratios. \citet{ma2026freshness} address PER staleness in the LLM/VLM regime
-via age-decay weights. Our Semantic PER sits inside this taxonomy as a
-\emph{proposal-shaping} scheme whose modifier (the VLM posterior) is exogenous
-and trajectory-level rather than policy-derived; see Table~\ref{tab:taxonomy}.
+$(|\delta|+\varepsilon)^\alpha$ and reweights every sampled gradient by the
+annealed importance-sampling correction
+$w_{\text{IS}}\!=\!(|\mathcal{D}|\cdot\mu_P)^{-\beta}$,
+$\beta\colon\beta_0\!\to\!1$. The IS correction is the load-bearing
+structural property of PER: in the $\beta\!=\!1$ limit the reweighted
+gradient is an unbiased estimator of the uniform-replay loss
+$\mathbb{E}_U[\ell]$ under self-normalized importance sampling, with the
+proposal $\mu_P$ supplying variance reduction~\citep[Sec.~3.4]{schaul2016per}.
+Multi-step off-policy correction generalizes this idea: Retrace~\citep{munos2016retrace}
+clips per-step IS ratios to bound the trace's variance under
+truncation-induced bias; V-trace~\citep{espeholt2018impala} doubly-clips the
+target and behavior ratios in a distributed actor-learner setup. In each
+case the proposal is a fixed behavior or policy distribution; the
+correction inherits its form from the proposal--target ratio. The
+PER lineage in 2024--2026 has explored \emph{auxiliary} proposal signals
+beyond raw TD-error while preserving the multiplicative
+``$\mu_P\!\cdot\!g$'' structure: ReaPER multiplies the PER priority by a
+per-transition reliability estimate~\citep{pleiss2025reaper};
+RPE-PER replaces $|\delta|^\alpha$ with a reward-prediction-error
+proposal~\citep{yamani2025rpeper}; Prioritized Generative Replay
+multiplies the priority by a generative-model relevance score (curiosity
+or value) on a learned synthetic-experience
+stream~\citep{wang2025prioritizedgenerative}; the non-uniform-memory line
+shows that almost any non-uniform proposal beats uniform under modest
+conditions~\citep{krutsylo2025nonuniform}.
+\citet{ma2026freshness} address a different failure mode---priority staleness
+when the policy itself is a rapidly-evolving LLM/VLM---via age-decay
+weights. Within this taxonomy our Semantic PER (\S\ref{sec:method:sper}) is
+a \emph{proposal-shaping} scheme whose auxiliary signal $w_{\text{sem}}$
+(i)~is \emph{exogenous} (a frozen foundation-VLM posterior, not a
+critic-internal estimate), (ii)~is \emph{trajectory-level} (one VLM call
+per failed episode, then a kernel-smeared weight applied to every slot in
+that episode), and (iii)~combines \emph{multiplicatively} with $\mu_P$,
+which is the family choice that preserves PER's IS-correction
+interpretation as derived in \S\ref{sec:theory}. The contrasting design
+choice in the very recent VLM-RB~\citep{sharony2026vlmrb} is an
+\emph{additive} mixture
+$\lambda\mu_{\text{VLM}}\!+\!(1-\lambda)\mu_U$; we return to this
+contrast in Table~\ref{tab:taxonomy} and in
+Section~\ref{sec:method:sper}.
 
 \paragraph{Foundation models in RL.}
 VLMs have been used as reward sources \citep{rocamonde2024vlmreward,venuto2024car,wang2024rlvlmf},
