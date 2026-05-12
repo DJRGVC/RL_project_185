@@ -1,0 +1,31 @@
+defaults: base
+
+# Oracle-CF stacked on top of Prioritized Experience Replay.
+# Same hand-coded oracle CFs as configs/oracle_cf.yaml; only sampling regime
+# differs. Sanity-check ablation: if Oracle-CF+PER does NOT outperform
+# Oracle-CF+Uniform, then the "novel-transitions-get-max-priority" story
+# is not contributing — useful negative evidence to report.
+
+replay:
+  type: cf_her_per
+  her_k: 4
+  her_strategy: future
+
+  # CF-specific settings
+  cf_provider: oracle             # oracle | vlm | verified
+  cf_input_kind: state            # state | vlm
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 1             # generate CF every failed episode
+  cf_window: 4
+
+  # PER hyperparams
+  per_alpha: 0.6
+  per_beta_start: 0.4
+  per_beta_end: 1.0
+  per_beta_anneal_steps: 500_000
+  per_epsilon: 1.0e-6
+
+logging:
+  run_name: oracle_cf_per

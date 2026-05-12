@@ -1,0 +1,56 @@
+defaults: base
+
+# Verified-CF stacked on top of Prioritized Experience Replay.
+#
+# Verified-CF and PER act on orthogonal axes:
+#   - Verified-CF decides WHICH transitions to *insert* (VLM-proposed and
+#     simulator-verified corrective relabels) — same mechanism as
+#     configs/verified_cf.yaml.
+#   - PER decides WHICH transitions to *sample* from the buffer
+#     (proportional |TD|^alpha sampling with annealed IS correction).
+#
+# Synthetic Verified-CF transitions land in the buffer with max-priority
+# (the standard PER initialisation for new transitions), so they are
+# initially over-sampled while their TD error is high — exactly the
+# regime that should accelerate learning if Verified-CF is providing
+# useful novel terminal-success-like transitions.
+
+replay:
+  type: cf_her_per
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: verified
+  cf_input_kind: vlm
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 8
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  vlm_provider: anthropic
+  vlm_model: claude-sonnet-4-5
+  vlm_keyframes: 5
+  vlm_variant: all                 # need corrective_action for verification
+
+  # Verification
+  verify_enabled: true
+  verify_n_steps: 50
+  verify_success_threshold: 0.05
+  verify_repeat_action: true
+
+  # PER hyperparams (inherited defaults from base.yaml are fine, repeated
+  # here for visibility — alpha=0.6 / beta 0.4→1.0 over 500k steps).
+  per_alpha: 0.6
+  per_beta_start: 0.4
+  per_beta_end: 1.0
+  per_beta_anneal_steps: 500_000
+  per_epsilon: 1.0e-6
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: verified_cf_per

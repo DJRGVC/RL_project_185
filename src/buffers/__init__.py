@@ -57,6 +57,16 @@ def make_buffer(cfg):
         return UniformReplayBuffer(capacity)
     elif rtype in ("per", "her_per"):
         return _make_per(cfg)
+    elif rtype == "cf_her_per":
+        # CF-HER stacked on top of PER: the underlying buffer is a
+        # PERBuffer (proportional-priority sampling + IS correction +
+        # sum-tree), and CounterfactualHERBuffer wraps it in train.py.
+        # Synthetic Verified-CF / oracle / VLM transitions land in the
+        # buffer at max-priority (PERBuffer.push default), so PER will
+        # initially over-sample them — exactly the behaviour we want
+        # (novel terminal successes get sampled more until their TD
+        # error decays).
+        return _make_per(cfg)
     elif rtype in ("semantic_per", "her_semantic_per"):
         return _make_semantic(cfg)
     elif rtype in ("bidir", "her_bidir"):

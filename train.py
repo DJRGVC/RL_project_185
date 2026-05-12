@@ -306,7 +306,9 @@ def train(cfg: dict):
     is_bidir    = replay_type in ("bidir", "her_bidir")
     use_her     = replay_type in ("her", "her_per", "her_semantic_per",
                                   "her_bidir")
-    use_cf_her  = replay_type == "cf_her"
+    use_cf_her  = replay_type in ("cf_her", "cf_her_per")
+    # 'prioritized' iff the underlying replay is a PERBuffer (cf_her_per).
+    cf_priority_mode = "prioritized" if replay_type == "cf_her_per" else "uniform"
     cf_provider_kind = cfg["replay"].get("cf_provider", "oracle") if use_cf_her else None
     # VLM-based CF providers need rendered keyframes.
     cf_needs_frames = use_cf_her and cf_provider_kind in ("vlm", "verified")
@@ -372,6 +374,7 @@ def train(cfg: dict):
             cf_window=cfg["replay"].get("cf_window", 4),
             env_name=env_name,
             verifier=cf_verifier,
+            priority_mode=cf_priority_mode,
         )
 
     # ── failure localizer (semantic PER / bidir only) ──
@@ -563,6 +566,13 @@ def train(cfg: dict):
                         cf_metrics["buffer/cf_verifications_success_rate"] = (
                             succeeded / max(1, attempted)
                         )
+                    # When CF-HER is stacked on PER, surface PER-specific
+                    # diagnostics (current IS-correction beta, sum-tree mass,
+                    # max priority, buffer size) so dashboards can confirm the
+                    # priority-distribution is alive and not collapsed.
+                    if hasattr(replay, "get_per_stats"):
+                        for pk, pv in replay.get_per_stats().items():
+                            cf_metrics[f"buffer/{pk}"] = pv
                     train_log.log(cf_metrics, global_step, prefix="")
                 except Exception as e:
                     logger.warning(f"CF stats log failed: {e}")

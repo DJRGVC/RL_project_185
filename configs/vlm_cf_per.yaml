@@ -1,0 +1,39 @@
+defaults: base
+
+# VLM-CF stacked on top of Prioritized Experience Replay.
+# Same VLM provider / variant as configs/vlm_cf.yaml; only sampling regime differs.
+# See verified_cf_per.yaml for the orthogonality argument.
+
+replay:
+  type: cf_her_per
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: vlm
+  cf_input_kind: vlm
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 8
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  vlm_provider: anthropic
+  vlm_model: claude-sonnet-4-5
+  vlm_keyframes: 5
+  vlm_variant: achieved_goal      # C1v2-A bake-off winner
+  vlm_task_description: ""
+
+  # PER hyperparams
+  per_alpha: 0.6
+  per_beta_start: 0.4
+  per_beta_end: 1.0
+  per_beta_anneal_steps: 500_000
+  per_epsilon: 1.0e-6
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: vlm_cf_per

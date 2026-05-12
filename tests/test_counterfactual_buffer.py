@@ -39,6 +39,7 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO_ROOT)
 
 from src.buffers.replay_buffer import UniformReplayBuffer  # noqa: E402
+from src.buffers.per_buffer import PERBuffer  # noqa: E402
 from src.buffers.counterfactual_buffer import CounterfactualHERBuffer  # noqa: E402
 
 
@@ -516,6 +517,260 @@ class TestStatsCoherence:
         )
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# PER + CF-HER stack tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _make_per_backed_buffer(
+    p_counterfactual: float = 0.25,
+    cf_fn=None,
+    cf_input_kind: str = "state",
+    min_confidence: float = 0.5,
+    fallback_to_achieved: bool = True,
+    k: int = 4,
+    capacity: int = 4096,
+    cf_window: int = 4,
+    per_alpha: float = 0.6,
+    per_beta_start: float = 0.4,
+    per_beta_end: float = 1.0,
+    per_beta_anneal_steps: int = 1000,
+    per_epsilon: float = 1e-6,
+):
+    """Construct a CounterfactualHERBuffer with a PERBuffer underlying."""
+    per = PERBuffer(
+        capacity=capacity,
+        alpha=per_alpha,
+        beta_start=per_beta_start,
+        beta_end=per_beta_end,
+        beta_anneal_steps=per_beta_anneal_steps,
+        epsilon=per_epsilon,
+    )
+    return CounterfactualHERBuffer(
+        underlying_buffer=per,
+        counterfactual_fn=cf_fn if cf_fn is not None else (lambda **kw: None),
+        goal_dim=3,
+        obs_dim=25,
+        k=k,
+        strategy="future",
+        p_counterfactual=p_counterfactual,
+        min_confidence=min_confidence,
+        fallback_to_achieved=fallback_to_achieved,
+        cf_call_interval=1,
+        cf_input_kind=cf_input_kind,
+        cf_window=cf_window,
+        priority_mode="prioritized",
+    )
+
+
+class TestPERModeSamplesWithPriority:
+    """Higher-|TD| transitions must be sampled more often under PER."""
+
+    def test_per_mode_high_td_dominates_sampling(self):
+        np.random.seed(0)
+        buf = _make_per_backed_buffer(p_counterfactual=0.0, k=1)
+        # Push 100 dummy transitions directly into the PER-backed underlying
+        # buffer (skip the HER episode dance — we are testing the sampler).
+        T = 100
+        for i in range(T):
+            obs      = np.zeros(31, dtype=np.float32)
+            next_obs = np.zeros(31, dtype=np.float32)
+            action   = np.zeros(4, dtype=np.float32)
+            buf.buffer.push(obs, action, -1.0, next_obs, 0.0)
+
+        # Boost priorities of indices [10, 20, 30] to be 100× the rest.
+        boost_idx  = np.array([10, 20, 30], dtype=np.int64)
+        boost_tds  = np.array([100.0, 100.0, 100.0], dtype=np.float64)
+        rest_idx   = np.array([i for i in range(T) if i not in set(boost_idx.tolist())],
+                              dtype=np.int64)
+        rest_tds   = np.full(len(rest_idx), 1.0, dtype=np.float64)
+        buf.update_priorities(boost_idx, boost_tds)
+        buf.update_priorities(rest_idx, rest_tds)
+
+        # Draw 2000 samples and count how often boost indices appear.
+        counts = np.zeros(T, dtype=np.int64)
+        for _ in range(2000):
+            batch = buf.sample(8)
+            for j in batch["indices"]:
+                counts[int(j)] += 1
+
+        # Expected uniform count per slot ≈ 2000*8/100 = 160.
+        # With α=0.6 and 100× priority, boosted slots should be sampled
+        # roughly (100/(100 + (T-3)*1))^0.6-corrected × N times → far more
+        # than uniform. We only require >2× the uniform rate.
+        uniform_rate = counts.mean()
+        boost_rate   = counts[boost_idx].mean()
+        assert boost_rate > 2 * uniform_rate, (
+            f"PER must over-sample high-TD slots: boost_rate={boost_rate:.1f} "
+            f"vs uniform_rate={uniform_rate:.1f}"
+        )
+
+    def test_uniform_mode_unchanged(self):
+        """priority_mode='uniform' (default) must behave like the existing
+        uniform-backed buffer — no surprises for old configs."""
+        np.random.seed(0)
+        buf = _make_buffer(p_counterfactual=0.0, k=1)
+        # Push 100 dummies.
+        for i in range(100):
+            buf.buffer.push(np.zeros(31, dtype=np.float32),
+                            np.zeros(4, dtype=np.float32),
+                            -1.0,
+                            np.zeros(31, dtype=np.float32),
+                            0.0)
+        # update_priorities is a no-op for UniformReplayBuffer; sampling
+        # must still be uniform across slots.
+        batch = buf.sample(256)
+        assert "indices" in batch and "weights" in batch
+        # Uniform weights = 1.0 for all entries.
+        assert np.allclose(batch["weights"], 1.0), \
+            "uniform buffer must emit unit IS weights"
+        # priority_mode reads as 'uniform'.
+        assert buf.priority_mode == "uniform"
+
+
+class TestPERModeUpdatesPriorities:
+    """update_priorities must change subsequent sampling distribution."""
+
+    def test_update_priorities_changes_sampling(self):
+        np.random.seed(123)
+        buf = _make_per_backed_buffer(p_counterfactual=0.0, k=1)
+        T = 50
+        for i in range(T):
+            buf.buffer.push(np.zeros(31, dtype=np.float32),
+                            np.zeros(4, dtype=np.float32),
+                            -1.0,
+                            np.zeros(31, dtype=np.float32),
+                            0.0)
+
+        # Phase 1: all equal priority → near-uniform sampling.
+        eq_idx = np.arange(T, dtype=np.int64)
+        buf.update_priorities(eq_idx, np.ones(T) * 1.0)
+        counts1 = np.zeros(T, dtype=np.int64)
+        for _ in range(500):
+            for j in buf.sample(8)["indices"]:
+                counts1[int(j)] += 1
+        cv1 = counts1.std() / counts1.mean()
+
+        # Phase 2: spike index 42 → it should dominate.
+        buf.update_priorities(np.array([42]), np.array([1000.0]))
+        counts2 = np.zeros(T, dtype=np.int64)
+        for _ in range(500):
+            for j in buf.sample(8)["indices"]:
+                counts2[int(j)] += 1
+        assert counts2[42] > counts1[42] * 2, (
+            f"After spike, idx 42 must be sampled much more often "
+            f"(was {counts1[42]}, now {counts2[42]})"
+        )
+
+
+class TestPERModeISCorrectionWeight:
+    """IS-correction weights must be computed, finite, and bounded by 1."""
+
+    def test_is_weights_present_and_finite(self):
+        np.random.seed(0)
+        buf = _make_per_backed_buffer(p_counterfactual=0.0, k=1)
+        for i in range(64):
+            buf.buffer.push(np.zeros(31, dtype=np.float32),
+                            np.zeros(4, dtype=np.float32),
+                            -1.0,
+                            np.zeros(31, dtype=np.float32),
+                            0.0)
+        # Spread priorities.
+        buf.update_priorities(np.arange(64),
+                              np.linspace(0.1, 10.0, 64))
+        batch = buf.sample(32)
+        w = batch["weights"]
+        assert w.shape == (32,)
+        assert np.isfinite(w).all(), "IS weights must be finite"
+        assert (w > 0).all(), "IS weights must be positive"
+        # PERBuffer normalises weights so max == 1.
+        assert w.max() <= 1.0 + 1e-6, f"IS weights normalised to <=1, got max={w.max()}"
+
+
+class TestCFSyntheticTransitionsGetMaxPriority:
+    """Synthetic CF / HER transitions land in the buffer at max-priority.
+
+    Mechanism: PERBuffer.push sets each new slot to (max_priority)^alpha,
+    so a freshly inserted Verified-CF transition gets the same top
+    priority as any other novel transition. This is the standard PER
+    initialisation and is what we want for novel terminal-success-like
+    transitions.
+    """
+
+    def test_synthetic_transitions_get_top_priority_on_insert(self):
+        np.random.seed(0)
+        ep, _desired = _build_episode(T=10)
+
+        # Use the oracle-style state-kind CF returning a single CF at frame 5.
+        cf_pos = np.array([0.9, 0.9, 0.5], dtype=np.float32)
+        def cf_fn(**kw):
+            return [(5, cf_pos, 1.0)]
+
+        buf = _make_per_backed_buffer(
+            p_counterfactual=1.0, cf_fn=cf_fn, cf_input_kind="state", k=2,
+        )
+        # Run the failed episode → buffer fills with real + HER + CF transitions.
+        _run_episode(buf, ep, episode_success=False)
+
+        per = buf.buffer  # the underlying PERBuffer
+        N   = len(per)
+        # All slots filled this episode should be at the current max
+        # priority^alpha. Sanity-check: the running max_priority is >= 1
+        # (PERBuffer initialises it at 1.0).
+        assert per._max_priority >= 1.0
+        # Read the leaf priorities of every filled slot.
+        leaves = np.array([per._sum_tree[i] for i in range(N)])
+        expected_top = (per._max_priority) ** per.alpha
+        # All filled slots should sit at expected_top to within float
+        # precision (no SGD updates have run, so nothing has shrunk).
+        assert np.allclose(leaves, expected_top, rtol=1e-6, atol=1e-9), (
+            f"Freshly-inserted slots must all be at max-priority^alpha "
+            f"= {expected_top}; saw min={leaves.min()}, max={leaves.max()}"
+        )
+
+    def test_per_stats_reports_buffer_state(self):
+        """get_per_stats must expose beta / max_priority / sum-tree mass."""
+        np.random.seed(0)
+        ep, _desired = _build_episode(T=10)
+        def cf_fn(**kw):
+            return [(5, np.array([0.9, 0.9, 0.5], dtype=np.float32), 1.0)]
+        buf = _make_per_backed_buffer(
+            p_counterfactual=1.0, cf_fn=cf_fn, cf_input_kind="state", k=2,
+        )
+        _run_episode(buf, ep, episode_success=False)
+        stats = buf.get_per_stats()
+        for k in ("per_beta", "per_max_priority", "per_sum_tree_total",
+                  "per_sum_tree_size", "per_buffer_size"):
+            assert k in stats, f"get_per_stats missing key {k!r}"
+        assert stats["per_buffer_size"] > 0
+        assert stats["per_sum_tree_total"] > 0
+        # 0.4 ≤ beta ≤ 1.0 throughout training.
+        assert 0.4 - 1e-6 <= stats["per_beta"] <= 1.0 + 1e-6
+
+    def test_priority_mode_uniform_returns_empty_per_stats(self):
+        """get_per_stats must be empty for uniform-backed buffers
+        (so train.py logging short-circuits cleanly)."""
+        buf = _make_buffer(p_counterfactual=0.0)
+        assert buf.get_per_stats() == {}
+
+
+class TestInvalidPriorityMode:
+    """priority_mode must reject typos so silent fallthroughs don't happen."""
+
+    def test_unknown_priority_mode_raises(self):
+        underlying = UniformReplayBuffer(capacity=512)
+        try:
+            CounterfactualHERBuffer(
+                underlying_buffer=underlying,
+                counterfactual_fn=lambda **kw: None,
+                priority_mode="wat",
+            )
+        except ValueError as e:
+            assert "priority_mode" in str(e)
+            return
+        raise AssertionError("Bad priority_mode must raise ValueError")
+
+
 def _run_all_tests_without_pytest():
     """Fallback runner — execute every test_* method on every TestX class.
 
@@ -527,12 +782,19 @@ def _run_all_tests_without_pytest():
         TestPCounterfactualEqualsZeroIsHER,
         TestPCounterfactualUsesCF,
         TestCausalValidity,
+        TestCfWindowLocality,
+        TestVlmExceptionsCounterDoesNotDoubleCount,
         TestSuccessfulEpisodesSkipCF,
         TestCallIntervalGating,
         TestLowConfidenceFiltering,
         TestVLMReturningNone,
         TestStateInputKindDispatch,
         TestStatsCoherence,
+        TestPERModeSamplesWithPriority,
+        TestPERModeUpdatesPriorities,
+        TestPERModeISCorrectionWeight,
+        TestCFSyntheticTransitionsGetMaxPriority,
+        TestInvalidPriorityMode,
     ]
     n_pass = 0
     n_fail = 0

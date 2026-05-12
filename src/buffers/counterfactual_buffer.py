@@ -157,6 +157,7 @@ class CounterfactualHERBuffer(HERBuffer):
         cf_window: int = 4,
         env_name: Optional[str] = None,
         verifier: Optional[object] = None,
+        priority_mode: str = "uniform",
     ):
         super().__init__(
             underlying_buffer=underlying_buffer,
@@ -179,6 +180,16 @@ class CounterfactualHERBuffer(HERBuffer):
         self.cf_window           = int(cf_window)
         self.env_name            = env_name
         self.verifier            = verifier
+        # priority_mode is informational. The *behaviour* is determined by the
+        # underlying buffer (UniformReplayBuffer vs PERBuffer), but the explicit
+        # tag lets train.py decide which diagnostics to log and lets callers
+        # assert/inspect the buffer's sampling regime without isinstance gymnastics.
+        # Allowed: 'uniform' | 'prioritized'.
+        if priority_mode not in ("uniform", "prioritized"):
+            raise ValueError(
+                f"priority_mode must be 'uniform' or 'prioritized', got {priority_mode!r}"
+            )
+        self.priority_mode       = priority_mode
 
         # Diagnostics — populated as episodes finish. Read these from train.py
         # and log to W&B to debug the mechanism.
@@ -429,3 +440,32 @@ class CounterfactualHERBuffer(HERBuffer):
     def get_stats(self) -> Dict[str, int]:
         """Return accumulator dict for W&B logging."""
         return dict(self.stats)
+
+    def get_per_stats(self) -> Dict[str, float]:
+        """PER-specific diagnostics surfaced to train.py / W&B.
+
+        Returns an empty dict when the underlying buffer is uniform.
+        When priority_mode == 'prioritized' and the underlying buffer
+        exposes PER internals (beta, _max_priority, _sum_tree), emit:
+          - per_beta:               current IS-correction exponent
+          - per_max_priority:       running max raw priority seen
+          - per_sum_tree_total:     sum of all leaf priorities (≈ N * mean_p^α)
+          - per_sum_tree_size:      leaf-tree capacity
+          - per_buffer_size:        current number of stored transitions
+        """
+        if self.priority_mode != "prioritized":
+            return {}
+        b = self.buffer
+        out: Dict[str, float] = {}
+        if hasattr(b, "beta"):
+            out["per_beta"] = float(b.beta)
+        if hasattr(b, "_max_priority"):
+            out["per_max_priority"] = float(b._max_priority)
+        if hasattr(b, "_sum_tree"):
+            try:
+                out["per_sum_tree_total"] = float(b._sum_tree.total)
+                out["per_sum_tree_size"]  = float(b._sum_tree.capacity)
+            except Exception:
+                pass
+        out["per_buffer_size"] = float(len(b))
+        return out
