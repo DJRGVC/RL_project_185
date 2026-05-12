@@ -993,21 +993,114 @@ Opus 4.7 $\to$ Sonnet 4.5 (75\% $\to$ 0\%) or \textsc{achieved\_goal} $\to$
 \label{fig:real}
 \end{figure}
 
-We re-ran the prompt analysis on 10 real failed eval episodes sampled from
-partially-trained SAC+HER policies (6 PickAndPlace + 4 Push, both at $\sim$5\%
-eval success after 50\,k/30\,k steps). Real failure modes are
-\emph{near-misses} (final-distance 0.06--0.34\,m) rather than the
-``block-flies-off-table'' mode that dominates random-policy synthetic episodes.
-Three findings carry to the production pipeline (Figure~\ref{fig:real}):
-(i) the teleport-collapse mode \emph{partially persists} on real data and is
-\emph{task-conditioned} (survives on Push where the target sits on the table
-surface; rescuable on PickAndPlace where mid-air goals admit a non-trivial
-waypoint); (ii) Sonnet 4.5 stands in usefully for GPT-4o when OpenAI quota is
-constrained, dropping PickAndPlace teleport from 75\% to 0\%; (iii) the
-\textsc{all} prompt regularizes the position field on tasks where a non-trivial
-waypoint exists. The synthetic-vs-real plausibility delta is small ($\pm 0.07$
-on most variants), indicating that the prompt-design conclusions from
-Section~\ref{sec:exp:prompt} survive the synthetic-to-real shift.
+The synthetic episodes of Section~\ref{sec:exp:prompt} are drawn from a heuristic
+sticky-action rollout that frequently pushes the block off the table edge;
+this is the regime that originally surfaced teleport-collapse but is
+\emph{not} the failure distribution a partially-trained SAC+HER policy
+generates. The relevant question for downstream deployment is whether the
+prompt-design conclusions of Section~\ref{sec:exp:prompt}---in particular,
+the necessity of the 5\,cm reject-teleport gate and the choice of
+\textsc{achieved\_goal} over \textsc{all} on mid-air targets---survive the
+synthetic-to-real shift. We answer this empirically on 10 \emph{real} failed
+eval episodes drawn from the agent's own evaluation distribution.
+
+\paragraph{Episode collection.}
+We trained two SAC+HER checkpoints from scratch under the same hyperparameters
+as Section~\ref{sec:exp:setup}: FetchPickAndPlace-v4 for 50\,k steps and
+FetchPush-v4 for 30\,k steps, both deliberately stopped at $\sim$5\% deterministic
+eval success---well below the $\sim$500\,k/$\sim$80\,k convergence horizons.
+This is the regime where counterfactual reasoning is meant to help: the policy
+has learned to \emph{approach} the block but typically fails to grasp or push
+correctly. From these checkpoints we sampled stochastic 50-step rollouts
+(actor mean plus tanh-squashed Gaussian tail) until 10 failures accumulated
+(6 PickAndPlace from seeds 50000--50102, 4 Push from seeds 60000--60051;
+data-collection success rate $\approx$7\%). Real failure modes are
+\emph{near-misses} with final-distance $\in [0.06,0.34]\,\mathrm{m}$ on Push
+and median $0.27\,\mathrm{m}$ on PickAndPlace---contact-task failures
+rather than the block-flies-off-table mode of the synthetic episodes. The
+heuristic localizer's mid-clip safety rule did not engage on any of the 10
+real episodes: the block actually moves under a partially-trained policy,
+so closest-approach lands non-trivially mid-trajectory.
+
+\paragraph{An honest reframe: two vendors, three families.}
+The synthetic sweep paired Claude Opus~4.7 against OpenAI GPT-4o. For the
+real-data sweep the project's OpenAI key returned a hard
+\texttt{insufficient\_quota} block, so we substituted Claude
+Sonnet~4.5 as the second generator. This is not a third \emph{family} in the
+strict sense---Opus~4.7 and Sonnet~4.5 share an Anthropic pre-training corpus
+and RLHF lineage---so the cross-vendor evidence in this paper is properly
+described as \emph{two vendors} (Anthropic, OpenAI) under one robust
+prompt-architectural fix. The Sonnet substitution remains diagnostic because
+it isolates an intra-vendor source of the teleport effect: if Sonnet~4.5
+behaves like Opus~4.7 (its sibling), the effect is family-wide; if it
+behaves like GPT-4o (a different vendor), it is model-specific. Empirically
+Sonnet behaves \emph{closer to GPT-4o} on PickAndPlace (0/6 vs.\ Opus's 3/4
+teleports) and \emph{closer to Opus} on Push (3/4 vs.\ Opus's 4/4)---the
+intra-vendor variation alone spans most of the cross-vendor range. The
+appropriate strength of claim is therefore: the teleport-collapse mode
+is \emph{prompt-architectural and task-conditioned}, not vendor- or
+family-specific. We pre-register an open-weights VLM extension (LLaVA-NeXT
+or Qwen2.5-VL-7B \citep{chen2024promptable}) as the natural next robustness
+check.
+
+\paragraph{Three findings carry to the production pipeline} (Figure~\ref{fig:real};
+full grid in supplementary table).
+
+\emph{(i) Teleport-collapse persists on real data and is task-conditioned.}
+On Push (planar target at $z\!=\!0.42$\,m, exactly the table surface), both
+Opus and Sonnet teleport on \textsc{achieved\_goal} with rates 100\% (4/4)
+and 75\% (3/4) respectively. On PickAndPlace (mid-air targets up to $z=0.63$\,m),
+Opus teleports at 75\% (3/4 parseable) but Sonnet drops to 0\% (0/6). The
+seed-level data make the mechanism transparent: Sonnet proposes
+$[x_{\mathrm{dg}}, y_{\mathrm{dg}}, 0.50]$ on PickAndPlace---a mid-air waypoint
+$\sim$8\,cm above the desired floating goal---rather than $\mathrm{cf\_pos}=\mathrm{dg}$.
+Where the task admits a non-trivial waypoint, prompt-architectural collapse
+\emph{can} be defeated; where it does not (Push), it cannot. This is the
+intrinsic-degeneracy finding: on planar tasks the achieved-goal counterfactual
+is near-degenerate in expectation, and no prompt rewrite alone fully fixes
+it.
+
+\emph{(ii) The 5\,cm reject-teleport gate is empirically necessary
+regardless of model.} Aggregating across both VLMs and both
+\textsc{achieved\_goal}+\textsc{all} variants on 20 generations, the gate
+fires on 12 (60\%) generations. The cross-vendor floor on Push
+(\textsc{achieved\_goal} variant) is 75\%---i.e.\ even the model that
+\emph{never} teleports on PickAndPlace teleports on Push. The downstream
+implication for Verified Counterfactual Hindsight
+(Section~\ref{sec:method:verified}) is that the gate is not a transient
+fix for one model: it is a structural requirement of the
+\textsc{position}-emitting prompt family. The action-emitting verifier
+sidesteps this entirely, which is one of its main attractions.
+
+\emph{(iii) The synthetic-to-real plausibility shift is small ($\pm 0.07$),
+but the sign-flip rate gets worse.} Judge plausibility for Opus~4.7
+shifts by $\Delta\!\le\!0.07$ on every variant from synthetic to real:
+\textsc{narrative} $0.79\!\to\!0.86$, \textsc{action} $0.55\!\to\!0.51$,
+\textsc{achieved\_goal} $0.46\!\to\!0.47$, \textsc{all} $0.70\!\to\!0.67$.
+The headline \textsc{narrative} variant is in fact slightly \emph{stronger}
+on real data, consistent with near-miss failures being more visually
+diagnosable than chaotic table-edge failures. The exception is the
+\textsc{action}-axis sign-flip rate (the fraction of axes whose sign disagrees
+with $\mathrm{sign}(g\!-\!\mathrm{ag}_{t^\star})$, restricted to
+$|g\!-\!\mathrm{ag}|>1$\,cm), which worsens from $0.50$ to $0.55$ for Opus
+and reaches $0.70$ for Sonnet. Real near-miss displacement vectors are
+small, so identifying ``direction toward the goal'' from a 480$\times$480
+keyframe is genuinely harder than on synthetic data. This is the locus
+of the largest remaining VLM-side error and motivates either (a) gating
+\textsc{action} outputs on the empirical sign-check or (b) injecting
+$g\!-\!\mathrm{ag}_{t^\star}$ directly into the prompt as a shortcut.
+
+\paragraph{Caveats.}
+(i) $n\!=\!10$ episodes is a pilot, not a powered sweep; we pre-register
+$n\!\ge\!30$ per environment with bootstrapped CIs. (ii) The OpenAI quota
+block prevented a within-pipeline GPT-4o real-data comparison; the
+Sonnet~4.5 substitution is informative for the intra-vendor question
+but does not replace GPT-4o on real data. (iii) The judge (Opus~4.7)
+overlaps with one of the generators (Opus~4.7) on the synthetic side,
+which is a known potential source of self-favoring bias; the Sonnet-vs-Opus
+contrast is internally valid because the \emph{same} judge scores both
+generators. A cross-judge sanity check (e.g.\ Sonnet~4.5 or GPT-4o
+judging the same outputs) is on the open-work list.
 
 \subsection{In-Flight Experiments}
 \label{sec:exp:inflight}
