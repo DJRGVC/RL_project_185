@@ -631,6 +631,87 @@ whose bias is bounded by Eq.~\eqref{eq:bias-bound} and controlled by
 $(w_{\max}, W, \beta_t)$; it delivers an unbiased estimator in the limit
 $\beta_t\to 1$ with $w_{\text{IS},\text{Sem}}$, deferred to a future ablation.}
 
+\paragraph{Two regimes of $q_\phi$-degeneracy: variance amplification vs.\ signal extinction.}
+The bias bound \eqref{eq:bias-bound} and the verifier-gate analysis of
+\S\ref{sec:method:verified} use $q_\phi$ in two operationally distinct
+roles, and the conditions under which $q_\phi$ degrades affect them
+asymmetrically. We make this asymmetry precise here because it
+underwrites both the multiplicative-form argument of \S\ref{sec:theory}
+and the cold-start caveat of \S\ref{sec:discussion}, bullet (ix).
+
+\emph{Decomposition of $q_\phi$ on the verifier channel.}
+For the verified-CF stack, write the effective marginal mass that
+$q_\phi$ contributes to a relabel write on a failed episode $\tau$ as
+\begin{equation}
+\begin{aligned}
+  m_\phi(\tau) \;=\;& \underbrace{\Pr_{q_\phi}\!\bigl[\text{VLM emits a parseable action 4-vector}\bigr]}_{m_{\text{gen}}} \\
+  &\cdot\;
+  \underbrace{\Pr_{\mu_b,\,\text{sim}}\!\bigl[r_t\!\ge\!0\text{ at some }t\!\le\!N\,\big|\,\sigma,\,a_{K:K+N}\!\sim\!q_\phi\bigr]}_{m_{\text{ver}}(\sigma)},
+\end{aligned}
+\label{eq:verifier-mass}
+\end{equation}
+where $m_{\text{gen}}\!\in\![0,1]$ is the VLM's parse rate and
+$m_{\text{ver}}(\sigma)\!\in\![0,1]$ is the verifier-acceptance rate
+conditional on snapshot state $\sigma\!=\!s_K$. Equation~\eqref{eq:verifier-mass}
+factors a property of the generator from a property of the snapshot
+distribution. The accepted-CF buffer measure $\nu_{\text{vcf}}$ is then
+absolutely continuous w.r.t.\ $q_\phi$ on the support
+$\{m_\phi>0\}$, with no mass elsewhere by construction
+(rejected proposals are not written; cf.\ Fig.~\ref{fig:protocol},
+step~5).
+
+\emph{Cold-start as $m_{\text{ver}}\!\to\!0$ with $m_{\text{gen}}$ bounded away from zero.}
+The cold-start regime documented in \S\ref{sec:discussion}, bullet (ix)
+(101/101 rejections at step $\sim$143k on
+\texttt{path\_c\_vlm\_vcf\_pp\_s42}; cf.\ bake-off mass concentrating
+on teleport-like outputs that fail the action-vector parse only on
+parse-strict variants and otherwise fail at step~(4)) is the regime
+$m_{\text{ver}}(\sigma)\!\to\!0$ uniformly over the early-training
+snapshot distribution, even when $m_{\text{gen}}$ is well above zero.
+By Eq.~\eqref{eq:verifier-mass}, $m_\phi\!\to\!0$, so
+$\nu_{\text{vcf}}$ is the zero measure on the buffer for the cold-start
+duration. The verifier's $\varepsilon_{\text{cal}}\!=\!0$ guarantee
+(A5 specialized to the accepted set, \S\ref{sec:method:verified})
+holds vacuously: every element of the empty set has perfect
+calibration. The bias bound \eqref{eq:bias-bound} also holds
+vacuously for the VCF channel during this regime, but at the
+operational cost that the VCF channel contributes zero new TD signal;
+the run reduces to a strictly costlier HER (\S\ref{sec:discussion}
+bullet (ix); cf.\ also the Phase~2 Oracle-CF cross-seed variance
+discussion in \S\ref{sec:exp:inflight}, where the same mechanism
+predicts the high-variance, two-mode seed distribution we observe
+empirically). The theoretically clean statement is:
+\emph{the verifier converts $q_\phi$-miscalibration into a
+write-throughput bottleneck rather than into a biased buffer write,
+and the cold-start regime is the limiting case in which the
+throughput is zero.}
+
+\emph{Semantic PER is non-degenerate under the same condition.}
+The Semantic-PER channel uses $q_\phi$ as a multiplicative
+proposal modifier on \emph{every} buffer slot
+(Eq.~\eqref{eq:sem-prop}); its proposal $\mu_{\text{Sem}}$ inherits
+$\mu_P$'s full support on $\mathcal{D}_B$ by (A1) and (A4), independently
+of whether any individual VLM call would survive a verifier gate. In
+particular, $\mu_{\text{Sem}}(i)\ge\varepsilon^\alpha\!\cdot\!1/Z\!>\!0$
+for every slot even when $q_\phi$ is maximally miscalibrated
+($\varepsilon_{\text{cal}}\!=\!1$ in A5), because the lower bound
+$w_{\text{sem}}\!\ge\!1$ in (A1) prevents semantic priors from
+extinguishing slots. The cold-start condition
+$m_{\text{ver}}(\sigma)\!\to\!0$, which would close the VCF channel,
+inflates the bias of the implemented Semantic-PER estimator only
+through the (A5) variance-amplification term --- bounded by
+Eq.~\eqref{eq:bias-bound} and not by any feasibility condition on
+$q_\phi$. The two regimes are therefore: \emph{(i)~Semantic PER
+$q_\phi$-degeneracy is variance amplification, bounded;
+(ii)~Verified-CF $q_\phi$-degeneracy is signal extinction,
+unbounded in the limit $m_{\text{ver}}\!\to\!0$.} This is the
+formal version of the throughput-vs.-quality-dial framing in
+\S\ref{sec:method:verified}: the two pathways do not fail in
+mathematically isomorphic ways under the same miscalibration
+stressor, which is the principal reason the paper treats them as
+complementary contributions and audits them separately in
+\S\ref{sec:exp} rather than averaging their outcomes.
+
 \section{Experimental Details}
 \label{app:experiments}
 
