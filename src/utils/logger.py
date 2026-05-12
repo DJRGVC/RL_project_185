@@ -40,20 +40,41 @@ class TrainingLogger:
                 import wandb
                 # Derive group from run_name prefix (method name) for W&B dashboard grouping
                 method = run_name.split("_fetch")[0] if "_fetch" in run_name else run_name.split("_seed")[0]
-                # Pick up tags from WANDB_TAGS env var (CSV) if set.
-                tags = None
-                tag_env = os.environ.get("WANDB_TAGS")
-                if tag_env:
-                    tags = [t.strip() for t in tag_env.split(",") if t.strip()]
-                self._wandb_run = wandb.init(
-                    project=wandb_project or "RL_project",
-                    entity=wandb_entity or None,
-                    name=run_name,
-                    group=method,
-                    config=config or {},
-                    tags=tags,
-                    resume="allow",
-                )
+                # Tags: pull from WANDB_TAGS env var (CSV, set by Modal sweep
+                # launcher / Path C orchestrator) plus the method-prefix tag
+                # so dashboards can always filter by either.
+                env_tags = os.environ.get("WANDB_TAGS", "")
+                tags = [t.strip() for t in env_tags.split(",") if t.strip()]
+                if method and method not in tags:
+                    tags.append(method)
+
+                def _init(entity):
+                    return wandb.init(
+                        project=wandb_project or "RL_project",
+                        entity=entity,
+                        name=run_name,
+                        group=method,
+                        config=config or {},
+                        tags=tags or None,
+                        resume="allow",
+                    )
+
+                try:
+                    self._wandb_run = _init(wandb_entity or None)
+                except Exception as primary_err:
+                    # Fallback: if the configured entity rejects (e.g. permission
+                    # denied for project creation on the wrong workspace), retry
+                    # with the user's default entity. Prevents silent loss of an
+                    # entire Modal sweep when the secret bakes in a stale entity.
+                    if wandb_entity:
+                        logger.warning(
+                            f"W&B init failed with entity={wandb_entity!r} ({primary_err}); "
+                            "retrying with default entity"
+                        )
+                        self._wandb_run = _init(None)
+                    else:
+                        raise
+
                 # All metrics share the same x-axis in the W&B dashboard
                 wandb.define_metric("global_step")
                 wandb.define_metric("*", step_metric="global_step")

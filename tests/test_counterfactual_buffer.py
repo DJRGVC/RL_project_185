@@ -96,6 +96,7 @@ def _make_buffer(
     fallback_to_achieved: bool = True,
     k: int = 4,
     capacity: int = 4096,
+    cf_window: int = 4,
 ):
     """Construct a CounterfactualHERBuffer with sensible defaults for tests."""
     underlying = UniformReplayBuffer(capacity=capacity)
@@ -111,7 +112,7 @@ def _make_buffer(
         fallback_to_achieved=fallback_to_achieved,
         cf_call_interval=cf_call_interval,
         cf_input_kind=cf_input_kind,
-        cf_window=4,
+        cf_window=cf_window,
     )
 
 
@@ -233,6 +234,80 @@ class TestCausalValidity:
         stats = buf.get_stats()
         # k=2 → at most 2 CF relabels (both at t=0).
         assert stats["cf_relabels_used"] <= 2
+
+
+class TestCfWindowLocality:
+    """cf_window bounds how far before frame K a CF can relabel transitions.
+
+    The CF at frame K is eligible for transitions t in [K-cf_window, K]
+    (combined with the causal constraint K >= t). cf_window<=0 disables
+    the upper bound (recovers the old unbounded-forward behavior).
+    """
+
+    def test_window_excludes_far_earlier_transitions(self):
+        """A CF at frame 30 with cf_window=4 must NOT relabel t=0..25."""
+        np.random.seed(0)
+        ep, _desired = _build_episode(T=40)
+
+        def cf_fn(**kw):
+            return [(30, np.array([0.5, 0.5, 0.5], dtype=np.float32), 1.0)]
+
+        buf = _make_buffer(p_counterfactual=1.0, cf_fn=cf_fn, k=4, cf_window=4)
+        _run_episode(buf, ep, episode_success=False)
+
+        stats = buf.get_stats()
+        # Eligible transitions: t in [26..30] = 5 transitions × k=4 = 20 CF relabels.
+        # Remaining 35 × 4 = 140 must fall back to HER achieved-future.
+        assert stats["cf_relabels_used"] <= 20, (
+            f"cf_window=4 with CF at frame 30 must cap CF relabels at 20 "
+            f"(saw {stats['cf_relabels_used']})"
+        )
+        assert stats["achieved_relabels_used"] >= 140, (
+            f"Remaining transitions must fall back to HER "
+            f"(saw {stats['achieved_relabels_used']} achieved relabels)"
+        )
+
+    def test_window_zero_disables_bound(self):
+        """cf_window<=0 must restore the unbounded-forward (causal-only) regime."""
+        np.random.seed(0)
+        ep, _desired = _build_episode(T=40)
+
+        def cf_fn(**kw):
+            return [(30, np.array([0.5, 0.5, 0.5], dtype=np.float32), 1.0)]
+
+        buf = _make_buffer(p_counterfactual=1.0, cf_fn=cf_fn, k=4, cf_window=0)
+        _run_episode(buf, ep, episode_success=False)
+
+        stats = buf.get_stats()
+        # Unbounded: all t in [0..30] are eligible = 31 × 4 = 124 CF relabels.
+        assert stats["cf_relabels_used"] >= 100, (
+            f"cf_window=0 should not bound; expected >=100 CF relabels, "
+            f"got {stats['cf_relabels_used']}"
+        )
+
+
+class TestVlmExceptionsCounterDoesNotDoubleCount:
+    """A raising CF callback must increment vlm_exceptions ONCE and
+    vlm_returned_none ONCE (not twice via the exception path bug)."""
+
+    def test_raising_cf_fn_counts_once(self):
+        ep, _desired = _build_episode(T=10)
+
+        def raising_cf_fn(**kw):
+            raise RuntimeError("synthetic VLM failure")
+
+        buf = _make_buffer(p_counterfactual=1.0, cf_fn=raising_cf_fn)
+        _run_episode(buf, ep, episode_success=False)
+
+        stats = buf.get_stats()
+        assert stats["vlm_calls"] == 1, "exactly one VLM call attempted"
+        assert stats["vlm_exceptions"] == 1, "exception path increments vlm_exceptions"
+        # vlm_returned_none should be 1 (the cf_list-is-None path in finish_episode),
+        # NOT 2 (which would indicate double-counting).
+        assert stats["vlm_returned_none"] == 1, (
+            f"vlm_returned_none must increment once even on exception "
+            f"(saw {stats['vlm_returned_none']}; double-count regression)"
+        )
 
 
 class TestSuccessfulEpisodesSkipCF:

@@ -182,11 +182,17 @@ class CounterfactualHERBuffer(HERBuffer):
 
         # Diagnostics — populated as episodes finish. Read these from train.py
         # and log to W&B to debug the mechanism.
+        # Semantics:
+        #   vlm_calls            — every attempted invocation of the CF callback
+        #   vlm_returned_none    — callback returned None or [] (no usable CFs)
+        #   vlm_exceptions       — callback raised; counted separately so the
+        #                          two failure modes aren't conflated in dashboards
         self.stats: Dict[str, int] = {
             "episodes_seen":         0,
             "episodes_failed":       0,
             "vlm_calls":             0,
             "vlm_returned_none":     0,
+            "vlm_exceptions":        0,
             "cf_relabels_used":      0,
             "achieved_relabels_used": 0,
             "low_conf_dropped":      0,
@@ -307,9 +313,13 @@ class CounterfactualHERBuffer(HERBuffer):
                     desired_goal=desired,
                     keyframes=keyframes,
                 )
-        except Exception as e:
-            # Never crash training because the VLM had a bad day.
-            self.stats["vlm_returned_none"] += 1
+        except Exception as e:  # noqa: BLE001
+            # Never crash training because the VLM had a bad day. Count the
+            # exception under its own key — finish_episode() will additionally
+            # see `cf_list is None` and increment `vlm_returned_none`, so the
+            # two counters together tell us "calls that yielded no CFs"
+            # (vlm_returned_none) and "of those, which crashed" (vlm_exceptions).
+            self.stats["vlm_exceptions"] += 1
             return None
 
     def _build_trajectory_dict(self, ep: List[dict], desired: np.ndarray) -> Dict[str, Any]:
@@ -349,15 +359,25 @@ class CounterfactualHERBuffer(HERBuffer):
     ) -> Optional[np.ndarray]:
         """Pick one relabeling goal for transition `t`. Returns None to skip.
 
-        Counterfactual draws are constrained to be causally valid:
-        we only use a counterfactual whose frame_index >= t (the corrective
-        goal must be for a future frame, not relabel the past with an
-        already-passed corrective state).
+        Counterfactual draws are constrained on two axes:
+          1. Causal: only use a counterfactual whose frame_index >= t (the
+             corrective goal must be for a future frame, not relabel the past
+             with an already-passed corrective state).
+          2. Locality: only use CFs whose frame_index is within
+             [t, t + cf_window]. Without this bound a transition at t=0 could
+             be relabeled with a CF at frame K=40, which is a very-long-horizon
+             credit assignment problem that washes out the local signal we
+             want HER to give. `cf_window <= 0` disables the upper bound
+             (recovers the old unbounded-forward behavior, useful for ablation).
         """
         if use_cf and cf_list is not None:
-            # Causal: only use CFs whose target frame is >= t. Prefer the
-            # closest CF frame to t (i.e. the upcoming corrective waypoint).
-            valid = [(k_i, g, c) for (k_i, g, c) in cf_list if k_i >= t]
+            # Apply causal + locality filters.
+            if self.cf_window > 0:
+                t_max = t + self.cf_window
+                valid = [(k_i, g, c) for (k_i, g, c) in cf_list
+                         if t <= k_i <= t_max]
+            else:
+                valid = [(k_i, g, c) for (k_i, g, c) in cf_list if k_i >= t]
             if len(valid) > 0:
                 valid.sort(key=lambda x: x[0])  # ascending frame index
                 # Bias: pick the *nearest upcoming* CF with the higher confidence.

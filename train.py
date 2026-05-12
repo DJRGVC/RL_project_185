@@ -306,7 +306,12 @@ def train(cfg: dict):
     cf_provider_kind = cfg["replay"].get("cf_provider", "oracle") if use_cf_her else None
     # VLM-based CF providers need rendered keyframes.
     cf_needs_frames = use_cf_her and cf_provider_kind in ("vlm", "verified")
-    capture_frames = is_semantic or cf_needs_frames
+    # Semantic PER only needs frames when its localizer is a VLM (not the
+    # heuristic goal-distance localizer, which is purely state-based).
+    needs_frames_semantic = is_semantic and (
+        cfg["replay"].get("vlm_provider", "openai") != "heuristic"
+    )
+    capture_frames = needs_frames_semantic or cf_needs_frames
     env = make_env(env_name, max_episode_steps=max_steps,
                    render_mode="rgb_array", capture_frames=capture_frames)
     obs, _ = env.reset(seed=seed)
@@ -513,6 +518,7 @@ def train(cfg: dict):
                         "buffer/cf_achieved_count": stats.get("achieved_relabels_used", 0),
                         "buffer/cf_vlm_calls":      stats.get("vlm_calls", 0),
                         "buffer/cf_vlm_returned_none": stats.get("vlm_returned_none", 0),
+                        "buffer/cf_vlm_exceptions": stats.get("vlm_exceptions", 0),
                         "buffer/cf_low_conf_dropped": stats.get("low_conf_dropped", 0),
                         "buffer/cf_episodes_failed": stats.get("episodes_failed", 0),
                         "buffer/cf_verification_pass_rate": (

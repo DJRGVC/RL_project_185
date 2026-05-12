@@ -101,7 +101,12 @@ def make_env(
     Returns:
         Wrapped gymnasium environment with flat observations.
     """
-    kwargs = {"render_mode": render_mode}
+    kwargs = {}
+    # Only request rendering when we actually need frames — otherwise MuJoCo's
+    # offscreen context fails on machines without OSMesa/EGL (defensive: keeps
+    # heuristic-only / no-frames runs on minimal images from crashing).
+    if capture_frames:
+        kwargs["render_mode"] = render_mode
     if max_episode_steps is not None:
         kwargs["max_episode_steps"] = max_episode_steps
 
