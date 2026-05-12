@@ -33,6 +33,7 @@ from src.agents import SAC
 from src.buffers import make_buffer
 from src.buffers.semantic_buffer import SemanticPERBuffer
 from src.buffers.bidirectional_buffer import BidirectionalSemanticBuffer
+from src.buffers.vlm_rb_buffer import VLMRBBuffer
 from src.buffers.her_buffer import HERBuffer
 from src.buffers.counterfactual_buffer import CounterfactualHERBuffer
 from src.envs.wrappers import make_env, get_task_description
@@ -304,8 +305,9 @@ def train(cfg: dict):
     is_semantic = replay_type in ("semantic_per", "her_semantic_per",
                                   "bidir", "her_bidir")
     is_bidir    = replay_type in ("bidir", "her_bidir")
+    is_vlm_rb   = replay_type in ("vlm_rb", "her_vlm_rb")
     use_her     = replay_type in ("her", "her_per", "her_semantic_per",
-                                  "her_bidir")
+                                  "her_bidir", "her_vlm_rb")
     use_cf_her  = replay_type in ("cf_her", "cf_her_per")
     # 'prioritized' iff the underlying replay is a PERBuffer (cf_her_per).
     cf_priority_mode = "prioritized" if replay_type == "cf_her_per" else "uniform"
@@ -317,7 +319,11 @@ def train(cfg: dict):
     # uses the state-based heuristic so it never needs frames.
     vlm_provider = cfg["replay"].get("vlm_provider", "openai") if is_semantic else None
     needs_frames_semantic = is_semantic and not is_bidir and vlm_provider != "heuristic"
-    capture_frames = needs_frames_semantic or cf_needs_frames
+    # VLM-RB (Sharony) scores 32-frame clips with an image VLM, so it always
+    # needs frames unless the scorer is the stub (smoke-test only). We always
+    # capture; the stub scorer ignores them.
+    needs_frames_vlm_rb = is_vlm_rb
+    capture_frames = needs_frames_semantic or cf_needs_frames or needs_frames_vlm_rb
     env = make_env(env_name, max_episode_steps=max_steps,
                    render_mode="rgb_array", capture_frames=capture_frames)
     obs, _ = env.reset(seed=seed)
@@ -376,6 +382,30 @@ def train(cfg: dict):
             verifier=cf_verifier,
             priority_mode=cf_priority_mode,
         )
+
+    # ── VLM-RB (Sharony) clip scorer ───────────────────────────────────
+    # Attach the clip scorer to the underlying VLMRBBuffer. We look up
+    # the buffer through any HER wrapper so `her_vlm_rb` also works.
+    if is_vlm_rb:
+        underlying = getattr(replay, "buffer", replay)
+        if isinstance(underlying, VLMRBBuffer):
+            scorer_provider = cfg["replay"].get("vlm_provider", "anthropic")
+            scorer_model = cfg["replay"].get("vlm_model", None)
+            max_frames_per_clip = int(cfg["replay"].get(
+                "vlm_rb_max_frames_per_clip", 8))
+            # Allow tests / smoke runs to opt-in to the stub scorer
+            # via vlm_provider=stub (skipping any API calls).
+            if scorer_provider == "stub":
+                from src.vlm.vlm_rb_scorer import make_stub_scorer
+                underlying.vlm_score_fn = make_stub_scorer(seed=seed)
+            else:
+                from src.vlm.vlm_rb_scorer import make_vlm_rb_scorer
+                underlying.vlm_score_fn = make_vlm_rb_scorer(
+                    provider=scorer_provider,
+                    model=scorer_model,
+                    max_frames_per_clip=max_frames_per_clip,
+                )
+            underlying.task_description = task_desc
 
     # ── failure localizer (semantic PER / bidir only) ──
     vlm = None
@@ -453,6 +483,8 @@ def train(cfg: dict):
                 replay.mark_episode_start()
             elif is_semantic and isinstance(replay,
                     (SemanticPERBuffer, BidirectionalSemanticBuffer)):
+                replay.mark_episode_start()
+            elif is_vlm_rb and isinstance(replay, VLMRBBuffer):
                 replay.mark_episode_start()
 
         # ── action selection ──
@@ -655,6 +687,30 @@ def train(cfg: dict):
                     )
                 except Exception as e:
                     logger.warning(f"VLM error (ep {ep_count}): {e}")
+
+            # ─── 3) VLM-RB (Sharony): clip-score the just-ended episode ───
+            # Every `vlm_call_interval`th episode, run the VLM scorer over
+            # the episode's 32-frame clips and update the buffer's clip-
+            # score weights. Runs on BOTH success and failure episodes
+            # (Sharony's signal is goal-satisfaction-positive).
+            if (is_vlm_rb
+                    and ep_count % vlm_call_interval == 0
+                    and ep_steps > 0):
+                underlying = getattr(replay, "buffer", replay)
+                if isinstance(underlying, VLMRBBuffer):
+                    try:
+                        ep_frames = getattr(env, "episode_frames", []) or []
+                        underlying.apply_vlm_rb_scoring(
+                            episode_start_idx=ep_start_idx,
+                            episode_length=ep_steps,
+                            episode_frames=ep_frames,
+                        )
+                        train_log.log(
+                            underlying.get_vlm_rb_stats(),
+                            global_step, prefix="",
+                        )
+                    except Exception as e:  # noqa: BLE001
+                        logger.warning(f"VLM-RB error (ep {ep_count}): {e}")
 
             # ── logging ──
             train_log.log({

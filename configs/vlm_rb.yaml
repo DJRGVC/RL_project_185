@@ -1,0 +1,39 @@
+defaults:
+  - base
+
+# Sharony et al. (2026) "VLM-Guided Experience Replay" baseline.
+# arXiv:2602.01915. Reproduced in our codebase for head-to-head
+# comparison on Gymnasium-Robotics Fetch (Sharony evaluated on
+# MiniGrid + OGBench, so this is a within-codebase reproduction with
+# acknowledged modelling-choice differences — see
+# agent_reports/_SHARONY_BASELINE_IMPL.md).
+
+replay:
+  type: vlm_rb
+  capacity: 1_000_000
+  # PER params (Sharony §4.1 uses α=0.6, β-anneal same as Schaul 2015).
+  per_alpha: 0.6
+  per_beta_start: 0.4
+  per_beta_end: 1.0
+  per_beta_anneal_steps: 500_000
+  per_epsilon: 1.0e-6
+  # VLM-RB specific:
+  #   clip_length L=32 frames per Sharony §3.2.
+  vlm_rb_clip_length: 32
+  #   λ warm-up 0 → 0.5 linear (Sharony §4.1).
+  vlm_rb_lambda_start: 0.0
+  vlm_rb_lambda_end: 0.5
+  vlm_rb_lambda_anneal_steps: 500_000
+  # Score every 10th episode to bound cost. (Sharony runs an async
+  # worker continuously; we sample episodes to fit our API budget.)
+  vlm_call_interval: 10
+  # VLM provider — Sonnet 4.5 matches our Phase 2 attempt 5 deployment;
+  # Sharony uses a frozen PerceptionLM 1B, which is not API-accessible.
+  vlm_provider: anthropic
+  vlm_model: claude-sonnet-4-5
+  # Number of frames passed to the VLM (downsampled from the 32-frame
+  # clip to keep per-call cost ≤ $0.01 on Sonnet 4.5).
+  vlm_rb_max_frames_per_clip: 8
+
+logging:
+  run_name: vlm_rb
