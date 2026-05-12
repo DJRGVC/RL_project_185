@@ -371,3 +371,44 @@ performance vs the original unbounded-forward implementation, set
 `cf_window: 0` in the relevant configs to recover prior behavior.
 
 
+---
+
+## 2026-05-12 ~03:50 PDT — addressed by code-feature agent (Opus 4.7)
+
+Two more pending items from the watchdog/logger diagnostic landed:
+
+1. **Watchdog pivot-decision filter bug** (`scripts/overnight_watchdog.sh::run_pivot_check`,
+   documented in `_PATH_A_RELAUNCH_HANDOFF.md` Issue 3). The pre-fix filter
+   looked for `'path_c_kill_her_oracle'` or `'oracle_cf'` substrings, neither
+   of which appears in actual run names (`path_c_kill_ocf_*`). Result:
+   `oracle_runs == []`, `oracle_mean = 0.000`, pivot triggered for the wrong
+   stated reason. Replaced with `'path_c_kill_her_' in name` and
+   `'path_c_kill_ocf_' in name`. Verified against the 18 plan run-names plus
+   3 distractors (path_a_pivot, cf_psweep, semantic_per): clean
+   {9 HER, 9 OCF, 0 leakage}. The watchdog has been running for 5+ hours and
+   is stable — this change takes effect on next launch only (do not restart).
+
+2. **W&B group derivation `_s42` suffix bug** (`src/utils/logger.py`,
+   documented in Cycle 5 of this file). After splitting on `_seed`, the
+   compact `_s<digits>` suffix that Path C plans embed in run_name was left
+   behind, so every seed landed in its own W&B group (one run per group).
+   Added a `re.sub(r"_s\d+$", "", method)` strip step. Verified on 18 cases:
+   - Path C names (`path_c_kill_{her,ocf}_{pp,push,sld}_s{42,123,999}_seed*`)
+     now collapse to a single group per method+env (the dashboard panels'
+     "group by W&B group" mode finally works as designed).
+   - Path A names (`path_a_pivot_bidir_<Env>-v4_seed<n>`) still group on the
+     env-suffixed name (no `_s<n>` segment to strip).
+   - Config-driven `_v<n>` and `_p<n>` markers (`cf_psweep_p25`,
+     `ablation_vlmtier_v1_gpt4o`, `semantic_per_heuristic_v2`,
+     `ablation_cfwindow_v3`) are correctly preserved (regex anchors on `_s`
+     not `_p`/`_v`).
+
+**Behavioral note**: previously-completed runs already have their W&B group
+field set to the per-seed name (e.g. `path_c_kill_ocf_pp_s42`). The morning
+consolidator can either (a) re-group them in the W&B UI by tag, or (b) use
+`wandb.Api()` to bulk-rewrite the `group` field on the affected runs. New
+runs launched after this fix will group correctly out of the box.
+
+**Safety**: no in-flight training touched. The fix lives in `logger.py`'s
+`__init__` which runs at process start — no subprocess re-imports the
+module mid-run.

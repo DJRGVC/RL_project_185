@@ -38,8 +38,16 @@ class TrainingLogger:
         if use_wandb:
             try:
                 import wandb
-                # Derive group from run_name prefix (method name) for W&B dashboard grouping
+                import re as _re
+                # Derive group from run_name prefix (method name) for W&B dashboard grouping.
+                # 1. Strip explicit "_seed<digits>" suffix (added by train.py:405).
+                # 2. Strip the compact "_s<digits>" suffix that Path C orchestrator
+                #    plans embed in run_name (e.g. "path_c_kill_ocf_pp_s42"). Without
+                #    this, each seed lands in its own W&B group and per-method
+                #    comparison panels don't auto-populate. Documented in
+                #    agent_reports/code_review_findings.md (Cycle 5).
                 method = run_name.split("_fetch")[0] if "_fetch" in run_name else run_name.split("_seed")[0]
+                method = _re.sub(r"_s\d+$", "", method)
                 # Tags: pull from WANDB_TAGS env var (CSV, set by Modal sweep
                 # launcher / Path C orchestrator) plus the method-prefix tag
                 # so dashboards can always filter by either.
