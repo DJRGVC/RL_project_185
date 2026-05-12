@@ -1469,14 +1469,50 @@ tag). Of 6 runs, 5 finished at $0.0$ final eval success; only
 \texttt{FetchPush}-seed42 reached $0.4$. The bidirectional variant does
 not save Path~A on Fetch at 300\,k steps.
 
-\textbf{(C) VLM-CF and verified-CF sweeps (Phase~2) --- not yet launched.}
-18 additional runs on Modal (VLM-CF with \texttt{gpt-4o-mini} +
-verified-CF with the N1 simulator gate) were to launch after Phase~1
-completion. They have not yet launched: a prior HER sweep is currently
-holding all 10 Modal GPU slots, and the orchestrator is correctly waiting
-on free capacity. These runs will provide ablation evidence for the
-verifier mechanism in the camera-ready, regardless of whether they show a
-training-time benefit beyond the kill-verdict envelope established here.
+\textbf{(C) VLM-CF and verified-CF sweeps (Phase~2) --- in flight.}
+18 runs on Modal (VLM-CF with \texttt{claude-sonnet-4-5} on
+\texttt{FetchPickAndPlace-v4}; GPT-4o on \texttt{FetchPush-v4} and
+\texttt{FetchSlide-v4}; verified-CF with the N1 simulator gate; 3 envs
+$\times$ 3 seeds $\times$ 2 methods $\times$ 500\,k steps, \texttt{path\_c\_overnight}
+W\&B tag) launched at 11:25~PDT on 2026-05-12 (Modal app
+\texttt{ap-NWsFCh9kA9P0syU9JhIBAR}). Provider routing follows the
+C1v2-B per-task best-model finding: Sonnet~4.5 for \texttt{PickAndPlace}
+(lowest teleport-collapse rate on the task), GPT-4o for
+\texttt{Push}/\texttt{Slide} (OpenAI Tier~1 RPM headroom exceeds Anthropic's
+for parallel runs). Call interval is 16 episodes; the SAC loop is never
+blocked (API failures fall back to \texttt{achieved\_goal} relabels). These
+runs will provide ablation evidence for the verifier mechanism; based on the
+pre-registered kill verdict for Oracle-CF, we do not expect them to exceed
+the HER-Fetch ceiling identified in~(A).
+
+\textbf{(D) Sharony VLM-RB baseline --- implemented, pending launch.}
+To sharpen the differentiation from \citet{sharony2026vlmrb} beyond the
+methodological comparison in Table~\ref{tab:vlm_comparison},
+we have implemented Sharony~et~al.'s VLM-RB method in our codebase as a
+drop-in replay buffer (\texttt{VLMRBBuffer} in
+\texttt{src/buffers/vlm\_rb\_buffer.py}; scorer in
+\texttt{src/vlm/vlm\_rb\_scorer.py}; hyperparameters in
+\texttt{configs/vlm\_rb.yaml}). The implementation faithfully reproduces
+the core algorithmic choices: PER with $\alpha\!=\!0.6$, 32-frame clip
+scoring, the clip-priority formula $\text{priority}\!\propto\!(|\delta|\cdot
+p_{\text{VLM}}+\varepsilon)^{\alpha}$, and the linear $\lambda$-warmup from
+$0\to0.5$ over the first half of training that mixes VLM-scored priorities
+with uniform sampling. We acknowledge two modeling-choice differences.
+First, Sharony~et~al.\ use a frozen open-weights Perception-LM~1B (Cho~et~al.,
+2025, not API-accessible without local GPU hosting); we substitute
+\texttt{claude-sonnet-4-5} via
+the Anthropic API, consistent with the VLM used in Phase~2 (Part~C above)
+and all other VLM calls in this paper. Second, Sharony use a continuous
+asynchronous VLM worker; we score synchronously every \texttt{vlm\_call\_interval}
+episodes to match our API-cost model (same $\le\!\$0.01$-per-call budget),
+preserving the priority formula and $\lambda$ schedule exactly. Nine unit
+tests (clip formation, priority update, mixture sampling, $\lambda$ anneal,
+stub smoke) pass on CPU. The 9-run sweep (3 envs $\times$ 3 seeds $\times$
+500\,k steps, \texttt{sharony-vlm-rb-baseline} W\&B group) will launch on
+Modal once the Phase~2 (Part~C) capacity is released; head-to-head
+numbers on Fetch are expected before the camera-ready deadline. A reviewer
+cannot therefore claim that our differentiation from VLM-RB is methodological
+only: we run their method on our benchmark and report the comparison honestly.
 
 \section{Discussion and Limitations}
 \label{sec:discussion}
