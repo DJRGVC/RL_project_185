@@ -279,13 +279,28 @@ Our verification protocol (Section~\ref{sec:method:verified}) sits inside the
 generator emits candidates, a verifier (learned or symbolic) accepts the
 correct ones \citep{zha2025tango}. We instantiate this in robotics with a
 foundation-VLM generator and a \emph{symbolic} verifier---the unmodified
-training simulator---whose decisions are correct by construction. The most
-related prior work in robotics is the line on counterfactual data augmentation
-for goal-conditioned RL \citep{urpi2024caiac,chuck2025hint,glossop2025cast}: each
-uses a learned proxy (causal-action-influence, learned dynamics, VLM
-plausibility) to produce additional trajectories. We use a ground-truth proxy
-(the simulator), which carries zero modeling error, at the cost of additional
-sim-fork compute.
+training simulator---whose decisions are correct by construction.
+This instantiation has a structural advantage beyond zero modeling error:
+the verifier is \emph{identical} to the environment on which the policy
+trains, so every accepted relabeled transition is not merely \emph{physically
+plausible} but \emph{in-distribution for the training MDP}---a guarantee that
+learned world-model verifiers \citep{wu2025rlvrworld} cannot provide when
+their training distribution differs from the RL task's dynamics.
+
+The most related prior work in robotics is the line on counterfactual data
+augmentation for goal-conditioned RL \citep{urpi2024caiac,chuck2025hint,glossop2025cast},
+which differs from our approach along the verifier axis:
+CAIAC~\citep{urpi2024caiac} uses a \emph{causal-influence proxy} (estimated
+interventional effect on object trajectory);
+HInt/NCII~\citep{chuck2025hint} uses a \emph{learned dynamics model}
+(modeling error bounded but nonzero);
+CAST~\citep{glossop2025cast} uses a \emph{frozen VLM plausibility score} as
+the acceptance signal (no guarantee of physics consistency).
+Each of these three choices produces a verifier with at least one of:
+non-zero modeling error, domain-shift sensitivity, or an implicit distributional
+assumption about the RL task. We use the training simulator directly,
+which eliminates all three failure modes at the cost of additional
+sim-fork compute per counterfactual proposal.
 
 \paragraph{Differentiation from VLM-RB.}
 The concurrent (Feb~2026) VLM-RB \citep{sharony2026vlmrb} is the closest
