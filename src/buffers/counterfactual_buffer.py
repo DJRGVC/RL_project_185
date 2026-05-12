@@ -341,6 +341,15 @@ class CounterfactualHERBuffer(HERBuffer):
         achieved = np.stack([tr["achieved_goal"] for tr in ep])
         # The desired_goal is in the last goal_dim entries of obs.
         desired  = ep[0]["obs"][-self.goal_dim:].astype(np.float32)
+        # End-effector positions (Fetch obs convention: obs[0:3] is grip_pos).
+        # Numeric prompt variants consume this; non-numeric providers ignore
+        # the extra kwarg via **_unused_kwargs in their signatures.
+        try:
+            ee_positions = np.stack([
+                np.asarray(tr["obs"][0:3], dtype=np.float32) for tr in ep
+            ])
+        except Exception:  # noqa: BLE001 — never crash for diagnostics.
+            ee_positions = None
         try:
             if self.cf_input_kind == "state":
                 trajectory = self._build_trajectory_dict(ep, desired)
@@ -350,6 +359,7 @@ class CounterfactualHERBuffer(HERBuffer):
                     achieved_goals=achieved,
                     desired_goal=desired,
                     keyframes=keyframes,
+                    ee_positions=ee_positions,
                 )
         except Exception as e:  # noqa: BLE001
             # Never crash training because the VLM had a bad day. Count the

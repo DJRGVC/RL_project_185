@@ -1,0 +1,35 @@
+defaults: base
+
+# CF-HER buffer with VLM-generated counterfactuals — NUMERIC-CONTEXT variant.
+# Same as vlm_cf.yaml (knows desired_goal) but the prompt is augmented with a
+# markdown trajectory table giving the VLM mm-precise block xyz and gripper
+# ee_xyz at each of the 5 keyframes. Crosses the visual-only vs visual+numeric
+# axis with the existing knows-goal vs blind axis to give a 2x2 ablation matrix.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: vlm
+  cf_input_kind: vlm
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 16            # cost control: VLM every 16 failed eps
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  # VLM provider config
+  vlm_provider: anthropic         # openai | anthropic
+  vlm_model: claude-sonnet-4-5    # match vlm_cf.yaml — Sonnet 4.5 stable at scale
+  vlm_keyframes: 5
+  vlm_variant: achieved_goal_numeric  # NEW: 5 images + numerical trajectory table
+  vlm_task_description: ""        # filled per env in train.py
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: vlm_cf_numeric

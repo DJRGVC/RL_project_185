@@ -158,6 +158,93 @@ Respond with ONLY a JSON object:
 }}
 """
 
+ACHIEVED_GOAL_NUMERIC_PROMPT = """You are analyzing a robotic manipulation trajectory.
+
+Task: {task_description}
+
+In the Fetch suite, `achieved_goal` is the current 3D position of the
+manipulated object (or the gripper, for FetchReach). The episode succeeds
+when ||achieved_goal - desired_goal|| < 5 cm. The Fetch workspace coords
+range roughly: x in [1.05, 1.55] m, y in [0.4, 1.1] m, z in [0.4, 0.85] m
+(the table surface is at z ~ 0.42 m).
+
+{K} keyframes from a FAILED episode are shown in chronological order,
+with their numerical state in the table below.
+
+Frame-to-timestep mapping:
+{frame_index_map}
+
+Numerical trajectory at the keyframes:
+{traj_table}
+
+The desired_goal (target marker) for this episode is at:
+  desired_goal = {desired_goal}
+
+A failure-detection module identified Frame {failure_frame_index}
+(~{failure_frame_pct:.0f}% through the episode) as the critical moment.
+
+QUESTION: At Frame {failure_frame_index}, what 3D position SHOULD the object
+have reached for the episode trajectory to be on track for success? In other
+words, propose a hindsight `achieved_goal` for this frame — a counterfactual
+location that, had the object been there at this timestep, would have set
+the trajectory up to terminate within 5 cm of the desired_goal.
+
+Use BOTH the images and the numerical table above: the table gives you
+millimetre-precise positions; the images give you spatial / contact context
+(e.g. gripper occlusion, block orientation).
+
+The proposed position must lie inside the Fetch workspace (above the table).
+
+Respond with ONLY a JSON object:
+{{
+  "corrective_position": [<x>, <y>, <z>],
+  "explanation": "<one concise sentence>",
+  "confidence": <float in [0,1]>
+}}
+"""
+
+ACHIEVED_GOAL_BLIND_NUMERIC_PROMPT = """You are analyzing a robotic manipulation trajectory.
+
+Task: {task_description}
+
+In the Fetch suite, `achieved_goal` is the current 3D position of the
+manipulated object (or the gripper, for FetchReach). The Fetch workspace
+coords range roughly: x in [1.05, 1.55] m, y in [0.4, 1.1] m, z in [0.4, 0.85] m
+(the table surface is at z ~ 0.42 m).
+
+{K} keyframes from a FAILED episode are shown in chronological order,
+with their numerical state in the table below.
+
+Frame-to-timestep mapping:
+{frame_index_map}
+
+Numerical trajectory at the keyframes:
+{traj_table}
+
+A failure-detection module identified Frame {failure_frame_index}
+(~{failure_frame_pct:.0f}% through the episode) as the critical moment.
+
+The target's exact coordinates are intentionally withheld; you must infer
+the corrective target ONLY from the visual evidence in the keyframes, the
+numerical trajectory above, and the task description.
+
+QUESTION: Based on the trajectory observed in the keyframes and the
+numerical positions in the table, what 3D position should the object have
+reached at Frame {failure_frame_index} to make progress toward the
+(unspecified) goal? Propose a hindsight `achieved_goal` for this frame —
+a plausible intermediate location along a successful path, consistent
+with the task and with what you see.
+
+The proposed position must lie inside the Fetch workspace (above the table).
+
+Respond with ONLY a JSON object:
+{{
+  "corrective_position": [<x>, <y>, <z>],
+  "explanation": "<one concise sentence>",
+  "confidence": <float in [0,1]>
+}}
+"""
+
 ACHIEVED_GOAL_BLIND_PROMPT = """You are analyzing a robotic manipulation trajectory.
 
 Task: {task_description}
@@ -231,12 +318,26 @@ Respond with ONLY a JSON object:
 
 
 PROMPT_TEMPLATES: Dict[str, str] = {
-    "narrative":           NARRATIVE_PROMPT,
-    "action":              ACTION_PROMPT,
-    "achieved_goal":       ACHIEVED_GOAL_PROMPT,
-    "achieved_goal_blind": ACHIEVED_GOAL_BLIND_PROMPT,
-    "all":                 ALL_PROMPT,
+    "narrative":                   NARRATIVE_PROMPT,
+    "action":                      ACTION_PROMPT,
+    "achieved_goal":               ACHIEVED_GOAL_PROMPT,
+    "achieved_goal_blind":         ACHIEVED_GOAL_BLIND_PROMPT,
+    "achieved_goal_numeric":       ACHIEVED_GOAL_NUMERIC_PROMPT,
+    "achieved_goal_blind_numeric": ACHIEVED_GOAL_BLIND_NUMERIC_PROMPT,
+    "all":                         ALL_PROMPT,
 }
+
+# Variants that consume the numerical trajectory table. Listed once so
+# query() and the buffer-side plumbing stay in sync.
+NUMERIC_VARIANTS = frozenset({
+    "achieved_goal_numeric",
+    "achieved_goal_blind_numeric",
+})
+# Variants that withhold desired_goal from the prompt (blind ablation arm).
+BLIND_VARIANTS = frozenset({
+    "achieved_goal_blind",
+    "achieved_goal_blind_numeric",
+})
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -276,6 +377,44 @@ def _build_frame_index_map(timestep_indices: List[int], total_steps: int) -> str
         pct = 100.0 * t / max(total_steps - 1, 1)
         lines.append(f"  Frame {i}: timestep {t} (~{pct:.0f}% through episode)")
     return "\n".join(lines)
+
+
+def _fmt_xyz(v: Optional[np.ndarray]) -> str:
+    """Render a 3-vector as `[x, y, z]` with 3-decimal precision, or [n/a]."""
+    if v is None:
+        return "[n/a, n/a, n/a]"
+    a = np.asarray(v).reshape(-1)
+    if a.size < 3:
+        return "[n/a, n/a, n/a]"
+    return f"[{a[0]:.3f}, {a[1]:.3f}, {a[2]:.3f}]"
+
+
+def _build_traj_table(
+    timestep_indices: List[int],
+    achieved_goals_at_keyframes: Optional[np.ndarray],
+    ee_positions_at_keyframes: Optional[np.ndarray],
+) -> str:
+    """Markdown-style numerical trajectory table for the numeric prompt variants.
+
+    Each row: `| Frame | Step | Block xyz (achieved_goal) | Gripper ee_xyz |`.
+
+    The two arrays should be aligned with `timestep_indices` (length K).
+    Either array may be None, in which case the corresponding column is
+    filled with `[n/a, n/a, n/a]`. We do NOT silently drop rows; the VLM
+    benefits from seeing partial data over no data.
+    """
+    header = (
+        "| Frame | Step | Block xyz (achieved_goal) | Gripper ee_xyz |\n"
+        "|-------|------|---------------------------|----------------|"
+    )
+    ag = np.asarray(achieved_goals_at_keyframes) if achieved_goals_at_keyframes is not None else None
+    ee = np.asarray(ee_positions_at_keyframes) if ee_positions_at_keyframes is not None else None
+    rows = []
+    for i, t in enumerate(timestep_indices):
+        block = _fmt_xyz(ag[i]) if ag is not None and i < len(ag) else "[n/a, n/a, n/a]"
+        gripper = _fmt_xyz(ee[i]) if ee is not None and i < len(ee) else "[n/a, n/a, n/a]"
+        rows.append(f"| {i} | {int(t)} | {block} | {gripper} |")
+    return header + "\n" + "\n".join(rows)
 
 
 _JSON_BLOCK_RE = re.compile(r"\{[\s\S]*\}", re.MULTILINE)
@@ -398,6 +537,8 @@ class CounterfactualLocalizer:
         desired_goal: Optional[np.ndarray] = None,
         variant: str = "all",
         retries: int = 1,
+        achieved_goals_at_keyframes: Optional[np.ndarray] = None,
+        ee_positions_at_keyframes: Optional[np.ndarray] = None,
     ) -> CounterfactualResult:
         """Query the VLM for a counterfactual at the failure moment.
 
@@ -416,7 +557,9 @@ class CounterfactualLocalizer:
             raise ValueError(
                 f"Unknown variant '{variant}'. Choose from {self.SUPPORTED_VARIANTS}."
             )
-        if variant in ("achieved_goal", "all") and desired_goal is None:
+        # The blind/numeric ablation variants intentionally do NOT consume
+        # desired_goal in the prompt, so don't require it for them.
+        if variant in ("achieved_goal", "achieved_goal_numeric", "all") and desired_goal is None:
             raise ValueError(
                 f"Variant '{variant}' requires `desired_goal` to be provided."
             )
@@ -427,7 +570,7 @@ class CounterfactualLocalizer:
         )
         failure_frame_pct = 100.0 * failure_timestep / max(total_steps - 1, 1)
 
-        prompt = PROMPT_TEMPLATES[variant].format(
+        fmt_kwargs: Dict[str, Any] = dict(
             task_description=task_description,
             K=len(frames),
             frame_index_map=_build_frame_index_map(timestep_indices, total_steps),
@@ -438,6 +581,15 @@ class CounterfactualLocalizer:
                 else [float(x) for x in np.asarray(desired_goal).tolist()]
             ),
         )
+        # Numeric variants need a markdown trajectory table. Build it from
+        # per-keyframe achieved_goal + ee_pos slices supplied by the caller.
+        if variant in NUMERIC_VARIANTS:
+            fmt_kwargs["traj_table"] = _build_traj_table(
+                timestep_indices=timestep_indices,
+                achieved_goals_at_keyframes=achieved_goals_at_keyframes,
+                ee_positions_at_keyframes=ee_positions_at_keyframes,
+            )
+        prompt = PROMPT_TEMPLATES[variant].format(**fmt_kwargs)
 
         last_err: Optional[Exception] = None
         for attempt in range(retries + 1):
@@ -676,10 +828,19 @@ def make_counterfactual_fn(
         achieved_goals: np.ndarray,
         desired_goal: np.ndarray,
         keyframes: Optional[List[Any]] = None,
+        ee_positions: Optional[np.ndarray] = None,
+        **_unused_kwargs: Any,
     ) -> Optional[List[Tuple[int, np.ndarray, float]]]:
+        """Callback invoked once per failed episode by CounterfactualHERBuffer.
+
+        Extra kwargs (`ee_positions`, etc.) are accepted but only consumed
+        by the numeric prompt variants. The buffer always passes the full
+        set so this callable stays backwards-compatible with the existing
+        `achieved_goal` / `achieved_goal_blind` providers.
+        """
         if keyframes is None or len(keyframes) == 0:
             return None
-        # Accept PIL or numpy frames; convert PIL → numpy.
+        # Accept PIL or numpy frames; convert PIL -> numpy.
         frames = []
         for kf in keyframes:
             if hasattr(kf, "convert"):                                   # PIL
@@ -706,6 +867,30 @@ def make_counterfactual_fn(
         if failure_t < max(2, T // 5):
             failure_t = T // 2
 
+        # For numeric variants, slice the per-step trajectory arrays at the
+        # keyframe indices so the prompt's markdown table aligns frame i
+        # with timestep ts_indices[i].
+        ag_at_kf: Optional[np.ndarray] = None
+        ee_at_kf: Optional[np.ndarray] = None
+        if variant in NUMERIC_VARIANTS:
+            try:
+                ag_arr = np.asarray(achieved_goals)
+                if ag_arr.ndim == 2 and ag_arr.shape[0] >= 1:
+                    safe_idx = [min(max(int(t), 0), ag_arr.shape[0] - 1)
+                                for t in ts_indices]
+                    ag_at_kf = ag_arr[safe_idx]
+            except Exception:  # noqa: BLE001
+                ag_at_kf = None
+            if ee_positions is not None:
+                try:
+                    ee_arr = np.asarray(ee_positions)
+                    if ee_arr.ndim == 2 and ee_arr.shape[0] >= 1:
+                        safe_idx = [min(max(int(t), 0), ee_arr.shape[0] - 1)
+                                    for t in ts_indices]
+                        ee_at_kf = ee_arr[safe_idx]
+                except Exception:  # noqa: BLE001
+                    ee_at_kf = None
+
         try:
             res = loc.query(
                 frames=frames,
@@ -715,6 +900,8 @@ def make_counterfactual_fn(
                 failure_timestep=failure_t,
                 desired_goal=np.asarray(desired_goal),
                 variant=variant,
+                achieved_goals_at_keyframes=ag_at_kf,
+                ee_positions_at_keyframes=ee_at_kf,
             )
         except Exception as e:
             logger.warning(f"[counterfactual_fn] VLM call failed: {e}")

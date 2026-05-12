@@ -167,11 +167,16 @@ def _build_cf_provider(cfg: dict, env_name: str, task_desc: str):
     # for the action-rollout verification to be informative.
     snapshot_seed = int(cfg["training"]["seed"])
 
-    def cf_fn_verified(achieved_goals, desired_goal, keyframes=None):
+    def cf_fn_verified(achieved_goals, desired_goal, keyframes=None,
+                       ee_positions=None, **_unused):
+        # ee_positions is accepted to keep the buffer's CF callback signature
+        # consistent with the numeric prompt variants; the verified wrapper
+        # forwards it transparently so the inner VLM call can consume it.
         cfs = cf_fn_raw(
             achieved_goals=achieved_goals,
             desired_goal=desired_goal,
             keyframes=keyframes,
+            ee_positions=ee_positions,
         )
         if cfs is None:
             return None
