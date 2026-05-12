@@ -59,15 +59,23 @@ credit-assignment oracle generalizes where a learned priority head would not.
 \section{Introduction}
 \label{sec:intro}
 
-Sparse-reward manipulation in environments such as Gymnasium-Robotics Fetch is
-defined by long horizons (50~steps), one bit of terminal reward, and a
-goal-achieved threshold of 5~cm. Standard prioritized experience replay
-(PER)~\citep{schaul2016per} sharpens the sampling distribution toward
-transitions with large TD-error, but TD-error itself decays exponentially
-away from the goal-achievement timestep. Hindsight Experience Replay (HER)~\citep{andrychowicz2017her}
-partially repairs this by relabeling failures as successes for an alternative
-achieved goal, but the relabel target is constrained to the agent's actually-realized
-trajectory.
+The core difficulty of sparse-reward manipulation is temporal credit assignment:
+with only one reward bit at the end of a 50-step episode, every standard
+TD-error signal decays exponentially back from the terminal timestep, leaving
+the bulk of each trajectory effectively invisible to the optimizer. In
+Gymnasium-Robotics Fetch environments---a canonical benchmark family with a
+5\,cm goal-achieved threshold and continuous end-effector control---a
+randomly-initialized policy will succeed in under 1\% of episodes, so the
+early replay buffer contains almost no positive signal to propagate forward.
+Standard prioritized experience replay (PER)~\citep{schaul2016per} sharpens
+the sampling distribution toward high-TD-error transitions, but this sharpening
+is itself downstream of a credit signal that decays exponentially away from
+the rare goal-achievement timestep. Hindsight Experience Replay
+(HER)~\citep{andrychowicz2017her} partially repairs this by relabeling failures
+as successes for an alternative achieved goal, converting every failed trajectory
+into at least one positive TD signal---but the relabel target is constrained to
+the agent's actually-realized trajectory, so the most instructive transition
+(the one where the failure became inevitable) receives no special treatment.
 
 Recent work has explored using foundation Vision-Language Models (VLMs) as
 ``oracles'' inside the RL loop, both for reward shaping \citep{rocamonde2024vlmreward,lee2025kagi,venuto2024car}
@@ -134,12 +142,24 @@ foundation-VLM credit-assignment oracle generalizes across structurally-differen
 manipulation tasks where any learned priority head would require per-task
 fitting.
 
+The remainder of the paper is organized as follows.
+Section~\ref{sec:related} surveys HER-family relabeling, the PER lineage, and
+the recent use of foundation models in RL, explicitly situating our two
+mechanisms in the relabel-verification and proposal-shaping subfamilies.
+Section~\ref{sec:theory} derives the IS-posterior framing and the
+off-policy-correction taxonomy that positions Semantic PER and VLM-RB.
+Section~\ref{sec:method} presents the implementation of Semantic PER
+(\S\ref{sec:method:sper}), the prompt-design analysis and teleport-collapse
+formalization (\S\ref{sec:method:prompt}), and the VLM-Verified Counterfactual
+Hindsight mechanism (\S\ref{sec:method:verified}).
 Section~\ref{sec:exp} reports SAC+HER baselines on the three Fetch environments,
-the prompt-design analysis, cross-task transfer evidence, real-data validation,
-and the current status of two in-flight experiments (HER baselines and a
-kill-test of the verified-counterfactual mechanism). Section~\ref{sec:discussion}
-discusses a pipeline-bug discovery that re-frames our headline ablation, small-$n$
-caveats, and limitations.
+the head-to-head prompt-design sweep, cross-task transfer evidence, real-data
+validation on 10 agent-generated failures, and the current status of two
+in-flight experiments---a HER~vs.~Oracle-CF kill test and the full
+VLM-CF sweep on Modal.
+Section~\ref{sec:discussion} discusses a pipeline-bug discovery that re-frames
+our headline GPT-4o curve, small-$n$ caveats, and eight forward-looking
+limitations pre-registering the camera-ready experimental agenda.
 
 \section{Related Work}
 \label{sec:related}
@@ -1222,13 +1242,28 @@ $n\!=\!12$. We pre-register the larger sweeps as the follow-on.
 
 \paragraph{The oracle-CF kill experiment.}
 A direct kill-test of the verified-CF mechanism is to compare
-SAC+HER+verified-CF against SAC+HER+\emph{oracle}-CF, where the oracle simply
-returns the ground-truth optimal corrective action by solving inverse
-kinematics from the failure state to the goal. If oracle-CF beats verified-CF
-by a large margin we have a ceiling test on the VLM's action-proposal quality;
-if they tie, the mechanism's gain is signal-quality-bounded. The smoke harness
-(\texttt{scripts/n1\_smoke\_verified\_cf.py}) supports this swap as a one-flag
-change; results are not yet in.
+SAC+HER+verified-CF against SAC+HER+\emph{oracle}-CF, where the oracle
+returns the ground-truth corrective action by solving inverse kinematics
+from the failure state to the desired goal---a perfect-information ceiling
+that the VLM cannot reach in zero-shot.
+This comparison serves three diagnostic purposes simultaneously.
+\textbf{First}, if oracle-CF matches or exceeds verified-CF, the gap is
+signal-quality-bounded: the VLM's action proposals are the performance
+bottleneck, not the simulator-fork mechanism.
+\textbf{Second}, if oracle-CF and HER tie (the pessimistic scenario
+anticipated by the pre-registered Phase~1 decision rule in
+Section~\ref{sec:exp:inflight}), the null result is informative: it
+says that even a perfect corrective action from the failure state does not
+meaningfully accelerate SAC convergence at 250\,k steps from cold start,
+likely because the SAC actor needs many more such relabels to update its
+policy in the right direction.
+\textbf{Third}, the oracle-CF run used a corrected midpoint anchor
+(block-position-to-goal rather than end-effector-to-goal after an
+earlier pipeline bug; see Section~\ref{sec:discussion}); the rerun
+provides the first valid oracle-CF measurement on FetchPush.
+The smoke harness (\texttt{scripts/n1\_smoke\_verified\_cf.py}) supports
+the oracle swap as a one-flag change; final numbers are awaited from the
+in-flight runs.
 
 \paragraph{Broader impact.}
 Sparse-reward manipulation RL is a building block of robot learning; our work
