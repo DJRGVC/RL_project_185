@@ -1490,10 +1490,17 @@ $\sim$4/6 = 67\% degenerate counterfactuals into the buffer as
 Figure~\ref{fig:headline} therefore conflates the genuine semantic signal with
 $\sim$two-thirds-degenerate noise. Sections~\ref{sec:exp:prompt}--\ref{sec:exp:real}
 were the discoveries that motivated the production switch to
-\texttt{(GPT-4o, achieved\_goal)} with the gate enforced. The corrected
-SAC+verified-CF curves are running overnight; we expect the GPT-4o trajectory
-to track the heuristic Oracle far more tightly than Figure~\ref{fig:headline}
-suggests.
+\texttt{(GPT-4o, achieved\_goal)} with the gate enforced.
+The corrected VLM-CF runs (Phase~2, 18 seeds, switched to
+\texttt{claude-sonnet-4-5} after the OpenAI free-tier RPD cap was hit)
+are in flight on Modal at time of writing. Based on the pre-registered
+kill verdict (Section~\ref{sec:exp:inflight})---Oracle-CF, which has
+privileged access to the exact failure frame and IK-correct corrective
+actions, underperformed HER by 0.05 on FetchPickAndPlace---we do not
+expect the VLM-CF column ($q_\phi$ with finite KL to the oracle) to
+exceed the oracle's performance. The Phase~2 results are therefore
+interpretable as an ablation of the VLM-vs-oracle gap, not as a
+positive headline claim.
 
 \paragraph{Small-$n$ caveats.}
 All headline numbers in Sections~\ref{sec:exp:prompt}--\ref{sec:exp:real} are

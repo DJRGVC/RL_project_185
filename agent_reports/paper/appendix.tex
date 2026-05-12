@@ -841,15 +841,24 @@ Env & Seed & Uniform & PER & Sem-PER (Oracle) & Sem-PER (GPT-4o, pre-fix) \\
 \end{tabular}
 \end{table}
 
-\paragraph{Ablation placeholder.}
-Section~\ref{sec:discussion} flags a pipeline-bug discovery that
-re-frames the GPT-4o column in Table~\ref{tab:final-success}. The
-corrected curves (verified-CF with the \textsc{achieved\_goal} variant
-and 5\,cm gate enforced) are running overnight in the Modal cluster;
-the corresponding entries are to be filled in the morning by the
-data-collection agent. Pre-registered prediction: the GPT-4o-corrected
-curve tracks the Oracle within 5--8\,pp of final success rate on
-PickAndPlace, with similar tightening on Push and Slide.
+\paragraph{Phase~2 VLM-CF status and revised projection.}
+Section~\ref{sec:discussion} flags the pipeline-bug discovery that
+re-frames the GPT-4o column in Table~\ref{tab:final-success}.
+The corrected VLM-CF runs (Phase~2, 18 seeds across
+FetchPush/PickAndPlace/Slide $\times$ \{vlm\_cf, verified\_cf\} $\times$ 3
+seeds, \texttt{claude-sonnet-4-5}) were launched after the OpenAI RPD cap
+blocked the original GPT-4o sweep; Table~\ref{tab:final-success} will be
+updated with Phase~2 numbers in the camera-ready revision.
+The pre-registered kill verdict (Section~\ref{sec:exp:inflight}) changes
+the interpretive framing of Table~\ref{tab:final-success}: the Oracle column
+already establishes a privileged ceiling that cannot be exceeded by any
+realistic $q_\phi$.  Phase~2 numbers are therefore ablation evidence for the
+VLM-vs-oracle gap, not headline results.
+The earlier prediction that the corrected curve would track the Oracle
+within 5--8\,pp on PickAndPlace is superseded by this bound:
+if Oracle-CF underperforms HER by 0.05, any VLM-CF tracking the Oracle
+within 5--8\,pp also underperforms HER, which is consistent with but
+stronger than the earlier prediction.
 
 \subsection{Cross-task transfer details}
 \label{app:transfer}
