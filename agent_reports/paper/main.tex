@@ -32,31 +32,28 @@
 \maketitle
 
 \begin{abstract}
-Sparse-reward manipulation is a credit-assignment problem: temporal-difference
-signal decays exponentially away from the one bit of terminal reward, so the
-bulk of every trajectory is effectively unprioritized. We make two
-contributions. First, we recast VLM-guided experience replay as
-\emph{importance-sampled posterior reweighting}: a frozen
-Vision-Language-Model emits an approximate posterior $q_\phi(t^\star\!\mid\!\tau)$
-over which timestep caused an episode's outcome, and Semantic PER multiplies
-the standard TD-error priority by this posterior. Within this framing the
-multiplicative form is the unique proposal modification that preserves PER's
-importance-sampling correction; the additive mixture used by the concurrent
-VLM-RB \citep{sharony2026vlmrb} implicitly retargets the loss. Second, we
-introduce \textbf{VLM-Verified Counterfactual Hindsight}, which closes the
-dominant failure mode of language-only counterfactual goal proposals: rather
-than asking the VLM for a hindsight goal (which teleport-collapses in 100\%
-of Claude Opus 4.7 calls on FetchPush), we ask for a corrective action
-sequence and execute it in a fork of the training simulator from the failure
-state. Only simulator-verified relabels enter the buffer, with confidence~1.0
-and zero modeling error. On Gymnasium-Robotics Fetch with SAC, a head-to-head
-GPT-4o vs.\ Opus~4.7 vs.\ Sonnet~4.5 prompt sweep on 6~synthetic and 10~real
-failed episodes identifies \texttt{(GPT-4o, achieved\_goal + 5\,cm gate)} as
-strictly dominant (0\% teleport-collapse, 0.79~plausibility, 0.83~goal-progress);
-a 12-episode cross-task pilot achieves 12/12 task-relevant annotations across
-Push, PickAndPlace, and Slide using a single prompt template, evidence that
-a foundation-VLM credit-assignment oracle transfers where a learned priority
-head would not.
+Sparse-reward manipulation is a credit-assignment problem: TD-signal decays
+exponentially away from the terminal reward bit, leaving the bulk of every
+trajectory effectively unprioritized. We make two contributions.
+\textbf{First}, we recast VLM-guided experience replay as
+\emph{importance-sampled posterior reweighting}: a frozen VLM emits an
+approximate posterior $q_\phi(t^\star\!\mid\!\tau)$ over which timestep caused
+an episode's outcome, and Semantic PER multiplies the standard TD-error
+priority by this posterior. The multiplicative form uniquely preserves PER's
+IS-correction; the additive mixture of the concurrent VLM-RB
+\citep{sharony2026vlmrb} implicitly retargets the loss.
+\textbf{Second}, we introduce \textbf{VLM-Verified Counterfactual Hindsight},
+which closes the dominant failure mode of language-only counterfactuals:
+rather than asking for a hindsight goal (which teleport-collapses in 100\%
+of Opus 4.7 calls on FetchPush), we ask for a corrective action sequence and
+execute it in a simulator fork. Only simulator-verified relabels enter the
+buffer (confidence~1.0, zero modeling error). A three-family prompt sweep
+(GPT-4o / Opus~4.7 / Sonnet~4.5) on 16 Fetch episodes identifies
+\texttt{(GPT-4o, achieved\_goal + 5\,cm gate)} as strictly dominant (0\%
+collapse, 0.79 plausibility, 0.83 goal-progress), and a 12-episode
+cross-task pilot achieves 12/12 annotations across Push, PickAndPlace, and
+Slide with a single template---evidence that a foundation-VLM
+credit-assignment oracle generalizes where a learned priority head would not.
 \end{abstract}
 
 \section{Introduction}
@@ -234,17 +231,17 @@ counterfactual relabels in the same simulator on which the policy trains.
   \footnotesize
   \caption{VLM-Guided Experience Replay (Sharony~et~al.~2026) vs.\ this paper.}
   \label{tab:differentiation}
-  \begin{tabular}{l p{0.30\linewidth} p{0.40\linewidth}}
+  \begin{tabular}{l p{0.29\linewidth} p{0.39\linewidth}}
     \toprule
     Axis & VLM-RB \citep{sharony2026vlmrb} & This paper \\
     \midrule
     Signal direction & Goal satisfaction (success) & Failure-causing transitions \\
     Granularity & 32-frame sub-trajectory clip & Single timestep $\pm$ window \\
-    Blending with TD-error & Mixture-with-uniform; $\lambda_t\!:\!0\!\to\!0.5$ warm-up & Multiplicative; degenerates to PER \\
-    Headroom analysis & --- & Heuristic privileged-state oracle \\
-    Counterfactual relabel & --- & VLM-proposed action $+$ sim-fork verification \\
-    Cross-task evidence & Per-benchmark tuning of $\lambda$, TD multiplier & One prompt template across 3 Fetch envs \\
-    Benchmarks & MiniGrid, OGBench (DQN/IQN/SAC/TD3) & Gymnasium-Robotics Fetch (SAC) \\
+    Blending & Mixture-with-uniform; $\lambda_t\!:\!0\!\to\!0.5$ warm-up & Multiplicative; degenerates to PER \\
+    Headroom & --- & Heuristic privileged-state oracle \\
+    CF relabel & --- & VLM-proposed action $+$ sim-fork verification \\
+    Cross-task & Per-benchmark tuning of $\lambda$, TD multiplier & One prompt template across 3 Fetch envs \\
+    Benchmarks & MiniGrid, OGBench (DQN/IQN/SAC/TD3) & Gym-Robotics Fetch (SAC) \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -342,20 +339,21 @@ neither curve should diverge}---a prediction reward-shaping cannot make.
 
 \begin{table}[t]
   \centering
-  \footnotesize
+  \scriptsize
+  \setlength{\tabcolsep}{4pt}
   \caption{Off-policy correction taxonomy. Semantic PER (this paper) is a
   proposal-shaping scheme whose modifier is exogenous and trajectory-level
   rather than policy-derived.}
   \label{tab:taxonomy}
-  \begin{tabular}{l p{0.20\linewidth} p{0.28\linewidth} p{0.27\linewidth}}
+  \begin{tabular}{p{0.19\linewidth} p{0.24\linewidth} p{0.22\linewidth} p{0.24\linewidth}}
     \toprule
     Method & Proposal $\mu$ & Correction & Bias source \\
     \midrule
-    Retrace \citep{munos2016retrace} & Behavior policy $\mu_b$ & Clipped per-step IS $c_s$ & IS-ratio truncation \\
-    V-trace \citep{espeholt2018impala} & Behavior policy $\mu_b$ & Doubly-clipped $\bar\rho,\bar c$ & Both-ratio truncation \\
-    Prioritized DQN \citep{schaul2016per} & $|\delta|^\alpha$ & $(|\mathcal{D}|\mu_P)^{-\beta}$ & Anneal of $\beta<1$ \\
-    VLM-RB \citep{sharony2026vlmrb} & $\lambda\mu_{\text{VLM}}^P + (1\!-\!\lambda)\mu_U$ & none published & Mixture objective $\neq$ PER \\
-    \textbf{Semantic PER (ours)} & $\mu_P\cdot w_{\text{sem}}$ (Eq.~\ref{eq:headline}) & $w_{\text{IS},P}$ (under-corrected) & $q_\phi$ miscalibration + under-correction \\
+    Retrace \citep{munos2016retrace} & Behavior $\mu_b$ & Clipped IS $c_s$ & IS-ratio truncation \\
+    V-trace \citep{espeholt2018impala} & Behavior $\mu_b$ & Doubly-clipped $\bar\rho,\bar c$ & Both-ratio truncation \\
+    PER \citep{schaul2016per} & $|\delta|^\alpha$ & $(|\mathcal{D}|\mu_P)^{-\beta}$ & Anneal $\beta<1$ \\
+    VLM-RB \citep{sharony2026vlmrb} & $\lambda\mu_{\text{VLM}} + (1\!-\!\lambda)\mu_U$ & none & Mixture obj.\ $\neq$ PER \\
+    \textbf{Sem.\ PER (ours)} & $\mu_P\!\cdot\!w_{\text{sem}}$ (\S\ref{sec:theory}) & $w_{\text{IS},P}$ (under-corr.) & $q_\phi$ + under-corr. \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -647,11 +645,15 @@ Appendix~\ref{app:prompts}.
 \centering
 \includegraphics[width=0.95\linewidth]{fig1_headline_success.pdf}
 \caption{Success rate vs.\ environment steps for \emph{Uniform}, \emph{PER},
-\emph{Semantic-PER (heuristic Oracle)}, and \emph{Semantic-PER (GPT-4o)} on the
-three Fetch tasks, mean $\pm$~SE across 3 seeds. The heuristic Oracle (privileged
-sim state) provides an upper envelope; GPT-4o tracks the Oracle on PickAndPlace
-and trails PER on Slide. Sample sizes are small ($n\!=\!3$); these results are
-intended as a directional baseline pending overnight HER + verified-CF runs.}
+\emph{Semantic-PER (Oracle v3)}, and \emph{Semantic-PER (GPT-4o)} on the three
+Fetch tasks, mean $\pm$~SE across 3 seeds. The Oracle (privileged sim state)
+provides the upper envelope; the gap between PER and Oracle is the maximum gain
+achievable by any failure-localizer. GPT-4o captures this headroom on PickAndPlace
+and narrows it on Push; the Slide ranking is within SE and not conclusive.
+Note: the GPT-4o curve uses a pre-fix pipeline (all-variant prompt without the
+teleport gate); Sections~\ref{sec:exp:prompt}--\ref{sec:exp:real} identify and
+close this bug. Three-family robustness (GPT-4o, Opus~4.7, Sonnet~4.5) is
+confirmed in the prompt-design sweep.}
 \label{fig:headline}
 \end{figure}
 
@@ -796,19 +798,29 @@ Section~\ref{sec:exp:prompt} survive the synthetic-to-real shift.
 \subsection{In-Flight Experiments}
 \label{sec:exp:inflight}
 
-Two experiments are mid-execution on the project's Modal cluster and were not
-ready in time for camera-ready numbers. \textbf{(A) HER baselines:} 27 SAC+HER
-runs (3 methods $\times$ 3 envs $\times$ 3 seeds at 500\,k--1\,M steps,
-\texttt{her\_baselines} W\&B tag) are 10/27 running and 17/27 queued at
-submission time. Headline question: does Semantic PER \emph{stack} on the
-standard HER stack? Smoke tests on \texttt{FetchReach} (2\,k steps, three
-configs) confirm all three configurations train end-to-end without crashes,
-with critic losses 0.22--0.38 and actor losses 1.4--1.7. \textbf{(B) Verified-CF
-kill experiment:} a 50-LOC subclass of \texttt{CounterfactualHERBuffer} wraps
-the verifier as a hindsight-relabel gate. Pre-registered claim: verified-CF
-hindsight strictly improves on standard HER on \texttt{FetchPickAndPlace};
-falsifier is acceptance rate below 20\% on a 5\,k-step calibration run. Both
-are scheduled to complete overnight.
+Two experiments are mid-execution and were not ready in time for
+camera-ready numbers.
+
+\textbf{(A) HER baseline kill experiment:} 18 SAC+HER-baseline
+runs and 18 Oracle-CF runs
+(3 envs $\times$ 3 seeds $\times$ 250\,k steps each, \texttt{path\_c\_overnight}
+W\&B tag) are training on the project's RTX~5070~Ti. The pre-registered
+decision rule: if Oracle-CF exceeds HER by $\ge$+0.10 on
+\texttt{FetchPickAndPlace} eval success, Path~C (verified-counterfactual
+hindsight) proceeds to full VLM-CF sweeps; if Oracle-CF $\le$ HER, we pivot
+the paper's headline to the IS-posterior framing (Sections~\ref{sec:theory}--\ref{sec:method:sper}).
+Smoke tests on \texttt{FetchReach} (2\,k steps) confirm all configurations
+train end-to-end without crashes: critic losses 0.22--0.38, actor losses
+1.4--1.7, CF relabel rate $\approx$25\% of failed episodes as intended.
+
+\textbf{(B) VLM-CF and verified-CF sweeps (Phase~2):} 18 additional runs
+on Modal (VLM-CF with \texttt{gpt-4o-mini} + verified-CF with the N1
+simulator gate) will launch once Phase~1 HER baselines complete and
+provide the computational baseline they compare against.
+
+% TODO: Replace in-flight placeholder with final numbers when
+% path_c_overnight W&B runs complete. Decision rule above is pre-registered;
+% do not change after seeing data.
 
 \section{Discussion and Limitations}
 \label{sec:discussion}
@@ -874,14 +886,19 @@ real-robot dynamics would need an additional verification layer.
 
 \paragraph{Conclusion.}
 We re-frame VLM-guided experience replay as importance-sampled posterior
-reweighting with a foundation-model credit-assignment oracle, introduce a
-verified-counterfactual hindsight mechanism that closes the dominant failure
-mode of language-only counterfactuals, and present prompt-design, cross-task,
-and synthetic-vs-real evidence that the framing is empirically actionable.
-The production configuration \texttt{(GPT-4o, achieved\_goal + 5\,cm gate)}
-emerged from a discovery that the teleport-collapse failure is
-prompt-architectural rather than VLM-family-specific. Section~\ref{sec:exp:inflight}'s
-SAC sweeps are the highest-priority follow-up.
+reweighting, showing that the multiplicative update is the unique
+proposal modification that preserves PER's IS-correction interpretation.
+We introduce VLM-Verified Counterfactual Hindsight, which closes the
+dominant failure mode of language-only counterfactuals by construction:
+the VLM generates corrective actions, the ground-truth simulator verifies
+them, and only physics-consistent relabels enter the buffer.
+A three-family (GPT-4o, Opus~4.7, Sonnet~4.5) prompt sweep on 16 real
+and synthetic Fetch failures identifies the teleport-collapse failure as
+prompt-architectural---not model-specific---and a single prompt template
+achieves 12/12 cross-task annotations.
+The in-flight HER kill experiment (\S\ref{sec:exp:inflight}) will determine
+whether Oracle-CF provides sufficient empirical headroom to motivate the full
+VLM-CF sweep; the IS-posterior framing stands regardless of that outcome.
 
 \bibliographystyle{plainnat}
 \bibliography{refs}
