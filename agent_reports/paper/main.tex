@@ -540,21 +540,108 @@ in Fetch-style environments.
 \subsection{Counterfactual Prompting and the Teleport-Collapse Failure Mode}
 \label{sec:method:prompt}
 
-For verified-counterfactual hindsight we additionally need a corrective signal.
-We define four prompt variants:
-(\textsc{narrative}) a free-form English diagnosis;
-(\textsc{action}) a corrective 4-vector $(\Delta x,\Delta y,\Delta z,\text{grip})$;
-(\textsc{achieved\_goal}) a hindsight $\text{achieved\_goal}\in\mathbb{R}^3$;
-(\textsc{all}) a unified JSON with all three fields.
+The verification protocol of Section~\ref{sec:method:verified} requires a
+\emph{corrective signal} from the VLM that the simulator can replay. The
+design choice---what to ask the VLM for---is not neutral: we show below that
+some prompts elicit a degenerate output mode in which the VLM ignores image
+content and copies a number out of the prompt. Naming this failure, locating
+its source in the prompt's output-type axis, and choosing the configuration
+that suppresses it are the prerequisites for §\ref{sec:method:verified}'s
+mechanism to be evaluated rather than reduced to noise.
 
-Empirically, Claude Opus 4.7 teleport-collapses on \textsc{achieved\_goal} in
-\textbf{100\% of FetchPush episodes (4/4)} by outputting
-\texttt{corrective\_position}~=~\texttt{desired\_goal} (Section~\ref{sec:exp:prompt}).
-GPT-4o eliminates this on \textsc{achieved\_goal} (0/6 collapse) but partially
-inherits it on \textsc{all} (4/6 collapse), suggesting the failure mode is
-\emph{prompt-architectural} rather than model-specific. We adopt
-\texttt{(GPT-4o, achieved\_goal)} as our production configuration, with a
-\texttt{reject\_teleport\_radius}~=~0.05\,m gate as a belt-and-suspenders fallback.
+\paragraph{Output-type design space.}
+A corrective signal can be elicited in four output types, organized along
+two axes---\emph{output kind} (natural language vs.\ numerical) and
+\emph{goal-conditioning} (the prompt mentions \texttt{desired\_goal} or
+does not). We instantiate one prompt per cell of the resulting 2$\times$2:
+(\textsc{narrative}) a free-form English diagnosis, the AHA-style output
+\citep{duan2025aha}; (\textsc{action}) a corrective 4-vector
+$(\Delta x,\Delta y,\Delta z,\text{grip})$ to be replayed by the controller;
+(\textsc{achieved\_goal}) a hindsight $\text{achieved\_goal}\!\in\!\mathbb{R}^3$
+in world coordinates, the HER-style relabel target
+\citep{andrychowicz2017her}; and (\textsc{all}) a unified JSON containing all
+three. The four variants share an identical preamble, an identical
+$K\!=\!5$ keyframe block, and an identical task-description sentence; only
+the answer-schema field differs.
+
+\begin{figure}[t]
+\centering
+\fbox{\parbox{0.92\linewidth}{
+\textbf{Definition (Teleport-collapse).}
+Fix a failed FetchPush/PickAndPlace episode with desired goal
+$g\!\in\!\mathbb{R}^3$ and final achieved position $\text{ag}_T$ with
+$\|\text{ag}_T-g\|_2\gg d_{\text{th}}\!=\!0.05$\,m. A VLM exhibits
+\emph{teleport-collapse} on a position-emitting variant if its output
+\texttt{corrective\_position} $\hat{p}$ satisfies
+$\|\hat{p}-g\|_2\le d_{\text{th}}$, i.e., the proposed corrective endpoint
+lies within the success-threshold ball of the desired goal.
+\textbf{Why it is degenerate.} An $\hat{p}\!\approx\!g$ relabel is
+trivially attainable for the relabeled goal $\hat{p}$ (the agent did not
+reach $g$, but $\hat{p}\!\approx\!g$ implies it did not reach $\hat{p}$
+either; HER's invariant is broken), and a hindsight buffer accepts it as
+``successful'' only by virtue of evaluating distance against the
+\emph{re-relabeled} goal. The transition carries zero physical
+information about how to close the failure gap; in the IS-posterior view
+(§\ref{sec:theory}) it is a Dirac on $g$, $q_\phi(\hat{p}\!\mid\!\tau)
+=\delta(\hat{p}-g)$, independent of the trajectory.
+\textbf{Detectability without the simulator.} Teleport-collapse is
+identifiable from the prompt and the response alone via the literal test
+$\|\hat{p}-g\|_2\!\le\!d_{\text{th}}$; this is the
+\texttt{reject\_teleport\_radius} gate used in C1's adapter and is a
+necessary but not sufficient hygiene check, since it leaves intact the
+underlying prompt-architectural cause.
+}}
+\caption{The teleport-collapse failure mode formalized. The detectability
+note motivates the post-hoc rejection gate used as a fallback in
+Section~\ref{sec:exp:real}; that gate is empirically necessary on every
+model and variant we tested. Removing the underlying cause---the prompt's
+exposure of \texttt{desired\_goal} as an in-context number---is the
+mechanism-level fix delivered in §\ref{sec:method:verified}.}
+\label{fig:teleport-def}
+\end{figure}
+
+\paragraph{Why output type matters: a mechanistic account.}
+The two position-emitting variants (\textsc{achieved\_goal}, \textsc{all})
+expose \texttt{desired\_goal} as a literal numerical triplet inside the
+prompt window; when the VLM is asked for a separate position in the same
+coordinate system, the lowest-perplexity numeric continuation is to copy
+the in-context goal triplet---a position-copy bias that requires no
+grounded reasoning about the keyframes. Empirically Claude Opus 4.7
+copies in $4/4\!=\!100\%$ of synthetic FetchPush calls and GPT-4o copies
+in $4/6$ of \textsc{all}-variant calls (Table~\ref{tab:prompt-variants}).
+The two non-position variants are immune by construction:
+\textsc{narrative} answers in natural language and has no numerical
+attractor; \textsc{action} answers in body-frame deltas
+$(\Delta x,\Delta y,\Delta z,\text{grip})$, a coordinate system absent
+from the goal field. This is the prompt-architectural source of the
+failure---a property of the schema's output type, not of any one model.
+
+\paragraph{Why this matters for the verifier-as-gate.}
+Output type is also what makes §\ref{sec:method:verified}'s simulator
+verification possible. A \textsc{narrative} output is not replayable; an
+\textsc{achieved\_goal} output is replayable only via inverse kinematics
+(a separately-engineered controller, with its own failure modes); an
+\textsc{action} output is directly executable by the env's step
+function. Asking for \textsc{action} thus serves two purposes
+simultaneously: (i) it removes the numerical attractor that drives
+teleport-collapse, and (ii) it produces an output the symbolic verifier
+can consume. The mechanism of §\ref{sec:method:verified} is then a
+\emph{generator--verifier} pairing \citep{zha2025tango} in which the
+prompt's output-type axis is the generator-side knob and the simulator
+fork is the verifier-side gate; the two co-design.
+
+\paragraph{Production configuration and the role of the rejection gate.}
+On the position-emitting axis we adopt \texttt{(GPT-4o,
+achieved\_goal)} as the production configuration: it is the only cell
+that combines zero teleport-collapse ($0/6$) with the highest
+plausibility tier (0.79; Table~\ref{tab:prompt-variants}). The
+\texttt{reject\_teleport\_radius}~=~$d_{\text{th}}$ gate of
+Figure~\ref{fig:teleport-def} is retained as a defense in depth: it
+catches model regressions, prompt drift, and the real-data residual
+identified in Section~\ref{sec:exp:real}. For the verified-CF mechanism
+itself we use the \textsc{action} variant, which sidesteps the
+position-copy bias by construction; the position-emitting analysis is
+how we identify which fields the prompt may safely include.
 
 \subsection{VLM-Verified Counterfactual Hindsight}
 \label{sec:method:verified}
