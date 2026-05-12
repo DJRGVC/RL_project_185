@@ -188,6 +188,10 @@ inside our protocol. Foundation-model credit assignment is itself a young
 thread: \citet{khandoga2026causalcredit} mask reasoning spans in an LLM policy
 to identify causally-influential tokens, in the lineage of \citet{mesnard2021cca}
 and the credit-assignment survey by \citet{pignatelli2023survey}.
+Concurrently, \citet{pignatelli2024calm} introduce CALM, which uses an LLM to
+decompose tasks into subgoals and evaluate their achievement zero-shot, providing
+shaped credit in text-based environments without hand-designed rewards---an
+independent instantiation of the FM-as-credit-oracle idea in language game settings.
 
 \paragraph{Generator--verifier and verified counterfactual reasoning.}
 Our verification protocol (Section~\ref{sec:method:verified}) sits inside the
@@ -368,8 +372,10 @@ by how they identify outcome-influential actions. Endogenous oracles include
 TD-error (PER), return-decomposition (RUDDER \citep{arjonamedina2019rudder},
 HCA \citep{harutyunyan2019hca}), and counterfactual policy-gradient baselines
 (CCA-PG \citep{mesnard2021cca}). \citet{khandoga2026causalcredit} extends the
-counterfactual idea to LLM tokens by masking reasoning spans. \emph{Our
-semantic-PER signal introduces a new category: exogenous foundation-model
+counterfactual idea to LLM tokens by masking reasoning spans; \citet{pignatelli2024calm}
+shows that an LLM can serve as a zero-shot credit oracle via subgoal decomposition
+in text-based environments, confirming FM-as-oracle as a live direction.
+\emph{Our semantic-PER signal introduces a new category: exogenous foundation-model
 credit-assignment oracles}, where the oracle is pre-trained on a different
 distribution (web video, image-text) and queried zero-shot at the trajectory
 level for causal localization. This admits a strictly stronger framing of our

@@ -1,4 +1,4 @@
-\begin{thebibliography}{35}
+\begin{thebibliography}{36}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -169,6 +169,14 @@ Eduardo Pignatelli, Johan Ferret, Matthieu Geist, Thomas Mesnard, Hado van
 \newblock A survey of temporal credit assignment in deep reinforcement
   learning.
 \newblock \emph{arXiv preprint arXiv:2312.01072}, 2023.
+
+\bibitem[Pignatelli et~al.(2024)Pignatelli, Ferret, Rockt{\"a}schel,
+  Grefenstette, Paglieri, Coward, and Toni]{pignatelli2024calm}
+Eduardo Pignatelli, Johan Ferret, Tim Rockt{\"a}schel, Edward Grefenstette,
+  Davide Paglieri, Samuel Coward, and Laura Toni.
+\newblock Assessing the zero-shot capabilities of {LLM}s for action evaluation
+  in {RL}.
+\newblock \emph{arXiv preprint arXiv:2409.12798}, 2024.
 
 \bibitem[Pleiss et~al.(2025)Pleiss, Sutter, and Schiffer]{pleiss2025reaper}
 Leonard~S. Pleiss, Tobias Sutter, and Maximilian Schiffer.
