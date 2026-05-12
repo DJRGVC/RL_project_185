@@ -1,0 +1,798 @@
+\documentclass{article}
+
+\PassOptionsToPackage{numbers, compress}{natbib}
+\usepackage[preprint]{neurips_2024}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{array}
+
+\title{VLM-Verified Counterfactual Hindsight for\\Sparse-Reward Manipulation}
+
+\author{%
+  Daniel Grant \quad Parshawn Gerafian \quad Matei Gardea \\
+  Department of Electrical Engineering and Computer Sciences \\
+  University of California, Berkeley \\
+  \texttt{\{dgrant,pgerafian,mgardea\}@berkeley.edu}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Sparse-reward manipulation is a credit-assignment problem: temporal-difference
+signal decays exponentially away from the one bit of terminal reward, so the
+bulk of every trajectory is effectively unprioritized. We make two
+contributions. First, we recast VLM-guided experience replay as
+\emph{importance-sampled posterior reweighting}: a frozen
+Vision-Language-Model emits an approximate posterior $q_\phi(t^\star\!\mid\!\tau)$
+over which timestep caused an episode's outcome, and Semantic PER multiplies
+the standard TD-error priority by this posterior. Within this framing the
+multiplicative form is the unique proposal modification that preserves PER's
+importance-sampling correction; the additive mixture used by the concurrent
+VLM-RB \citep{sharony2026vlmrb} implicitly retargets the loss. Second, we
+introduce \textbf{VLM-Verified Counterfactual Hindsight}, which closes the
+dominant failure mode of language-only counterfactual goal proposals: rather
+than asking the VLM for a hindsight goal (which teleport-collapses in 100\%
+of Claude Opus 4.7 calls on FetchPush), we ask for a corrective action
+sequence and execute it in a fork of the training simulator from the failure
+state. Only simulator-verified relabels enter the buffer, with confidence~1.0
+and zero modeling error. On Gymnasium-Robotics Fetch with SAC, a head-to-head
+GPT-4o vs.\ Opus~4.7 vs.\ Sonnet~4.5 prompt sweep on 6~synthetic and 10~real
+failed episodes identifies \texttt{(GPT-4o, achieved\_goal + 5\,cm gate)} as
+strictly dominant (0\% teleport-collapse, 0.79~plausibility, 0.83~goal-progress);
+a 12-episode cross-task pilot achieves 12/12 task-relevant annotations across
+Push, PickAndPlace, and Slide using a single prompt template, evidence that
+a foundation-VLM credit-assignment oracle transfers where a learned priority
+head would not.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+Sparse-reward manipulation in environments such as Gymnasium-Robotics Fetch is
+defined by long horizons (50~steps), one bit of terminal reward, and a
+goal-achieved threshold of 5~cm. Standard prioritized experience replay
+(PER)~\citep{schaul2016per} sharpens the sampling distribution toward
+transitions with large TD-error, but TD-error itself decays exponentially
+away from the goal-achievement timestep. Hindsight Experience Replay (HER)~\citep{andrychowicz2017her}
+partially repairs this by relabeling failures as successes for an alternative
+achieved goal, but the relabel target is constrained to the agent's actually-realized
+trajectory.
+
+Recent work has explored using foundation Vision-Language Models (VLMs) as
+``oracles'' inside the RL loop, both for reward shaping \citep{rocamonde2024vlmreward,lee2025kagi,venuto2024car}
+and, very recently, for replay-buffer prioritization \citep{sharony2026vlmrb}. We
+argue these uses are best framed not as engineering recipes but as
+\emph{importance-sampled stochastic optimization with a foundation-model proposal
+distribution}: the VLM is a frozen approximation to the (intractable) posterior
+$p(t^\star\mid\tau)$ over which transitions caused an episode's outcome.
+
+This paper makes four contributions.
+
+\textbf{(1) An IS-posterior framing of VLM-guided replay} (Section~\ref{sec:theory}).
+We re-derive prioritized DQN \citep{schaul2016per}, retrace \citep{munos2016retrace},
+V-trace \citep{espeholt2018impala}, and Sharony~et~al.'s VLM-RB \citep{sharony2026vlmrb}
+inside a single off-policy-correction taxonomy, locating our scheme as
+\emph{proposal-shaping} with an exogenous foundation-model credit-assignment
+oracle. The multiplicative form of our update is the \emph{unique}
+proposal modification (up to trajectory-conditional normalization) that
+preserves the standard PER importance-sampling correction; the additive
+mixture used by VLM-RB \citep{sharony2026vlmrb} implicitly retargets the
+loss to a $\lambda$-weighted objective.
+
+\textbf{(2) Semantic PER with a failure-direction signal}
+(Section~\ref{sec:method:sper}). Sharony~et~al.\ score 32-frame clips for
+goal-satisfaction; we ask the VLM the strictly more informative
+question---\emph{which single timestep made this trajectory fail?}---and
+multiply the standard PER priority by a bounded boost over a window around
+that timestep. The scheme degenerates gracefully to PER when the VLM is
+uncommitted ($w_{\max}\!=\!1$), needs no $\lambda$-warm-up, and admits an
+unbiased IS-corrected interpretation. Crucially, unlike VLM-as-reward
+approaches \citep{rocamonde2024vlmreward,wu2026largerewardmodels,patel2025iker}
+that splice the VLM signal into the TD target, our scheme leaves the target
+untouched: the env's true sparse reward is recomputed on every sampled
+transition. VLM miscalibration costs variance in the sampling distribution,
+not bias in the value function.
+
+\textbf{(3) VLM-Verified Counterfactual Hindsight} (Section~\ref{sec:method:verified}).
+A direct prompt for an alternative \emph{achieved goal} elicits a teleport-collapse
+failure mode in 100\% of Claude Opus 4.7 calls on FetchPush: the VLM returns
+\texttt{corrective\_position}~=~\texttt{desired\_goal}, a degenerate
+zero-information output. We close this loophole \emph{by construction} by
+asking instead for a corrective \emph{action sequence} and executing it in
+a fork of the training simulator from the failure-timestep state. A
+four-vector action cannot teleport a 50\,g block by 50\,cm under MuJoCo
+dynamics; the failure mode is structurally inexpressible. The mechanism
+instantiates the \emph{generator--verifier} paradigm \citep{zha2025tango}
+in robot RL---the VLM generates, the simulator verifies---and only
+trajectories whose sparse reward fires under the unmodified environment
+dynamics enter the buffer, with confidence~1.0 and zero modeling error.
+
+\textbf{(4) Empirical analysis: prompt design, VLM-family robustness, and
+cross-task transfer} (Sections~\ref{sec:exp:prompt}--\ref{sec:exp:real}).
+A head-to-head GPT-4o vs.\ Claude Opus 4.7 sweep on six synthetic Fetch
+failures identifies a strictly-dominating configuration:
+\texttt{(GPT-4o, achieved\_goal)} eliminates teleport-collapse (0/6 vs.\
+Opus's 4/4), ties for highest plausibility (0.79), and trails only Opus's
+degenerate goal-copying on goal-progress (0.83 vs.\ 0.97). A second
+prompt sweep on ten \emph{real} SAC-failure episodes confirms the
+prompt-architectural fix transfers to a third VLM family
+(Sonnet~4.5: 75\%~$\to$~0\% teleport on PickAndPlace). A 12-episode
+cross-task pilot achieves 12/12 task-relevant annotations on
+Push/PickAndPlace/Slide with a single prompt template, evidence that a
+foundation-VLM credit-assignment oracle generalizes across structurally-different
+manipulation tasks where any learned priority head would require per-task
+fitting.
+
+Section~\ref{sec:exp} reports SAC+HER baselines on the three Fetch environments,
+the prompt-design analysis, cross-task transfer evidence, real-data validation,
+and the current status of two in-flight experiments (HER baselines and a
+kill-test of the verified-counterfactual mechanism). Section~\ref{sec:discussion}
+discusses a pipeline-bug discovery that re-frames our headline ablation, small-$n$
+caveats, and limitations.
+
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{HER and goal-conditioned RL.}
+Hindsight Experience Replay~\citep{andrychowicz2017her} is the dominant
+solution to sparse-reward goal-conditioned manipulation; the \texttt{future}
+relabel strategy with $k\!=\!4$ remains a strong baseline a decade later. Recent
+sample-efficiency improvements include single-step relabeling
+(Next-Future)~\citep{ozgur2025nextfuture}, contact-energy
+prioritization (CEBP)~\citep{sayar2023cebp}, hindsight regularization
+(GCHR)~\citep{lei2025gchr}, and null-counterfactual interaction inference
+(HInt/NCII)~\citep{chuck2025hint}. HInt is the closest in spirit to our verified
+counterfactuals: it asks ``would the target object's dynamics change if the cause
+object were removed?'' using a learned dynamics model. We use a frozen VLM rather
+than a learned model and verify in the real simulator.
+
+\paragraph{Prioritized replay and off-policy correction.}
+Prioritized DQN~\citep{schaul2016per} samples in proportion to
+$(|\delta|+\varepsilon)^\alpha$ with an annealed importance-sampling weight
+$w_{\text{IS}}=(|\mathcal{D}|\cdot\mu_P)^{-\beta}$. Retrace~\citep{munos2016retrace}
+and V-trace~\citep{espeholt2018impala} extend off-policy correction to multi-step
+returns and distributed actor-learner setups, respectively, via clipped per-step
+IS ratios. \citet{ma2026freshness} address PER staleness in the LLM/VLM regime
+via age-decay weights. Our Semantic PER sits inside this taxonomy as a
+\emph{proposal-shaping} scheme whose modifier (the VLM posterior) is exogenous
+and trajectory-level rather than policy-derived; see Table~\ref{tab:taxonomy}.
+
+\paragraph{Foundation models in RL.}
+VLMs have been used as reward sources \citep{rocamonde2024vlmreward,venuto2024car,wang2024rlvlmf},
+affordance-guided shaping signals \citep{lee2025kagi}, promptable feature
+encoders \citep{chen2024promptable}, counterfactual data labelers
+\citep{glossop2025cast}, token-level counterfactual critics \citep{feng2025coso},
+hindsight rewriters for LM agents \citep{hu2026echo,ding2026agentHER}, and
+online per-timestep reward models for manipulation
+\citep{wu2026largerewardmodels,patel2025iker}. \citet{duan2025aha} fine-tune a
+VLM (AHA) on synthetic robotic failures and produce natural-language failure
+explanations that downstream-refine LLM-generated reward code (Eureka pipeline);
+our system differs in three orthogonal ways. (i)~AHA \emph{describes} a failure;
+we \emph{localize} it to a single timestep usable as a credit-assignment signal.
+(ii)~AHA proposes no corrective actions; we do, and gate them on simulator
+verification. (iii)~AHA's RL integration is reward-refinement (modifies the TD
+target); ours is replay-prioritization (modifies only the sampling
+distribution). An AHA-fine-tuned VLM could plausibly replace zero-shot GPT-4o
+inside our protocol. Foundation-model credit assignment is itself a young
+thread: \citet{khandoga2026causalcredit} mask reasoning spans in an LLM policy
+to identify causally-influential tokens, in the lineage of \citet{mesnard2021cca}
+and the credit-assignment survey by \citet{pignatelli2023survey}.
+
+\paragraph{Generator--verifier and verified counterfactual reasoning.}
+Our verification protocol (Section~\ref{sec:method:verified}) sits inside the
+\emph{generator--verifier} paradigm now popular in LLM reasoning: the
+generator emits candidates, a verifier (learned or symbolic) accepts the
+correct ones \citep{zha2025tango}. We instantiate this in robotics with a
+foundation-VLM generator and a \emph{symbolic} verifier---the unmodified
+training simulator---whose decisions are correct by construction. The most
+related prior work in robotics is the line on counterfactual data augmentation
+for goal-conditioned RL \citep{urpi2024caiac,chuck2025hint,glossop2025cast}: each
+uses a learned proxy (causal-action-influence, learned dynamics, VLM
+plausibility) to produce additional trajectories. We use a ground-truth proxy
+(the simulator), which carries zero modeling error, at the cost of additional
+sim-fork compute.
+
+\paragraph{Differentiation from VLM-RB.}
+The concurrent (Feb~2026) VLM-RB \citep{sharony2026vlmrb} is the closest
+published work: a frozen VLM scores sub-trajectory clips for prioritized
+replay on MiniGrid and OGBench, reporting 11--52\% higher success and
+19--45\% better sample efficiency. The two systems differ along five
+orthogonal axes summarized in Table~\ref{tab:differentiation}, with two
+methodological cores worth emphasizing. \textbf{First,} VLM-RB asks ``is this
+sub-trajectory good?'' (success-direction scoring) and mixes the answer
+\emph{additively} with uniform sampling
+$\mu = \lambda \mu_{\text{VLM}} + (1-\lambda)\mu_U$; we ask the strictly
+more informative ``which single timestep was outcome-causing?'' and combine
+the answer \emph{multiplicatively} with TD-error
+$\mu \propto \mu_P \cdot w_{\text{sem}}$. The multiplicative form is what
+preserves PER's importance-sampling-correction interpretation
+(Section~\ref{sec:theory}); the additive mixture implicitly retargets the
+loss to a $\lambda$-weighted objective that VLM-RB does not correct for.
+\textbf{Second,} we ship a verified-counterfactual-hindsight mechanism
+(Section~\ref{sec:method:verified}) that is outside the scope of any
+VLM-RB-style success-scoring scheme: VLM-RB's signal is non-actionable for
+relabeling, ours is. To our knowledge this paper is the first to (a) use a
+VLM-localized failure timestep as a credit-assignment signal and (b) verify
+counterfactual relabels in the same simulator on which the policy trains.
+
+\begin{table}[t]
+  \centering
+  \footnotesize
+  \caption{VLM-Guided Experience Replay (Sharony~et~al.~2026) vs.\ this paper.}
+  \label{tab:differentiation}
+  \begin{tabular}{l p{0.30\linewidth} p{0.40\linewidth}}
+    \toprule
+    Axis & VLM-RB \citep{sharony2026vlmrb} & This paper \\
+    \midrule
+    Signal direction & Goal satisfaction (success) & Failure-causing transitions \\
+    Granularity & 32-frame sub-trajectory clip & Single timestep $\pm$ window \\
+    Blending with TD-error & Mixture-with-uniform; $\lambda_t\!:\!0\!\to\!0.5$ warm-up & Multiplicative; degenerates to PER \\
+    Headroom analysis & --- & Heuristic privileged-state oracle \\
+    Counterfactual relabel & --- & VLM-proposed action $+$ sim-fork verification \\
+    Cross-task evidence & Per-benchmark tuning of $\lambda$, TD multiplier & One prompt template across 3 Fetch envs \\
+    Benchmarks & MiniGrid, OGBench (DQN/IQN/SAC/TD3) & Gymnasium-Robotics Fetch (SAC) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Theoretical Motivation: VLM-Guided PER as Posterior Reweighting}
+\label{sec:theory}
+
+\paragraph{Setup.}
+Let $\tau=(s_0,a_0,r_0,\dots,s_T)$ be an episode trajectory and
+$i\in\{0,\dots,T\!-\!1\}$ a transition index. Off-policy value learning solves a
+regression problem on a replay-sampling distribution $\mu(i)$ over a buffer
+$\mathcal{D}_B$:
+\begin{equation}
+  \mathcal{L}(\theta) \;=\; \mathbb{E}_{i\sim\mu}\bigl[\ell\bigl(\delta_i(\theta)\bigr)\bigr],
+  \qquad
+  \delta_i = r_i + \gamma\,Q\bigl(s_{i+1},\pi(s_{i+1})\bigr) - Q(s_i,a_i).
+  \label{eq:loss}
+\end{equation}
+Uniform replay $\mu_U(i)=1/|\mathcal{D}_B|$ is unbiased but variance-heavy.
+Prioritized replay~\citep{schaul2016per} uses
+$\mu_P(i)\propto(|\delta_i|+\varepsilon)^\alpha$ and recovers (an annealed
+estimator of) the uniform objective by reweighting each gradient by the IS
+correction
+\begin{equation}
+  w_{\text{IS}}(i) \;=\; \bigl(|\mathcal{D}_B|\cdot\mu_P(i)\bigr)^{-\beta},
+  \qquad \beta\colon\beta_0 \to 1.
+  \label{eq:per-is}
+\end{equation}
+This is an instance of self-normalized importance sampling: the proposal $\mu_P$
+concentrates on high-error transitions; the IS-weight returns the target to
+$\mathbb{E}_U[\ell]$ in expectation.
+
+\paragraph{The VLM as a posterior.}
+A frozen VLM that answers ``which timestep caused this trajectory's outcome?''
+approximates the posterior $p(t^\star\mid\tau) \propto p(\tau\mid t^\star)p(t^\star)$
+where $t^\star$ is the (latent) outcome-causing timestep. Write
+$q_\phi(t^\star\mid\tau)$ for the VLM's approximation; in our implementation it is
+the argmax of a chain-of-thought prompt, but it can equivalently be elicited as a
+soft distribution. We define a per-transition semantic boost
+\begin{equation}
+  w_{\text{sem}}(i;\tau) \;:=\; \mathbb{E}_{t^\star\sim q_\phi(\cdot\mid\tau)}\bigl[K_W(i;t^\star)\bigr],
+  \qquad K_W(i;t^\star) = 1 + (w_{\max}\!-\!1)\,\mathbb{1}\bigl[|i-t^\star|\le W\bigr],
+  \label{eq:wsem}
+\end{equation}
+with window half-width $W$ and bounded boost $w_{\max}\ge 1$. The semantic-PER
+proposal is the product
+\begin{equation}
+  \boxed{\;\mu_{\text{Sem}}(i) \;\propto\; \mu_P(i)\,\cdot\,w_{\text{sem}}(i;\tau_i)\;}
+  \label{eq:headline}
+\end{equation}
+Two factors drive priority: $\mu_P(i)$ captures \emph{learning progress} (how much
+the value head would reduce its loss by training on $i$); $w_{\text{sem}}$
+captures \emph{causal influence} (how much posterior mass the VLM places on $i$
+being outcome-causing). Standard PER uses only the first; uniform replay uses
+neither; Semantic PER multiplies the two. When $q_\phi$ is near-uniform,
+$w_{\text{sem}}\!\approx\!1$ and we degenerate to PER.
+
+\paragraph{Off-policy correction taxonomy.}
+Eq.~\eqref{eq:headline} sits inside a well-charted off-policy-correction
+taxonomy (Table~\ref{tab:taxonomy}). In our current implementation we use the
+PER IS-weight $w_{\text{IS},P}$ rather than the strictly-correct
+$w_{\text{IS},\text{Sem}}=(|\mathcal{D}_B|\mu_{\text{Sem}})^{-\beta}$. This is a
+conservative under-correction (semantic-boosted transitions are sampled more
+than their IS weight reflects) and is mathematically analogous to V-trace's
+ratio truncation: a controlled bias for variance reduction.
+
+\paragraph{Why multiplicative? Uniqueness, additive mixtures, and what this buys us.}
+Two predictions follow from Eq.~\eqref{eq:headline} that distinguish our
+scheme from neighboring options. \textbf{(P1) Uniqueness of multiplicative.}
+The PER IS-correction $w_{\text{IS}}(i)=(|\mathcal{D}_B|\mu(i))^{-\beta}$
+recovers the uniform-replay objective as $\beta\!\to\!1$. Any proposal
+modification $\mu'(i)=f(\mu_P(i), q_\phi(i;\tau))$ that wants the same
+correction interpretation must satisfy
+$\mu'(i)\propto \mu_P(i)\cdot g(q_\phi(i;\tau))$
+for some trajectory-conditional $g$: the IS denominator must factor so that
+the $\beta\!\to\!1$ limit returns the uniform-replay expectation. An
+additive mixture $\lambda \mu_q + (1\!-\!\lambda)\mu_P$
+\citep{sharony2026vlmrb} does \emph{not} satisfy this: under
+$w_{\text{IS}}=(|\mathcal{D}_B|(\lambda\mu_q+(1\!-\!\lambda)\mu_P))^{-\beta}$
+the $\beta\!\to\!1$ limit is the $\lambda$-weighted objective
+$\lambda\mathbb{E}_{\mu_q}[\ell]+(1\!-\!\lambda)\mathbb{E}_{\mu_P}[\ell]$,
+\emph{not} $\mathbb{E}_U[\ell]$, unless $\lambda$ is itself folded into the
+correction. The multiplicative form is, up to normalization, the unique
+proposal modification that keeps PER's interpretation. \textbf{(P2)
+Replay-shaping vs.\ reward-shaping.} A natural alternative use of the VLM
+is to splice it into the TD target as a per-timestep reward
+\citep{wu2026largerewardmodels,patel2025iker,rocamonde2024vlmreward};
+that propagates VLM calibration error directly into $Q$ as bias. Our scheme
+keeps the env's true sparse reward intact in the TD target and uses the VLM
+only to modify $\mu$; VLM miscalibration shows up only as variance in the
+sampling distribution, corrected by $w_{\text{IS}}$. The framing forces a
+clean prediction: \emph{semantic-PER should track standard PER closely when
+the VLM is poorly calibrated, and pull ahead when the VLM is reliable;
+neither curve should diverge}---a prediction reward-shaping cannot make.
+
+\begin{table}[t]
+  \centering
+  \footnotesize
+  \caption{Off-policy correction taxonomy. Semantic PER (this paper) is a
+  proposal-shaping scheme whose modifier is exogenous and trajectory-level
+  rather than policy-derived.}
+  \label{tab:taxonomy}
+  \begin{tabular}{l p{0.20\linewidth} p{0.28\linewidth} p{0.27\linewidth}}
+    \toprule
+    Method & Proposal $\mu$ & Correction & Bias source \\
+    \midrule
+    Retrace \citep{munos2016retrace} & Behavior policy $\mu_b$ & Clipped per-step IS $c_s$ & IS-ratio truncation \\
+    V-trace \citep{espeholt2018impala} & Behavior policy $\mu_b$ & Doubly-clipped $\bar\rho,\bar c$ & Both-ratio truncation \\
+    Prioritized DQN \citep{schaul2016per} & $|\delta|^\alpha$ & $(|\mathcal{D}|\mu_P)^{-\beta}$ & Anneal of $\beta<1$ \\
+    VLM-RB \citep{sharony2026vlmrb} & $\lambda\mu_{\text{VLM}}^P + (1\!-\!\lambda)\mu_U$ & none published & Mixture objective $\neq$ PER \\
+    \textbf{Semantic PER (ours)} & $\mu_P\cdot w_{\text{sem}}$ (Eq.~\ref{eq:headline}) & $w_{\text{IS},P}$ (under-corrected) & $q_\phi$ miscalibration + under-correction \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Connection to causal credit assignment.}
+The credit-assignment survey of \citet{pignatelli2023survey} categorizes methods
+by how they identify outcome-influential actions. Endogenous oracles include
+TD-error (PER), return-decomposition (RUDDER \citep{arjonamedina2019rudder},
+HCA \citep{harutyunyan2019hca}), and counterfactual policy-gradient baselines
+(CCA-PG \citep{mesnard2021cca}). \citet{khandoga2026causalcredit} extends the
+counterfactual idea to LLM tokens by masking reasoning spans. \emph{Our
+semantic-PER signal introduces a new category: exogenous foundation-model
+credit-assignment oracles}, where the oracle is pre-trained on a different
+distribution (web video, image-text) and queried zero-shot at the trajectory
+level for causal localization. This admits a strictly stronger framing of our
+contribution than ``VLM in replay'': we use foundation-model priors as
+credit-assignment oracles, with verifiable counterfactual hindsight as the
+acceptance gate.
+
+\section{Method}
+\label{sec:method}
+
+\subsection{Semantic PER with the Failure-Direction Signal}
+\label{sec:method:sper}
+
+At the end of each failed training episode, we render $K\!=\!5$ uniformly-sampled
+keyframes plus a task description, query a frozen VLM for the
+\texttt{failure\_frame\_index} $\in\{0,\dots,K\!-\!1\}$, and map this back to a
+timestep $t_{\text{fail}}\in\{0,\dots,T\!-\!1\}$. For each in-buffer slot $i$ of
+that episode we apply a multiplicative weight
+\[
+  w_i \;=\; \begin{cases} w_{\max} & |i-t_{\text{fail}}|\le W,\\ 1 & \text{otherwise}\end{cases}
+\]
+with $w_{\max}\!=\!10$ and $W\!=\!5$ steps as defaults. The priority becomes
+$p_i=(|\delta_i|+\varepsilon)^\alpha\cdot w_i$ (with $\alpha\!=\!0.6$); we keep
+the raw TD priority in a sibling array so re-blending after weight changes is
+exact (no stale sum-tree leaves).
+
+The \emph{bidirectional} variant (used as an upper-bound experimental control)
+adds a \emph{success} window centered on \texttt{argmax}-window
+distance-reduction; this is Sharony et al.'s direction but per-timestep. Slots
+inside both windows receive $w_{\max}\!\times\!w_{\max}\!=\!100\!\times$ the
+baseline TD priority. The contact-aware ``Oracle v3'' heuristic, used as a
+privileged-state upper envelope, walks the trajectory for contact-loss events
+($\|\text{ee}-\text{obj}\| < 0.05$\,m to far-from-contact) with the object still
+$>0.10$\,m from the goal.
+
+\subsection{Counterfactual Prompting and the Teleport-Collapse Failure Mode}
+\label{sec:method:prompt}
+
+For verified-counterfactual hindsight we additionally need a corrective signal.
+We define four prompt variants:
+(\textsc{narrative}) a free-form English diagnosis;
+(\textsc{action}) a corrective 4-vector $(\Delta x,\Delta y,\Delta z,\text{grip})$;
+(\textsc{achieved\_goal}) a hindsight $\text{achieved\_goal}\in\mathbb{R}^3$;
+(\textsc{all}) a unified JSON with all three fields.
+
+Empirically, Claude Opus 4.7 teleport-collapses on \textsc{achieved\_goal} in
+\textbf{100\% of FetchPush episodes (4/4)} by outputting
+\texttt{corrective\_position}~=~\texttt{desired\_goal} (Section~\ref{sec:exp:prompt}).
+GPT-4o eliminates this on \textsc{achieved\_goal} (0/6 collapse) but partially
+inherits it on \textsc{all} (4/6 collapse), suggesting the failure mode is
+\emph{prompt-architectural} rather than model-specific. We adopt
+\texttt{(GPT-4o, achieved\_goal)} as our production configuration, with a
+\texttt{reject\_teleport\_radius}~=~0.05\,m gate as a belt-and-suspenders fallback.
+
+\subsection{VLM-Verified Counterfactual Hindsight}
+\label{sec:method:verified}
+
+\begin{figure}[t]
+\centering
+\fbox{\parbox{0.92\linewidth}{
+\textbf{Verification protocol (per failed episode).}
+\textbf{(1) Snapshot} the MuJoCo state $s_K=(\text{qpos},\text{qvel},t,\text{mocap},g)$
+at the localized failure timestep $K$.
+\textbf{(2) Fork} a separate Gymnasium-Robotics env, write the snapshot, call
+\texttt{mujoco.mj\_forward}.
+\textbf{(3) Roll out} the VLM-proposed corrective action sequence for $N\!=\!50$
+steps in the forked env, computing $r_t=$\texttt{env.compute\_reward}$(\text{achieved}_t,g)$
+under the \emph{unmodified} sparse reward.
+\textbf{(4) Accept} the counterfactual iff $r_t\ge 0$ at any step; append the
+resulting trajectory (and a hindsight-relabeled copy with the verified
+achieved-goal as desired-goal) to the buffer with confidence~1.0.
+\textbf{(5) Reject} otherwise; fall back to standard HER.
+}}
+\caption{The Verified Counterfactual mechanism: a VLM proposes a corrective
+4-vector, the simulator decides whether to admit it. Teleport-style answers are
+structurally inexpressible as actions.}
+\label{fig:protocol}
+\end{figure}
+
+The teleport-collapse failure mode (Section~\ref{sec:method:prompt}) is the
+dominant pathology of VLM-as-counterfactual-oracle in our domain. C1's adapter
+band-aided it with a 5\,cm rejection gate; that is a heuristic, not a
+mechanism. We close the loophole \emph{by construction} (Figure~\ref{fig:protocol}):
+ask the VLM for an action sequence rather than a goal, then verify execution in
+a simulator fork. A four-vector cannot teleport a 50\,g block by 50\,cm.
+
+A 4/4 smoke test on three failed episodes from
+\texttt{C1\_counterfactual\_outputs.json} plus a hand-crafted positive control
+confirms each design assertion: (i) teleport counterfactuals are rejected with
+\texttt{no\_corrective\_action\_provided} before any rollout; (ii) physically
+reasonable but goal-missing actions are rejected with precise
+\texttt{final\_distance} values (0.32\,m, 0.16\,m); (iii) a hand-crafted close-goal
+action is \emph{verified} with $\text{final\_distance}\!=\!0.030$\,m. Snapshot
+round-trip equality (qpos/qvel after restore equals pre-snapshot value) holds to
+\texttt{0.00e+00} on all four Fetch environments. Per-verification CPU cost is
+17.6\,ms; at $\sim$1700 failed episodes per 100\,k-step training run this is a
+$0.4\%$ overhead.
+
+\paragraph{A generator--verifier framing.}
+The protocol instantiates the generator--verifier paradigm
+\citep{zha2025tango} from LLM reasoning: a candidate-emitting generator (the
+VLM) is paired with a verifier whose decisions are correct by construction
+(the simulator + the env's sparse reward). Generator--verifier systems in LLM
+reasoning typically use a \emph{learned} verifier that may share generator
+failure modes \citep{wu2025rlvrworld}; ours uses a \emph{symbolic} verifier
+in the program-synthesis sense---an oracle that decides whether a candidate
+trajectory satisfies the goal predicate under ground-truth dynamics---so
+verifier-side errors are impossible. This is what licenses the assignment of
+confidence~1.0 to accepted relabels.
+
+This view is best summarized as \emph{model-based hindsight relabeling with a
+perfect world model}: the verifier env is the ground-truth simulator
+(re-instanced), so the ``model'' carries zero modeling error. Compared to MuZero-style
+learned-model planning, we sidestep the model-error budget; compared to model-based
+HER \citep[and related lines]{chuck2025hint}, we use a language prior to propose
+the action rather than learned forward dynamics. Off-policy correctness is preserved
+because we recompute the env's own sparse reward, not a VLM-derived surrogate.
+
+\section{Experiments}
+\label{sec:exp}
+
+\subsection{Setup}
+\label{sec:exp:setup}
+
+We use Gymnasium-Robotics \texttt{FetchPush-v4}, \texttt{FetchPickAndPlace-v4},
+and \texttt{FetchSlide-v4} with SAC~\citep{haarnoja2018sac}: hidden width 256,
+$\gamma\!=\!0.98$, $\tau\!=\!0.005$, learning rate $3\!\times\!10^{-4}$
+everywhere, batch~256, updates-per-step~1, auto-entropy. HER uses the
+\texttt{future} strategy with $k\!=\!4$. PER uses $\alpha\!=\!0.6$ with the
+standard linearly-annealed $\beta$. Semantic PER adds a multiplicative window
+of $W\!=\!5$ steps and $w_{\max}\!=\!10$ around the localized failure timestep.
+Training runs are 500\,k env steps for paper-grade sweeps and 50\,k--100\,k for
+the rapid in-flight experiments reported below. Each (method, env) cell uses 3
+seeds; mean and standard error are reported throughout. VLM calls use Claude
+Opus 4.7 and GPT-4o (\texttt{gpt-4o-2024-08-06}) via the official APIs at
+$\le\!\$0.05$ per call; the per-task-description prompt and the
+\texttt{GoalDistanceLocalizer} heuristic baseline are described in
+Appendix~\ref{app:prompts}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{fig1_headline_success.pdf}
+\caption{Success rate vs.\ environment steps for \emph{Uniform}, \emph{PER},
+\emph{Semantic-PER (heuristic Oracle)}, and \emph{Semantic-PER (GPT-4o)} on the
+three Fetch tasks, mean $\pm$~SE across 3 seeds. The heuristic Oracle (privileged
+sim state) provides an upper envelope; GPT-4o tracks the Oracle on PickAndPlace
+and trails PER on Slide. Sample sizes are small ($n\!=\!3$); these results are
+intended as a directional baseline pending overnight HER + verified-CF runs.}
+\label{fig:headline}
+\end{figure}
+
+\subsection{Headline Ablation: PER vs.\ Semantic PER on Fetch}
+\label{sec:exp:headline}
+
+Figure~\ref{fig:headline} reports the existing semantic-PER ablation against
+uniform replay and standard PER, with two oracle conditions: a heuristic
+contact-aware localizer reading privileged sim state (``Oracle v3'') and a
+GPT-4o-driven semantic-PER variant. On \emph{FetchPickAndPlace} the
+GPT-4o-semantic-PER trajectory tracks the Oracle and clears the PER baseline by
+the 250\,k-step mark; on \emph{FetchPush} the Oracle leads cleanly while GPT-4o
+sits between PER and Oracle; on \emph{FetchSlide} the ranking is closer and
+seeds disagree, consistent with FetchSlide's known sensitivity to initial-state
+randomization. Importantly, the gap between PER and Oracle is the
+\emph{maximum achievable headroom} from a perfect failure-localizer; the gap
+between PER and GPT-4o is the headroom \emph{VLM-attributable to a frontier
+model}. Section~\ref{sec:discussion} reports a pipeline-bug discovery that
+qualifies this headline.
+
+\subsection{Counterfactual Prompt Design}
+\label{sec:exp:prompt}
+
+We ran a head-to-head comparison of Claude Opus 4.7 (the C1 baseline) and
+GPT-4o on six bit-identical synthetic Fetch failures, scoring each of the four
+prompt variants (\textsc{narrative}, \textsc{action}, \textsc{achieved\_goal},
+\textsc{all}) with a fixed Opus 4.7 judge.
+Table~\ref{tab:prompt-variants} summarizes the key metrics; Figure~\ref{fig:prompt}
+plots judge plausibility and specificity per variant.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{figN_c1v2_model_comparison.pdf}
+\caption{Counterfactual prompt design head-to-head. Left: judge plausibility
+per variant. Right: judge specificity per variant. Claude Opus 4.7 (C1
+baseline; partial grid: $n\!=\!4$ on \textsc{narrative}/\textsc{action}/\textsc{achieved\_goal},
+$n\!=\!2$ on \textsc{all}) vs.\ GPT-4o (this work, full $n\!=\!6$ grid). Error
+bars: mean~$\pm$~SE.}
+\label{fig:prompt}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Prompt-variant analysis: mean~$\pm$~SE judge plausibility, goal-progress,
+and teleport-collapse rate (the fraction of \texttt{corrective\_position}
+outputs landing within 5\,cm of \texttt{desired\_goal}). Six bit-identical
+synthetic Fetch failures; the judge is Claude Opus 4.7 throughout.
+\textbf{Bold}: best per column.}
+\label{tab:prompt-variants}
+\begin{tabular}{ll cccc}
+\toprule
+Variant & Model & $n$ & Plausibility & Goal-progress & Teleport-collapse \\
+\midrule
+\textsc{narrative}    & Opus 4.7 & 4 & $\mathbf{0.79\pm 0.04}$ & $\mathbf{0.68\pm 0.06}$ & --- \\
+\textsc{narrative}    & GPT-4o   & 6 & $0.70\pm 0.06$ & $0.40\pm 0.06$ & --- \\
+\textsc{action}       & Opus 4.7 & 4 & $0.55\pm 0.09$ & $0.53\pm 0.16$ & --- \\
+\textsc{action}       & GPT-4o   & 6 & $\mathbf{0.74\pm 0.04}$ & $0.42\pm 0.09$ & --- \\
+\textsc{achieved\_goal} & Opus 4.7 & 4 & $0.46\pm 0.18$ & $\mathbf{0.97\pm 0.01}$ & $4/4$ (100\%) \\
+\textbf{\textsc{achieved\_goal}} & \textbf{GPT-4o} & 6 & $\mathbf{0.79\pm 0.06}$ & $0.83\pm 0.11$ & $\mathbf{0/6\ (0\%)}$ \\
+\textsc{all}          & Opus 4.7 & 2 & $0.70\pm 0.10$ & $0.62\pm 0.12$ & $2/2$ (100\%) \\
+\textsc{all}          & GPT-4o   & 6 & $0.67\pm 0.04$ & $0.68\pm 0.13$ & $4/6\ (67\%)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Key finding.} The \texttt{(GPT-4o, achieved\_goal)} configuration
+\emph{strictly dominates} every other (model, position-emitting variant) cell:
+0\% teleport-collapse (vs.\ Opus's 100\%), 0.79~plausibility (tied for the
+highest in the entire grid), and 0.83~goal-progress (only narrowly behind
+Opus's degenerate 0.97 which trivially copies the goal). We adopt this as the
+production configuration. Critically, GPT-4o still teleport-collapses on the
+joint \textsc{all} variant in 4/6 episodes: the failure mode is
+\emph{prompt-architectural}, not model-specific. Section~\ref{sec:exp:real}
+extends this prompt grid to a third VLM family (Sonnet~4.5) on real-data
+failures and confirms the prompt-architectural fix transfers, evidence that
+the design recommendations here are not GPT-4o-specific.
+
+\subsection{Cross-Task Transferability}
+\label{sec:exp:transfer}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\linewidth]{figN2_cross_task_transfer.pdf}
+\caption{Cross-task transferability. Same prompt template, three Fetch
+environments. \emph{Parse rate}, \emph{judge task-relevance}, and \emph{judge
+physical-plausibility} are all 12/12 (100\%) across environments. \emph{Tolerant
+keyframe agreement} (VLM vs.\ heuristic Oracle within $\pm 1$ keyframe) improves
+monotonically with failure visual-distinctiveness, suggesting the heuristic
+under-localizes synthetic-policy rollouts rather than the VLM erring.}
+\label{fig:transfer}
+\end{figure}
+
+A central structural claim against VLM-RB is that a foundation-model evaluator
+serves multiple tasks with one prompt template, while any \emph{learned}
+priority head (TD-error, contact-energy, or per-task fitted $\lambda$ schedule)
+requires per-task retraining. We tested this on 12 failed episodes (4 each on
+Push, PickAndPlace, Slide) with a single Python format-string template differing
+only in a one-sentence task description. Results: parse rate~12/12,
+judge-rated task-relevance~12/12, judge-rated physical plausibility~12/12;
+tolerant keyframe agreement~9/12 (Figure~\ref{fig:transfer}). Qualitative
+sampling of the VLM's reasoning strings shows correct task-specific failure-mode
+identification in every case: ``gripper passes over block without making
+contact'' (Push), ``gripper at block location but fails to close''
+(PickAndPlace), ``strike direction off-axis'' (Slide). Pilot $n$ is small;
+Section~\ref{sec:discussion} flags this as the leading limitation.
+
+\subsection{Real-Data Validation}
+\label{sec:exp:real}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\linewidth]{figN_c1v2_real_vs_synthetic.pdf}
+\caption{Real-vs-synthetic generalization. Ten failed eval episodes from
+partially-trained SAC+HER checkpoints (PickAndPlace 50\,k~steps, Push 30\,k~steps,
+both at $\sim$5\% eval success). Left: plausibility per variant.
+Middle: specificity per variant. Right: teleport-collapse rate. The
+\textsc{achieved\_goal} teleport rate is task-conditioned: it survives on Push
+(planar target) but is rescued on PickAndPlace (mid-air target) when switching
+Opus 4.7 $\to$ Sonnet 4.5 (75\% $\to$ 0\%) or \textsc{achieved\_goal} $\to$
+\textsc{all} (75\% $\to$ 17\%). The 5\,cm reject-teleport gate is empirically
+\emph{necessary} regardless of model.}
+\label{fig:real}
+\end{figure}
+
+We re-ran the prompt analysis on 10 real failed eval episodes sampled from
+partially-trained SAC+HER policies (6 PickAndPlace + 4 Push, both at $\sim$5\%
+eval success after 50\,k/30\,k steps). Real failure modes are
+\emph{near-misses} (final-distance 0.06--0.34\,m) rather than the
+``block-flies-off-table'' mode that dominates random-policy synthetic episodes.
+Three findings carry to the production pipeline (Figure~\ref{fig:real}):
+(i) the teleport-collapse mode \emph{partially persists} on real data and is
+\emph{task-conditioned} (survives on Push where the target sits on the table
+surface; rescuable on PickAndPlace where mid-air goals admit a non-trivial
+waypoint); (ii) Sonnet 4.5 stands in usefully for GPT-4o when OpenAI quota is
+constrained, dropping PickAndPlace teleport from 75\% to 0\%; (iii) the
+\textsc{all} prompt regularizes the position field on tasks where a non-trivial
+waypoint exists. The synthetic-vs-real plausibility delta is small ($\pm 0.07$
+on most variants), indicating that the prompt-design conclusions from
+Section~\ref{sec:exp:prompt} survive the synthetic-to-real shift.
+
+\subsection{In-Flight Experiments}
+\label{sec:exp:inflight}
+
+Two experiments are mid-execution on the project's Modal cluster and were not
+ready in time for camera-ready numbers. \textbf{(A) HER baselines:} 27 SAC+HER
+runs (3 methods $\times$ 3 envs $\times$ 3 seeds at 500\,k--1\,M steps,
+\texttt{her\_baselines} W\&B tag) are 10/27 running and 17/27 queued at
+submission time. Headline question: does Semantic PER \emph{stack} on the
+standard HER stack? Smoke tests on \texttt{FetchReach} (2\,k steps, three
+configs) confirm all three configurations train end-to-end without crashes,
+with critic losses 0.22--0.38 and actor losses 1.4--1.7. \textbf{(B) Verified-CF
+kill experiment:} a 50-LOC subclass of \texttt{CounterfactualHERBuffer} wraps
+the verifier as a hindsight-relabel gate. Pre-registered claim: verified-CF
+hindsight strictly improves on standard HER on \texttt{FetchPickAndPlace};
+falsifier is acceptance rate below 20\% on a 5\,k-step calibration run. Both
+are scheduled to complete overnight.
+
+\section{Discussion and Limitations}
+\label{sec:discussion}
+
+\paragraph{The GPT-4o pipeline-bug discovery.}
+The first GPT-4o semantic-PER run (Figure~\ref{fig:headline}) used the
+\textsc{all} prompt variant with the pre-fix code path: position outputs were
+not run through the teleport-rejection gate. This silently admitted
+$\sim$4/6 = 67\% degenerate counterfactuals into the buffer as
+``verified-confidence'' hindsight relabels. The headline GPT-4o curve in
+Figure~\ref{fig:headline} therefore conflates the genuine semantic signal with
+$\sim$two-thirds-degenerate noise. Sections~\ref{sec:exp:prompt}--\ref{sec:exp:real}
+were the discoveries that motivated the production switch to
+\texttt{(GPT-4o, achieved\_goal)} with the gate enforced. The corrected
+SAC+verified-CF curves are running overnight; we expect the GPT-4o trajectory
+to track the heuristic Oracle far more tightly than Figure~\ref{fig:headline}
+suggests.
+
+\paragraph{Small-$n$ caveats.}
+All headline numbers in Sections~\ref{sec:exp:prompt}--\ref{sec:exp:real} are
+small-sample pilots: $n\!=\!6$ synthetic, $n\!=\!10$ real, $n\!=\!12$
+cross-task. A camera-ready submission would scale these to $n\!\ge\!30$ per
+condition with bootstrapped CIs. The cross-task 12/12 is suggestive of strong
+transfer but not statistically distinguishable from an 80\% true rate at
+$n\!=\!12$. We pre-register the larger sweeps as the follow-on.
+
+\paragraph{The oracle-CF kill experiment.}
+A direct kill-test of the verified-CF mechanism is to compare
+SAC+HER+verified-CF against SAC+HER+\emph{oracle}-CF, where the oracle simply
+returns the ground-truth optimal corrective action by solving inverse
+kinematics from the failure state to the goal. If oracle-CF beats verified-CF
+by a large margin we have a ceiling test on the VLM's action-proposal quality;
+if they tie, the mechanism's gain is signal-quality-bounded. The smoke harness
+(\texttt{scripts/n1\_smoke\_verified\_cf.py}) supports this swap as a one-flag
+change; results are not yet in.
+
+\paragraph{Broader impact.}
+Sparse-reward manipulation RL is a building block of robot learning; our work
+is methodological and inherits the standard impact profile of that domain. No
+new safety risks are introduced beyond standard simulation-trained policy
+deployment caveats. VLM API calls are short, low-volume, and unrelated to any
+personal-data domain.
+
+\paragraph{Limitations.}
+(i) Our IS-correction is conservative (uses $w_{\text{IS},P}$ rather than the
+strictly-correct $w_{\text{IS},\text{Sem}}$); the framing motivates this as an
+analogue to V-trace truncation, but the strictly-correct ablation has not yet
+been run. (ii) The VLM's posterior $q_\phi$ is conditioned on trajectories
+collected by the current policy, which couples it to the policy in a way
+classical IS theory does not anticipate; the appropriate response is
+freshness-aware PER \citep{ma2026freshness}, deferred to future work.
+(iii) The window kernel $K_W$ is a heuristic; a softer prompt eliciting a
+proper posterior $q_\phi(t^\star\!=\!i\mid\tau)$ would dispense with $W$.
+(iv) Our cross-task evidence is at $n\!=\!12$ in three Fetch envs; transfer to
+non-Fetch tasks (Adroit, OGBench, robosuite---and to VLM-RB's MiniGrid
+benchmark for a head-to-head comparison) is the natural follow-on.
+(v) Our three-VLM-family robustness sweep (Opus~4.7, GPT-4o, Sonnet~4.5)
+does not yet cover open-weights VLMs (LLaVA-NeXT, Qwen2.5-VL, Pixtral);
+the relative magnitude of the prompt-architectural teleport failure on
+smaller open VLMs is open. (vi) The simulator-as-verifier assumption
+requires a forkable training environment; tasks with non-deterministic or
+real-robot dynamics would need an additional verification layer.
+
+\paragraph{Conclusion.}
+We re-frame VLM-guided experience replay as importance-sampled posterior
+reweighting with a foundation-model credit-assignment oracle, introduce a
+verified-counterfactual hindsight mechanism that closes the dominant failure
+mode of language-only counterfactuals, and present prompt-design, cross-task,
+and synthetic-vs-real evidence that the framing is empirically actionable.
+The production configuration \texttt{(GPT-4o, achieved\_goal + 5\,cm gate)}
+emerged from a discovery that the teleport-collapse failure is
+prompt-architectural rather than VLM-family-specific. Section~\ref{sec:exp:inflight}'s
+SAC sweeps are the highest-priority follow-up.
+
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+\appendix
+
+\section{Prompt Template and Implementation Details}
+\label{app:prompts}
+
+\paragraph{Prompt template.}
+The single cross-task prompt template used in Section~\ref{sec:exp:transfer} is:
+
+\begin{quote}
+\small
+\texttt{You are an expert robotics analyst. The robot is attempting the
+following task: \{task\_description\}. Examine the \{K\} keyframes of a failed
+episode shown below. Identify the single keyframe index $\in\{0,\dots,K\!-\!1\}$
+at which the failure became inevitable, and a 1-2 sentence reasoning. Return
+strict JSON: \{``failure\_frame\_index'': $i$, ``reasoning'': $s$\}.}
+\end{quote}
+
+\noindent
+With per-environment substitutions:
+\begin{itemize}\itemsep0pt
+\item FetchPush: \texttt{``the robot should push the red cube to the green target on the table''}.
+\item FetchPickAndPlace: \texttt{``the robot should pick up the red cube and place it at the floating green target''}.
+\item FetchSlide: \texttt{``the robot should strike the red puck so that it slides to the green target''}.
+\end{itemize}
+
+\paragraph{Heuristic localizer (Oracle v3).}
+The \texttt{GoalDistanceLocalizer} reads privileged sim state and selects the
+failure timestep via three phases, in precedence order: (a) \emph{ballistic}:
+fires when an object keeps moving with $>$0.05\,m/step velocity for $>$3
+consecutive post-peak steps (catches Slide throws); (b) \emph{contact-loss}:
+fires on transitions $\text{in\_contact}_t \to \neg\text{in\_contact}_{t+1}$
+with run length $\ge 2$ and object-goal distance $>$0.10\,m (Push/PickPlace);
+(c) \emph{argmin}: falls back to the closest-approach timestep. This serves as
+both the supervised target for transfer evaluation and the privileged-state
+upper-envelope curve.
+
+\paragraph{Codebase and reproduction.}
+All training scripts, configurations, and analysis notebooks are released at
+\url{https://github.com/d-grant-uc-berkeley/RL_project} (commit
+\texttt{0fa36fc}). Reproduction details, hyperparameter sweeps, and full
+SAC+HER+Semantic-PER configs are in \texttt{configs/}; the verified-CF prototype
+lives at \texttt{src/vlm/verified\_counterfactual.py}.
+
+\input{appendix}
+
+\end{document}

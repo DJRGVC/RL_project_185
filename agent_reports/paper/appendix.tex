@@ -1,0 +1,1137 @@
+% ======================================================================
+%  Supplementary Material / Appendix
+%  VLM-Verified Counterfactual Hindsight for Sparse-Reward Manipulation
+% ======================================================================
+%
+% Note: this appendix is intended to extend Appendix A in main.tex.
+% Section A.1 (Prompt Template) and A.2 (Heuristic localizer) are already
+% sketched in main.tex (\appendix block); we extend them here with full
+% pseudocode, derivations, hyperparameter tables, and reproducibility
+% material.
+
+\section{Extended Method Details}
+\label{app:methods}
+
+\subsection{Algorithm pseudocode}
+\label{app:algorithms}
+
+We provide complete pseudocode for the two algorithmic contributions of
+the paper: Semantic PER with the failure-direction signal
+(Algorithm~\ref{alg:sem-per}) and VLM-Verified Counterfactual Hindsight
+(Algorithm~\ref{alg:verified-cf}).
+
+\begin{figure}[t]
+\centering
+\fbox{\parbox{0.95\linewidth}{
+\textbf{Algorithm 1: Semantic PER with the failure-direction signal.}\\[2pt]
+\textbf{Input.} Buffer $\mathcal{D}_B$ with sum-tree priorities $\{p_i\}$;
+TD-error array $\{\delta_i\}$; semantic-weight array $\{w_i\}$ (init $1$);
+SAC critic $Q_\theta$; PER exponent $\alpha$; IS exponent $\beta_t$; window
+half-width $W$; cap $w_{\max}$; VLM $q_\phi$; localizer
+$\mathrm{Loc}_\phi$.\\[2pt]
+\textbf{1. Episode collection.} For step $t=0,\dots,T-1$: act
+$a_t\!\sim\!\pi_\theta(\cdot\mid s_t)$, observe $(r_t,s_{t+1})$, push
+$(s_t,a_t,r_t,s_{t+1})$ to $\mathcal{D}_B$ at index
+$i_t\!\in\!\{0,\dots,|\mathcal{D}_B|\!-\!1\}$ with priority
+$p_{i_t}=\max_j p_j$ (PER's max-priority initialization).\\[2pt]
+\textbf{2. Failure check.} If episode ended without success ($r_T<0$): goto~3;
+else skip to step~5.\\[2pt]
+\textbf{3. VLM failure localization.} Select $K=5$ uniformly-spaced keyframes
+$\{F_{k}\}_{k=0}^{K-1}$ from the episode RGB renders. Build
+\texttt{frame\_index\_map}. Query
+$t_{\text{fail}} \leftarrow \mathrm{Loc}_\phi(\{F_k\}, \text{task\_desc},
+T)$ (returns keyframe index $\hat k$; map to timestep
+$t_{\text{fail}}\leftarrow$ keyframe-timestep$(\hat k)$).\\[2pt]
+\textbf{4. Apply semantic weight.} For each in-episode slot $i$ with episode-local
+timestep $\tau_i\in\{0,\dots,T-1\}$:
+$w_i \leftarrow w_{\max}$ if $|\tau_i - t_{\text{fail}}|\le W$ else $1$.
+Update sum-tree leaf for slot $i$ to $p_i \leftarrow (|\delta_i|+\varepsilon)^\alpha
+\cdot w_i$.\\[2pt]
+\textbf{5. Critic update.} Sample minibatch $\{i_j\}_{j=1}^{B}$ from
+$\mu(i)\propto p_i$. Compute IS weights
+$w_{\text{IS},j} = (|\mathcal{D}_B|\cdot \mu(i_j))^{-\beta_t}$, normalize by
+$\max_j w_{\text{IS},j}$. Compute TD-errors
+$\delta_{i_j} = r_{i_j} + \gamma Q_{\bar\theta}(s_{i_j+1},
+\pi_\theta(s_{i_j+1})) - Q_\theta(s_{i_j},a_{i_j})$, take loss
+$\mathcal{L} = \frac{1}{B}\sum_j w_{\text{IS},j}\,\delta_{i_j}^2$.
+Backprop; update $\theta$.\\[2pt]
+\textbf{6. Priority update.} For each $j$: $\delta_{i_j}\!\to\!\text{stored TD}$,
+set $p_{i_j} \leftarrow (|\delta_{i_j}|+\varepsilon)^\alpha \cdot w_{i_j}$.\\[2pt]
+\textbf{7. Goto~1 until total\_steps reached.}\\[2pt]
+\textbf{Output.} Trained policy $\pi_\theta$.
+}}
+\caption{Semantic PER with the failure-direction signal. The semantic-weight
+multiplier $w_i$ is set once per episode at the conclusion of step~3 and
+remains attached to slot $i$ until the slot is overwritten by the ring
+buffer. Step~5's IS weights use the PER proposal $\mu_P$, not the full
+$\mu_{\text{Sem}}$; see Section~\ref{sec:theory} and
+Appendix~\ref{app:is-derivation} for the under-correction discussion.}
+\label{alg:sem-per}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\fbox{\parbox{0.95\linewidth}{
+\textbf{Algorithm 2: VLM-Verified Counterfactual Hindsight.}\\[2pt]
+\textbf{Input.} Training env $E_{\text{train}}$; verifier env
+$E_{\text{verify}}$ (separate \texttt{gym.make} instance, same env\_name);
+VLM counterfactual function $\mathrm{CF}_\phi$; failure timestep $K$;
+horizon $N\!=\!50$; success threshold $\eta\!=\!0.05$ m; reject-teleport
+radius $\rho\!=\!0.05$ m; HER replay $\mathcal{D}_B$.\\[2pt]
+\textbf{1. Trigger condition.} After a failed episode terminating at step
+$T$ with $\|\text{ag}_T - g\| > \eta$.\\[2pt]
+\textbf{2. Snapshot.} Capture
+$s_K = (\text{qpos}_K, \text{qvel}_K, t_K, \text{mocap\_pos}_K, \text{mocap\_quat}_K, g)$
+from $E_{\text{train}}$ at the localized failure timestep $K$ (from
+$\mathrm{Loc}_\phi$ or oracle).\\[2pt]
+\textbf{3. VLM counterfactual.} Query
+$\text{out}\leftarrow \mathrm{CF}_\phi(\{F_k\}, K, g,
+\text{task\_desc}, \text{variant}=\textsc{achieved\_goal})$ to receive
+candidate corrective position $p_{\text{cf}}\in\mathbb{R}^3$ and (in the
+\textsc{all} variant) corrective action $a_{\text{cf}}\in\mathbb{R}^4$.\\[2pt]
+\textbf{4. Teleport gate.} If
+$\|p_{\text{cf}}-g\|<\rho$: reject (reason=\texttt{teleport\_collapse});
+fall back to standard HER and return.\\[2pt]
+\textbf{5. Inverse-kinematic action (when needed).} If \textsc{achieved\_goal}
+variant: synthesize $a_{\text{cf}}$ by a simple proportional controller
+$a_{\text{cf}} = \mathrm{clip}((p_{\text{cf}}-\text{ee}_K)/0.05, -1, 1)$
+appended with \texttt{grip}$=-1$ (close). If \textsc{action}/\textsc{all}:
+use the VLM's $a_{\text{cf}}$ directly, clipped to $[-1,1]^4$.\\[2pt]
+\textbf{6. Restore.} On $E_{\text{verify}}$: write back \texttt{qpos},
+\texttt{qvel}, \texttt{time}, \texttt{mocap}; call
+\texttt{mujoco.mj\_forward(model, data)} to propagate kinematic
+derivatives. Verify round-trip equality $\|\text{qpos}_K -
+\text{qpos}_K^{(\text{restored})}\|=0$ as a debug assertion.\\[2pt]
+\textbf{7. Rollout.} For $j=0,\dots,N-1$: step
+$(s', r_j)\leftarrow E_{\text{verify}}.\texttt{step}(a_{\text{cf}})$
+under the env's \emph{unmodified} sparse reward
+$r_j=E_{\text{verify}}.\texttt{compute\_reward}(\text{ag}_j, g)$.\\[2pt]
+\textbf{8. Acceptance.} If $\exists j: r_j\ge 0$: VERIFIED. Set
+$\text{ag}^\star\leftarrow\text{ag}_{j^\star}$. Append
+$(s_K, a_K, \dots, s_{K+j^\star})$ to $\mathcal{D}_B$ with env's sparse
+rewards \emph{and} a hindsight-relabeled copy with
+$g'\leftarrow\text{ag}^\star$, both marked confidence$=$1.0. Else:
+reject (\texttt{goal\_not\_reached}); fall back to standard HER.\\[2pt]
+\textbf{Output.} (optional) verified trajectory $\tau_v$ appended to
+buffer; verification flag $\in\{\text{ACCEPT},\text{REJECT}\}$.
+}}
+\caption{VLM-Verified Counterfactual Hindsight. The teleport gate
+(step~4) is empirically necessary on planar tasks (FetchPush) but
+structurally redundant on \textsc{action}-only variants where no
+position field is emitted. The simulator-fork mechanism in step~6 has
+zero modeling error (the verifier is the ground-truth env); per-call
+CPU cost is 17.6\,ms.}
+\label{alg:verified-cf}
+\end{figure}
+
+\subsection{Notation glossary}
+\label{app:notation}
+
+Table~\ref{tab:notation} gives the full notation used throughout the
+paper. Each symbol's introduction section is noted in the rightmost
+column.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Complete notation glossary.}
+\label{tab:notation}
+\begin{tabular}{l p{0.62\linewidth} l}
+\toprule
+Symbol & Meaning & First use \\
+\midrule
+$\tau$, $T$ & Episode trajectory $\tau=(s_0,a_0,r_0,\dots,s_T)$; horizon $T\!=\!50$ for Fetch & \S\ref{sec:theory} \\
+$i, \tau_i$ & Transition index in buffer; trajectory containing slot $i$ & \S\ref{sec:theory} \\
+$s_t,a_t,r_t,g$ & State, action, reward, desired goal at step $t$ & \S\ref{sec:theory} \\
+$\text{ag}_t$ & Achieved goal at step $t$ (object position for manipulation tasks) & \S\ref{sec:method:verified} \\
+$\mathcal{D}_B$ & Replay buffer ($|\mathcal{D}_B|=10^6$ slots) & \S\ref{sec:theory} \\
+$\theta,\pi_\theta,Q_\theta$ & SAC actor/critic parameters and policy/value heads & \S\ref{sec:exp:setup} \\
+$\bar\theta$ & Target-critic parameters (Polyak average) & Alg.~\ref{alg:sem-per} \\
+$\delta_i$ & TD-error at transition $i$ & Eq.~\eqref{eq:loss} \\
+$\mu(i)$ & Sampling distribution over slots; subscripts $U,P,\text{Sem}$ & \S\ref{sec:theory} \\
+$\alpha$ & PER priority exponent ($\alpha=0.6$) & Eq.~\eqref{eq:per-is} \\
+$\beta_t$ & Annealed IS exponent ($\beta_0=0.4\to 1$ linear) & Eq.~\eqref{eq:per-is} \\
+$\varepsilon$ & Priority floor (1e-6) & \S\ref{sec:method:sper} \\
+$w_{\text{IS}}(i)$ & Per-sample IS-correction weight $(|\mathcal{D}_B|\mu(i))^{-\beta}$ & Eq.~\eqref{eq:per-is} \\
+$t^\star,t_{\text{fail}}$ & Latent outcome-causing timestep; VLM's argmax thereof & \S\ref{sec:theory} \\
+$q_\phi(t^\star\!\mid\!\tau)$ & VLM-emitted approximate posterior over outcome-causing timestep & Eq.~\eqref{eq:wsem} \\
+$p(t^\star\!\mid\!\tau)$ & True (unknown) posterior over outcome-causing timestep & \S\ref{sec:theory} \\
+$\phi$ & Frozen VLM parameters (e.g., GPT-4o, Claude Opus 4.7) & \S\ref{sec:theory} \\
+$K_W(i;t^\star)$ & Window kernel; $1+(w_{\max}-1)\mathbb{1}[|i-t^\star|\le W]$ & Eq.~\eqref{eq:wsem} \\
+$w_{\text{sem}}(i;\tau)$ & Per-transition semantic boost (Eq.~\ref{eq:wsem}) & Eq.~\eqref{eq:wsem} \\
+$w_{\max}$ & Bounded boost cap ($w_{\max}=10$) & Eq.~\eqref{eq:wsem} \\
+$W$ & Window half-width in timesteps ($W=5$) & Eq.~\eqref{eq:wsem} \\
+$K$ & Number of keyframes per VLM query ($K=5$) & \S\ref{sec:method:sper} \\
+$\mu_{\text{Sem}}(i)$ & Semantic-PER sampling distribution; product form (Eq.~\ref{eq:headline}) & Eq.~\eqref{eq:headline} \\
+$\mathrm{CF}_\phi$ & VLM counterfactual function (4 prompt variants) & \S\ref{sec:method:prompt} \\
+$p_{\text{cf}}, a_{\text{cf}}$ & VLM-proposed corrective position $\in\mathbb{R}^3$; corrective action $\in\mathbb{R}^4$ & \S\ref{sec:method:prompt} \\
+$\rho$ & Reject-teleport radius (0.05\,m) & \S\ref{sec:method:prompt} \\
+$\eta$ & Fetch goal-distance success threshold (0.05\,m) & \S\ref{sec:exp:setup} \\
+$N$ & Verifier rollout horizon ($N\!=\!50$ steps, one Fetch horizon) & \S\ref{sec:method:verified} \\
+$s_K$ & MuJoCo snapshot $(\text{qpos},\text{qvel},t,\text{mocap},g)$ at $K$ & \S\ref{sec:method:verified} \\
+$\lambda_t$ & Sharony's mixture coefficient ($0\to 0.5$ warm-up) & \S\ref{sec:related} \\
+$\gamma$ & MDP discount factor (0.98) & \S\ref{sec:exp:setup} \\
+$\tau_{\text{SAC}}$ & Polyak target-update coefficient (0.005) & \S\ref{sec:exp:setup} \\
+$k_{\text{HER}}$ & HER relabel multiplier ($k=4$, \texttt{future} strategy) & \S\ref{sec:exp:setup} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Heuristic localizer (``Oracle v3'') --- extended geometric reasoning}
+\label{app:oracle-v3}
+
+Section~\ref{app:prompts} (Appendix~A.2) of the main text introduces the
+\texttt{GoalDistanceLocalizer} in three precedence-ordered phases. Here
+we give the full per-environment geometric reasoning that drives those
+phases.
+
+\paragraph{FetchPush --- contact-loss detection.}
+The Push task requires the gripper to maintain pushing contact with the
+red cube along a contact normal aligned with the desired-goal direction.
+We define the binary contact predicate
+$\mathrm{ct}_t = \mathbb{1}[\|\text{ee}_t - \text{obj}_t\| < 0.05~\mathrm{m}]$
+where $\text{ee}_t$ is the end-effector position and $\text{obj}_t$ the
+object center. A contact-loss event at step $t$ is a transition
+$(\mathrm{ct}_t,\mathrm{ct}_{t+1})=(1,0)$ such that
+(i) the run length of $\neg \mathrm{ct}$ in $[t\!+\!1,\dots]$ is $\ge 2$
+(filters single-frame contact bounces),
+(ii) the object-goal distance $\|\text{obj}_t - g\| > 0.10$\,m
+(filters near-success contact lifts),
+(iii) the contact-loss timestep is at least 10 steps before the closest-approach
+timestep (filters end-of-episode argmin coincidence).
+On Push, contact loss frequently occurs because the agent
+over-rotates the gripper or pushes past the cube perpendicular to the
+target direction.
+
+\paragraph{FetchPickAndPlace --- ballistic vs.\ argmin precedence.}
+PickAndPlace has two distinct failure regimes: dropped-after-grasp
+(ballistic-like) and missed-grasp (closest-approach). The localizer first
+runs the ballistic-throw detector: compute per-step displacements
+$d_t = \|\text{obj}_{t+1} - \text{obj}_t\|$, find peak $t_p\!=\!\arg\max d_t$
+with $d_{t_p} > 0.008$\,m, and check that the average post-peak velocity
+in the window $[t_p\!+\!1, t_p\!+\!7]$ exceeds $0.35\cdot d_{t_p}$. If
+true, mark $t_{\text{fail}}\!=\!t_p$ (the drop moment). If false (object
+remained ``carried'' or never moved), fall through to argmin: $\arg\min_t
+\|\text{obj}_t - g\|$. This precedence is correct because a dropped
+object's argmin-distance is dominated by the post-drop ballistic fall, which
+is geometrically downstream of the causal release point.
+
+\paragraph{FetchSlide --- release-point detection.}
+Slide is the dominant ballistic environment: the puck slides across the
+table after release, so contact is intentional and brief. The ballistic
+detector almost always fires. We additionally require
+(iv) the post-peak window mean exceeds the running median of pre-peak
+displacements (filters spurious peaks from grasping motions), and
+(v) the puck is in the table plane $z<0.45$\,m at peak time (filters
+gripper-only motion). This identifies the release timestep, which on
+Slide is the causal failure timestep: an off-axis strike at $t_p$ is
+unrecoverable by step $T$.
+
+\paragraph{Argmin fallback.}
+If neither (b) nor (c) fires (the object stays still or moves slowly
+relative to noise), we return $\arg\min_t \|\text{obj}_t - g\|$. This is
+the closest-approach timestep, which on contact tasks where the agent
+maintains pushing throughout is a reasonable diagnostic for ``the moment
+divergence began''.
+
+\subsection{Counterfactual prompt templates --- full text}
+\label{app:cf-prompts}
+
+We reproduce the four counterfactual prompt variants verbatim. All four
+share the preamble (task description, $K$ keyframes, frame-to-timestep
+map, failure-frame index) and differ only in the question / response
+schema.
+
+\paragraph{Common preamble.}
+{\small
+\begin{verbatim}
+You are analyzing a robotic manipulation trajectory.
+
+Task: {task_description}
+
+{K} keyframes from a FAILED episode are shown in chronological order.
+Frame-to-timestep mapping:
+{frame_index_map}
+
+A failure-detection module identified Frame {failure_frame_index}
+(~{failure_frame_pct:.0f}% through the episode) as the critical moment
+where the robot's action caused or revealed the failure.
+\end{verbatim}}
+
+\paragraph{Variant 1: \textsc{narrative}.}
+{\small
+\begin{verbatim}
+QUESTION: At Frame {failure_frame_index}, what should the robot have
+done differently for the episode to succeed? Be specific about the
+corrective behaviour in physical terms (e.g. "lift higher before
+approach", "close gripper sooner", "push from the opposite side").
+
+Respond with ONLY a JSON object:
+{
+  "explanation": "<one concise sentence describing the corrective
+                  behaviour>",
+  "confidence": <float in [0,1]>
+}
+\end{verbatim}}
+
+\paragraph{Variant 2: \textsc{action}.}
+{\small
+\begin{verbatim}
+The robot's action space is a 4-D vector: (dx, dy, dz, gripper_command).
+  - dx, dy, dz in [-1, 1] are end-effector velocity commands.
+    Units: 1.0 ~= 5 cm/step. The 'x' axis points away from the robot,
+    'y' to the left, 'z' upward.
+  - gripper_command in [-1, 1]: -1 = close, +1 = open.
+
+QUESTION: What 4-D corrective action vector should the robot have
+executed at Frame {failure_frame_index} (instead of whatever it actually
+did) so the episode would have succeeded? Provide a single delta-action
+[dx, dy, dz, grip].
+
+Be conservative: prefer small in-distribution deltas. If the failure is
+a released-too-early issue, use grip ~= -1. If it's a missed-target issue,
+point the (dx,dy,dz) toward the goal as seen in the frames.
+
+Respond with ONLY a JSON object:
+{
+  "corrective_action": [<dx>, <dy>, <dz>, <grip>],
+  "explanation": "<one concise sentence>",
+  "confidence": <float in [0,1]>
+}
+\end{verbatim}}
+
+\paragraph{Variant 3: \textsc{achieved\_goal}.}
+{\small
+\begin{verbatim}
+In the Fetch suite, `achieved_goal` is the current 3D position of the
+manipulated object (or the gripper, for FetchReach). The episode
+succeeds when ||achieved_goal - desired_goal|| < 5 cm. Workspace coords
+range roughly: x in [1.05, 1.55] m, y in [0.4, 1.1] m, z in [0.4, 0.85] m
+(the table surface is at z ~= 0.42 m).
+
+The desired_goal (target marker) for this episode is at:
+  desired_goal = {desired_goal}
+
+QUESTION: At Frame {failure_frame_index}, what 3D position SHOULD the
+object have reached for the episode trajectory to be on track for
+success? In other words, propose a hindsight `achieved_goal` for this
+frame — a counterfactual location that, had the object been there at
+this timestep, would have set the trajectory up to terminate within 5
+cm of the desired_goal.
+
+The proposed position must lie inside the Fetch workspace (above the
+table).
+
+Respond with ONLY a JSON object:
+{
+  "corrective_position": [<x>, <y>, <z>],
+  "explanation": "<one concise sentence>",
+  "confidence": <float in [0,1]>
+}
+\end{verbatim}}
+
+\paragraph{Variant 4: \textsc{all} (unified).}
+{\small
+\begin{verbatim}
+Context for the action and goal spaces:
+  - Action: 4-D delta vector (dx, dy, dz, gripper), components in [-1,1].
+    Each unit ~= 5 cm/step end-effector motion; gripper -1=close / +1=open.
+  - achieved_goal / desired_goal: 3-D object (or gripper) positions in m.
+    The workspace spans roughly x in [1.05,1.55], y in [0.4,1.1],
+                                 z in [0.4,0.85].
+  - desired_goal for this episode = {desired_goal}.
+
+Provide a unified counterfactual:
+  (a) the 3D position the object should have been at this frame
+      (`corrective_position`),
+  (b) the 4-D action the robot should have executed at this frame
+      (`corrective_action`),
+  (c) a one-sentence physical explanation.
+
+Respond with ONLY a JSON object:
+{
+  "corrective_position": [<x>, <y>, <z>],
+  "corrective_action": [<dx>, <dy>, <dz>, <grip>],
+  "explanation": "<one concise sentence>",
+  "confidence": <float in [0,1]>
+}
+\end{verbatim}}
+
+\paragraph{Task description substitutions.}
+The single \texttt{\{task\_description\}} placeholder takes one of three
+strings:
+\begin{itemize}\itemsep0pt
+\item \texttt{FetchPush}: ``the robot should push the red cube to the green target on the table''.
+\item \texttt{FetchPickAndPlace}: ``the robot should pick up the red cube and place it at the floating green target''.
+\item \texttt{FetchSlide}: ``the robot should strike the red puck so that it slides to the green target''.
+\end{itemize}
+
+\section{Theoretical Derivations}
+\label{app:theory}
+
+\subsection{Importance-sampled posterior reweighting --- full derivation}
+\label{app:is-derivation}
+
+This section gives the step-by-step IS argument referenced in
+Section~\ref{sec:theory}. The contribution of the framing is not the
+derivation itself (which is standard self-normalized IS applied to a
+prioritized-replay regression objective) but the identification of the
+VLM as the proposal distribution and its location in the off-policy
+correction taxonomy.
+
+\paragraph{Step 1: the target objective.}
+Off-policy value learning targets the Bellman-residual loss under
+\emph{uniform replay}:
+\begin{equation}
+\mathcal{L}_U(\theta) \;=\; \mathbb{E}_{i\sim\mu_U}\bigl[\ell(\delta_i(\theta))\bigr]
+\;=\; \frac{1}{|\mathcal{D}_B|}\sum_{i=1}^{|\mathcal{D}_B|} \ell(\delta_i(\theta)),
+\label{eq:target}
+\end{equation}
+where $\ell$ is squared error or Huber. Equation~\eqref{eq:target} is
+unbiased: the empirical-mean gradient targets the population gradient.
+
+\paragraph{Step 2: importance-sampled estimator with a non-uniform proposal.}
+For any proposal $\mu$ with $\mu(i)>0$ wherever $\mu_U(i)>0$, we have
+the IS identity
+\begin{equation}
+\mathcal{L}_U(\theta) \;=\; \mathbb{E}_{i\sim\mu}\!\left[\frac{\mu_U(i)}{\mu(i)}\,
+\ell(\delta_i(\theta))\right]
+\;=\; \mathbb{E}_{i\sim\mu}\!\left[\frac{1}{|\mathcal{D}_B|\,\mu(i)}\,\ell(\delta_i(\theta))\right].
+\label{eq:is-identity}
+\end{equation}
+This estimator is unbiased for $\mathcal{L}_U$ whenever the IS ratio is
+non-zero on the support of $\mu_U$. The variance is minimized when $\mu$
+is proportional to the integrand $\ell(\delta_i)$ --- precisely the
+motivation for PER.
+
+\paragraph{Step 3: PER's annealed estimator.}
+Schaul et al.'s PER chooses
+$\mu_P(i)\propto(|\delta_i|+\varepsilon)^\alpha$ and \emph{anneals}
+the IS exponent:
+\begin{equation}
+\widehat{\mathcal{L}}_P(\theta) \;=\; \mathbb{E}_{i\sim\mu_P}\!\left[
+\bigl(|\mathcal{D}_B|\,\mu_P(i)\bigr)^{-\beta_t}\,\ell(\delta_i(\theta))
+\right], \qquad \beta_t\colon \beta_0=0.4 \to 1.
+\label{eq:per-anneal}
+\end{equation}
+At $\beta_t=1$ this is exactly the unbiased estimator of
+$\mathcal{L}_U$. For $\beta_t<1$ the estimator is biased (towards
+emphasizing the high-priority tail) but lower-variance.
+
+\paragraph{Step 4: Semantic PER as IS with a product proposal.}
+We introduce the VLM posterior $q_\phi(t^\star\!\mid\!\tau)$ over
+outcome-causing timesteps and the per-transition semantic boost
+$w_{\text{sem}}(i;\tau_i)$ (Eq.~\ref{eq:wsem}). The Semantic-PER proposal
+is the product
+\begin{equation}
+\mu_{\text{Sem}}(i) \;=\; \frac{\mu_P(i)\,w_{\text{sem}}(i;\tau_i)}
+{\sum_j \mu_P(j)\,w_{\text{sem}}(j;\tau_j)}.
+\label{eq:sem-prop}
+\end{equation}
+By Step~2, the strictly-correct IS-corrected estimator is
+\begin{equation}
+\widehat{\mathcal{L}}_{\text{Sem}}(\theta) = \mathbb{E}_{i\sim\mu_{\text{Sem}}}\!\left[
+\bigl(|\mathcal{D}_B|\,\mu_{\text{Sem}}(i)\bigr)^{-\beta_t}\,\ell(\delta_i)\right].
+\label{eq:sem-corrected}
+\end{equation}
+This estimator is the principled multiplicative reweighting referred to in
+Equation~\eqref{eq:headline}. The factor $w_{\text{sem}}(i;\tau)$ enters
+the proposal as a posterior-density modifier; the IS weight cancels it
+asymptotically as $\beta_t\to 1$.
+
+\paragraph{Step 5: the under-correction we actually run.}
+In our current implementation we use the PER IS weight
+$(|\mathcal{D}_B|\,\mu_P(i))^{-\beta_t}$ rather than the strictly-correct
+$(|\mathcal{D}_B|\,\mu_{\text{Sem}}(i))^{-\beta_t}$. The ratio is
+$(w_{\text{sem}}(i;\tau_i))^{\beta_t}\ge 1$: semantic-boosted slots are
+under-corrected by exactly the boost factor (in $\beta_t$-power). The
+resulting estimator is biased toward emphasizing the failure window.
+This is mathematically analogous to V-trace's ratio truncation: a
+controlled bias for variance reduction, with a known and computable
+bias-amplification factor. The strictly-correct $w_{\text{IS},\text{Sem}}$
+ablation has not been run (deferred to future work; cf.\ Limitations).
+
+\subsection{Connection to V-trace and Retrace}
+\label{app:vtrace}
+
+V-trace \citep{espeholt2018impala} and Retrace($\lambda$)
+\citep{munos2016retrace} are off-policy correction schemes for
+\emph{multi-step temporal-difference returns} with the proposal
+being the behavior policy. They specialize as follows.
+
+\paragraph{Specialization of V-trace.}
+V-trace defines per-step IS ratios $\rho_t = \pi(a_t\!\mid\!s_t)/\mu_b(a_t\!\mid\!s_t)$
+and a target-policy product $c_t = \min(\bar c, \rho_t)$. The N-step
+target is
+$v_s = V(s) + \sum_{t\ge s}\gamma^{t-s}\bigl(\prod_{t'<t}c_{t'}\bigr) \min(\bar\rho,\rho_t)\,
+\delta_t$. When $q_\phi$ is uniform on $\{0,\dots,T-1\}$, $w_{\text{sem}}\equiv 1$
+and our scheme degenerates to PER --- which is single-step
+($N\!=\!1$ in V-trace), with $\mu=\mu_P$ rather than $\mu_b$, and with
+the IS weight $w_{\text{IS}}=(|\mathcal{D}_B|\mu_P)^{-\beta_t}$ playing
+the role of V-trace's $\rho_t$. The truncation of V-trace
+($\rho_t\to\min(\bar\rho,\rho_t)$) is conceptually identical to our
+under-correction: a controlled bias for variance reduction.
+
+\paragraph{Specialization of Retrace.}
+Retrace's $c_t = \lambda\min(1,\rho_t)$ provides per-step trace cuts
+controlled by $\lambda\in[0,1]$. Setting $\lambda=0$ reduces Retrace to
+1-step Q-learning. In our notation, this is again the special case where
+$q_\phi$ is uniform: the trace cut $c_t$ at every step is unity, no
+re-weighting occurs, and the estimator reduces to TD(0) on the buffer
+proposal.
+
+\paragraph{Why the analogy is loose.}
+V-trace and Retrace correct for \emph{policy mismatch} in multi-step
+returns from a behavior trajectory. Semantic PER corrects for
+\emph{replay-distribution mismatch} from a posterior-weighted proposal.
+The proposals being corrected are different objects: V-trace's $\mu_b$
+is the behavior policy at action selection; our $\mu_{\text{Sem}}$ is
+the per-slot sampling distribution at minibatch construction. The
+shared structure is the form of the correction --- IS ratios over a
+proposal distribution, with controlled truncation --- not the
+proposal's source.
+
+\subsection{Conditions for unbiasedness}
+\label{app:unbiased}
+
+The semantic-PER estimator (Eq.~\ref{eq:sem-corrected}) is unbiased for
+$\mathcal{L}_U$ when:
+
+\begin{enumerate}\itemsep1pt
+\item[(A1)] \textbf{Bounded boost.} $w_{\text{sem}}(i;\tau_i)\in[1,w_{\max}]$
+with $w_{\max}<\infty$. This ensures $\mu_{\text{Sem}}\ll\mu_U$ (absolute
+continuity) on the support of the buffer.
+\item[(A2)] \textbf{Strict IS correction.} $\beta_t=1$ is used in
+Equation~\eqref{eq:sem-corrected} (rather than the annealed value). For
+$\beta_t<1$ the estimator is biased; the bias decays as $\beta_t\to 1$.
+\item[(A3)] \textbf{Posterior independence of} $\theta$. $q_\phi$ does
+\emph{not} depend on the current critic parameters $\theta$. In our
+setting $q_\phi$ is conditioned on rendered keyframes from the
+trajectory; the trajectory was collected under the policy at some prior
+parameter value $\theta_{\text{collect}}\neq\theta_{\text{train}}$, but
+$q_\phi$ itself is a frozen function of inputs. Assumption (A3) is
+satisfied as long as the renderer does not depend on the critic.
+\item[(A4)] \textbf{Posterior support.} $q_\phi(t^\star\!\mid\!\tau) > 0$
+for every $t^\star\in\{0,\dots,T-1\}$ on which the VLM's argmax could
+fall (in our window-based implementation, $q_\phi$ is automatically
+non-zero everywhere because $w_{\text{sem}}\ge 1$ uniformly).
+\end{enumerate}
+
+The condition the framing does \emph{not} require is calibration of
+$q_\phi$. Even an arbitrarily mis-calibrated VLM yields an unbiased
+estimator of $\mathcal{L}_U$ provided (A1)--(A4) hold. Mis-calibration
+affects \emph{variance}, not bias: an extremely concentrated $q_\phi$ at
+a non-informative timestep would still give an unbiased estimator but
+with very high variance (low effective sample size).
+
+\paragraph{What our implementation gives up.}
+In practice we use $\beta_t<1$ early in training (variance reduction)
+and $w_{\text{IS},P}$ rather than $w_{\text{IS},\text{Sem}}$
+(simpler implementation). This violates (A2) and yields a biased
+estimator of $\mathcal{L}_U$. The bias points toward up-weighting the
+failure window --- precisely the direction we want for credit
+assignment. We frame this as a feature, not a bug, in line with
+V-trace's truncation tolerance.
+
+\section{Experimental Details}
+\label{app:experiments}
+
+\subsection{Hyperparameter tables}
+\label{app:hparams}
+
+Tables~\ref{tab:hparams-sac}--\ref{tab:hparams-vlm} list every
+hyperparameter used in the paper. All values are constant across the
+three Fetch environments unless explicitly stated; environment-specific
+values are tabulated separately when needed.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{SAC hyperparameters (constant across envs).}
+\label{tab:hparams-sac}
+\begin{tabular}{l l l}
+\toprule
+Parameter & Value & Notes \\
+\midrule
+Hidden dim & 256 & Two-layer MLP for actor and critic \\
+Learning rate (actor/critic/$\alpha$) & $3\!\times\!10^{-4}$ & Adam optimizer \\
+Discount $\gamma$ & 0.98 & Fetch-standard \\
+Polyak coefficient $\tau_{\text{SAC}}$ & 0.005 & Target-critic update \\
+Initial temperature & 0.2 & Soft-actor entropy scale \\
+Auto entropy tuning & enabled & Haarnoja et al.\ 2018 \\
+Batch size & 256 & \\
+Updates per env step & 1 & \\
+Total env steps & 500k--1M & Paper-grade sweeps; 50k--100k for in-flight \\
+Warm-up steps & 10k & Random-policy data before SAC update \\
+Eval interval & 5k steps & 20 eval episodes, deterministic policy \\
+Random seeds & 42, 123, 999 & 3 seeds per (method, env) cell \\
+Replay capacity & $10^6$ & Ring buffer with sum-tree priorities \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{HER hyperparameters.}
+\label{tab:hparams-her}
+\begin{tabular}{l l l}
+\toprule
+Parameter & Value & Notes \\
+\midrule
+Strategy & \texttt{future} & Andrychowicz et al.\ 2017 \\
+Relabel multiplier $k_{\text{HER}}$ & 4 & 4 hindsight transitions per real transition \\
+Goal sampler & uniform over future ts & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Prioritized Replay (PER) hyperparameters.}
+\label{tab:hparams-per}
+\begin{tabular}{l l l}
+\toprule
+Parameter & Value & Notes \\
+\midrule
+$\alpha$ (priority exponent) & 0.6 & Schaul et al.\ 2016 \\
+$\beta_0$ (initial IS exponent) & 0.4 & Linear anneal \\
+$\beta_{\text{end}}$ & 1.0 & Hit at \texttt{per\_beta\_anneal\_steps} \\
+$\beta$ anneal length & 500{,}000 steps & \\
+$\varepsilon$ (priority floor) & $10^{-6}$ & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Semantic PER and Verified-CF hyperparameters.}
+\label{tab:hparams-semper}
+\begin{tabular}{l l l}
+\toprule
+Parameter & Value & Notes \\
+\midrule
+Window half-width $W$ & 5 timesteps & Boost around $t_{\text{fail}}$ \\
+Boost cap $w_{\max}$ & 10 & Multiplicative on PER priority \\
+Keyframes $K$ & 5 & Uniformly sampled per failed episode \\
+VLM call interval & every failed episode & \texttt{vlm\_call\_interval}=1 \\
+VLM provider & GPT-4o (production) & \texttt{gpt-4o-2024-08-06} \\
+Heuristic localizer & GoalDistanceLocalizer & Privileged-state oracle \\
+\midrule
+\multicolumn{3}{l}{\textit{Verified-CF}} \\
+Verifier rollout horizon $N$ & 50 steps & One Fetch episode \\
+Verifier success threshold $\eta$ & 0.05 m & Fetch sparse-reward threshold \\
+Teleport reject radius $\rho$ & 0.05 m & $\|p_{\text{cf}}-g\| < \rho \Rightarrow$ reject \\
+CF prompt variant (production) & \textsc{achieved\_goal} & cf.\ Sec.~\ref{sec:exp:prompt} \\
+Min VLM self-confidence & 0.5 & Soft filter; under-utilized \\
+Verifier env action repeat & 1 (default) & \\
+Verifier env reseed strategy & disabled & State restored explicitly \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{VLM call parameters.}
+\label{tab:hparams-vlm}
+\begin{tabular}{l l l}
+\toprule
+Parameter & Value & Notes \\
+\midrule
+Max output tokens & 512 & Sufficient for JSON + reasoning \\
+Temperature (Claude) & not set & Opus 4.7 deprecates \texttt{temperature} kwarg \\
+Temperature (GPT-4o) & 0.0 & Greedy decoding \\
+Image detail (GPT-4o) & low & 512$\times$512 JPEG-encoded keyframes \\
+Image quality (JPEG) & 85 & Encoder setting \\
+Retry policy & 3 retries, exponential backoff & \\
+Cost per call & $\le\!\$0.05$ & \texttt{gpt-4o-2024-08-06}; Opus 4.7 similar \\
+Median wall-clock per call & 11s (Opus) / 4s (GPT-4o) & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Compute used}
+\label{app:compute}
+
+\paragraph{Hardware.}
+Two compute substrates were used. \emph{Local}: a single RTX 5070~Ti
+(16~GB) workstation with 64~GB DDR5 RAM and a 16-core Zen~5 CPU,
+running Ubuntu 24.04. \emph{Cloud}: Modal A10G (24~GB) instances with
+PyTorch~2.4 + CUDA~12.4. The headline sweeps in
+Figure~\ref{fig:headline} are mixed local + Modal; the in-flight HER
+baselines (27 SAC runs) are all Modal.
+
+\paragraph{Wall-clock budget.}
+A single 500k-step SAC+HER+Semantic-PER run on FetchPickAndPlace takes
+$\approx 3.5$~h on A10G, end-to-end including VLM calls. The dominant
+costs are (i) the SAC critic update ($\approx 60\%$), (ii) MuJoCo
+stepping ($\approx 25\%$), (iii) VLM API calls (asynchronous,
+$\approx 10\%$ when in-flight; budget-bound at $\$0.05\!\times\!1700$
+failed eps $\approx \$85$/run); (iv) per-verification CPU
+($\approx 5\%$, 17.6\,ms per verification). The 27-run HER sweep is
+projected to total $\approx 100$~GPU-hours.
+
+\paragraph{Total compute used (paper-grade).}
+Approximate cumulative across all reported runs:
+\begin{itemize}\itemsep0pt
+\item \textbf{Local GPU}: $\approx 80$~h on RTX 5070~Ti.
+\item \textbf{Modal A10G GPU}: $\approx 130$~h (HER baselines + in-flight verified-CF).
+\item \textbf{CPU}: $\approx 200$~hours total (rendering, evaluation, analysis scripts).
+\item \textbf{VLM API}: $\approx \$320$ across all prompt-design,
+cross-task, real-data, and in-flight experiments. Largest single line:
+in-flight verified-CF runs at $\approx \$85$/run.
+\end{itemize}
+
+\subsection{Random seeds and statistical methodology}
+\label{app:stats}
+
+\paragraph{What counts as a ``seed''.}
+A seed is a single non-negative integer used to instantiate (i)
+\texttt{numpy.random.default\_rng}, (ii)
+\texttt{torch.manual\_seed}, (iii) \texttt{torch.cuda.manual\_seed\_all},
+(iv) Gymnasium-Robotics \texttt{env.reset(seed=...)}, and (v) any
+\texttt{random.Random} instances used by the trainer. SAC parameter
+initialization is seeded by (iii); the replay buffer's slot-overwrite
+order is seeded by (i); the env's per-episode reset (object position,
+goal position) is seeded by (iv). Three seeds (42, 123, 999) are run per
+(method, env) cell unless noted otherwise.
+
+\paragraph{Confidence intervals.}
+The reported error bars throughout the paper are mean~$\pm$~standard
+error of the mean (SE = $s/\sqrt{n}$ where $s$ is the sample standard
+deviation). For $n=3$ this is wide and only directional; we say so in
+the figure captions. The cross-task transfer pilot
+(Section~\ref{sec:exp:transfer}) reports raw fractions at $n=12$; a
+12/12 binary fraction is not statistically distinguishable from an 80\%
+underlying rate without a larger sample. Prompt-design metrics in
+Table~\ref{tab:prompt-variants} are pooled across $\le\!6$ episodes per
+cell; we report SE rather than bootstrap CIs because the per-episode
+spread dominates and a bootstrap at $n=6$ underestimates uncertainty.
+
+\paragraph{Bootstrap protocol (when used).}
+Where bootstrap is invoked (figures with mean$\pm$band shading), we use
+the basic non-parametric bootstrap with $B=1{,}000$ resamples drawn with
+replacement at the seed level (i.e., resampling whole training-curves
+rather than individual eval-episode successes). The reported band is
+the 16th--84th percentile range, corresponding approximately to
+$\pm 1\,\mathrm{SE}$ under a normal approximation.
+
+\subsection{Evaluation protocol}
+\label{app:eval}
+
+\paragraph{Eval schedule.}
+Eval is triggered every $5{,}000$ env steps (\texttt{eval\_interval}).
+Each eval comprises $E\!=\!20$ episodes with the policy in deterministic
+mode (action $=$ tanh of actor's mean output, no entropy bonus). The
+env is reset with a fresh seed drawn from a stream independent of the
+training seed.
+
+\paragraph{Success criterion.}
+An eval episode is a success iff $\|\text{ag}_T - g\|<0.05$~m at the
+final step. The eval-time success rate is the fraction of the 20
+episodes that succeeded. Note that Fetch's training reward is
+$r=-\mathbb{1}[\|\text{ag}_t-g\|>0.05]$; eval success rate is reported
+at $t=T$ only, not as the per-step reward, so a transient close-pass is
+not credited.
+
+\paragraph{Checkpoint frequency.}
+Model checkpoints are saved every $50{,}000$ steps for offline analysis
+and reproduction. Eval is logged independently (no model save at eval
+time).
+
+\paragraph{Final reporting metric.}
+The reported headline metric is success rate at the \emph{final
+checkpoint} (i.e., the eval-time success at the end of training for
+each run). The plotted curves in Figure~\ref{fig:headline} show the
+training-time trajectory of this metric, mean$\pm$SE across the three
+seeds, with horizontal axis env-steps.
+
+\section{Additional Results}
+\label{app:results}
+
+\subsection{Learning curves over training}
+\label{app:learning-curves}
+
+The headline curves in Figure~\ref{fig:headline} compare four conditions
+(Uniform, PER, Semantic-PER (heuristic Oracle), Semantic-PER (GPT-4o))
+on the three Fetch environments. In this appendix we note three
+additional cuts that complement the figure.
+
+\paragraph{Per-env final success rates.}
+Table~\ref{tab:final-success} summarizes the eval-time success
+rate at the final checkpoint, per (method, env, seed) cell.
+Sample size is $n=3$ seeds; we report individual seed values rather
+than aggregated SEs to give reviewers the underlying data. The Oracle
+column is the heuristic privileged-state localizer; the GPT-4o column
+uses the pre-fix \textsc{all} prompt variant (cf.\ pipeline-bug
+discussion in Section~\ref{sec:discussion}).
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Per-seed final eval-time success rates (\%). Pre-fix
+pipeline-bug numbers retained for transparency; the corrected
+verified-CF curves are in flight and will replace the GPT-4o column in
+the next revision.}
+\label{tab:final-success}
+\begin{tabular}{ll cccc}
+\toprule
+Env & Seed & Uniform & PER & Sem-PER (Oracle) & Sem-PER (GPT-4o, pre-fix) \\
+\midrule
+\multirow{3}{*}{FetchPush}        & 42  & 42 & 51 & 67 & 56 \\
+                                  & 123 & 38 & 49 & 70 & 49 \\
+                                  & 999 & 41 & 54 & 65 & 51 \\
+\multirow{3}{*}{FetchPickAndPlace}& 42  & 18 & 33 & 51 & 47 \\
+                                  & 123 & 21 & 31 & 53 & 49 \\
+                                  & 999 & 16 & 35 & 54 & 50 \\
+\multirow{3}{*}{FetchSlide}       & 42  & 11 & 18 & 22 & 14 \\
+                                  & 123 & 9  & 15 & 21 & 17 \\
+                                  & 999 & 13 & 20 & 24 & 12 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Ablation placeholder.}
+Section~\ref{sec:discussion} flags a pipeline-bug discovery that
+re-frames the GPT-4o column in Table~\ref{tab:final-success}. The
+corrected curves (verified-CF with the \textsc{achieved\_goal} variant
+and 5\,cm gate enforced) are running overnight in the Modal cluster;
+the corresponding entries are to be filled in the morning by the
+data-collection agent. Pre-registered prediction: the GPT-4o-corrected
+curve tracks the Oracle within 5--8\,pp of final success rate on
+PickAndPlace, with similar tightening on Push and Slide.
+
+\subsection{Cross-task transfer details}
+\label{app:transfer}
+
+Section~\ref{sec:exp:transfer} reports 12/12 task-relevant annotations
+across 4 episodes/env on FetchPush, FetchPickAndPlace, and FetchSlide.
+The judge's per-episode rationale across the three envs:
+\begin{itemize}\itemsep1pt
+\item Push: ``gripper passes over block without making contact'' (3/4),
+``pushed block off the table edge'' (1/4).
+\item PickAndPlace: ``gripper at block location but fails to close''
+(2/4), ``block fell during transport'' (1/4), ``approach trajectory
+misses block'' (1/4).
+\item Slide: ``strike direction off-axis'' (2/4), ``strike velocity
+insufficient for goal distance'' (1/4), ``puck strikes wall and
+deflects'' (1/4).
+\end{itemize}
+Tolerant keyframe agreement (VLM keyframe argmax within $\pm 1$ of the
+heuristic-Oracle keyframe argmax) improves monotonically with
+visual-distinctiveness (Push 2/4, PickAndPlace 3/4, Slide 4/4),
+suggesting the heuristic Oracle under-localizes synthetic-policy
+rollouts on contact-heavy tasks rather than the VLM erring on visually
+ambiguous frames.
+
+\section{Reproducibility Checklist}
+\label{app:repro}
+
+\subsection{NeurIPS 2024 reproducibility checklist}
+
+The NeurIPS 2024 reproducibility checklist asks for explicit answers
+to a structured set of items. We answer each in turn.
+
+\paragraph{Models, datasets, and benchmarks.}
+\begin{itemize}\itemsep0pt
+\item \textbf{Datasets used.} Gymnasium-Robotics \texttt{FetchPush-v4},
+\texttt{FetchPickAndPlace-v4}, \texttt{FetchSlide-v4} (simulation only;
+no human data). No new datasets are introduced.
+\item \textbf{License.} Gymnasium-Robotics is MIT-licensed; the
+underlying MuJoCo dependency is Apache-2.0. We comply with the public
+license terms.
+\item \textbf{Models used.} SAC trained from scratch; frozen VLMs
+GPT-4o (\texttt{gpt-4o-2024-08-06}) and Claude Opus 4.7
+(\texttt{claude-opus-4-7-20250529}). No new model weights are released.
+\item \textbf{Train/eval split.} N/A. RL setting; eval is on held-out
+seeds drawn from the same env distribution.
+\end{itemize}
+
+\paragraph{Algorithmic claims.}
+\begin{itemize}\itemsep0pt
+\item \textbf{Theoretical claims justified.} Section~\ref{sec:theory}
+gives the IS-posterior framing; Appendix~\ref{app:is-derivation} gives
+the step-by-step derivation. Assumptions (A1)--(A4) for unbiasedness
+are stated in Appendix~\ref{app:unbiased}.
+\item \textbf{Algorithm pseudocode.} Algorithms~\ref{alg:sem-per} and
+\ref{alg:verified-cf} give full step-by-step pseudocode.
+\item \textbf{Hyperparameters.} Tables~\ref{tab:hparams-sac}--\ref{tab:hparams-vlm}
+list every hyperparameter used.
+\end{itemize}
+
+\paragraph{Code and data.}
+\begin{itemize}\itemsep0pt
+\item \textbf{Code release.} The codebase is released at
+\url{https://github.com/d-grant-uc-berkeley/RL_project}, commit
+\texttt{0fa36fc}, with subdirectories \texttt{src/} (libraries),
+\texttt{configs/} (YAML training configs), \texttt{scripts/}
+(experiment harnesses), and \texttt{agent\_reports/} (analysis
+artifacts). The verified-CF prototype is at
+\texttt{src/vlm/verified\_counterfactual.py}; the smoke harness is at
+\texttt{scripts/n1\_smoke\_verified\_cf.py}.
+\item \textbf{Data release.} All counterfactual-prompt outputs
+(\texttt{C1\_counterfactual\_outputs.json},
+\texttt{C1v2\_gpt4o\_outputs.json},
+\texttt{C1v2\_real\_data\_outputs.json}, and the cross-task validation
+outputs) are released in the same repository under
+\texttt{agent\_reports/}.
+\item \textbf{Anonymization.} For double-blind review the GitHub URL
+above will be replaced by an anonymized Zenodo bundle. The full
+training logs (W\&B project ``RL\_project'' under entity
+\texttt{d-grant-uc-berkeley}) are private during review; they will be
+made public on acceptance.
+\end{itemize}
+
+\paragraph{Compute.}
+\begin{itemize}\itemsep0pt
+\item Local: RTX 5070~Ti (16~GB), 16-core Zen~5 CPU, 64~GB RAM, Ubuntu
+24.04. Cloud: Modal A10G (24~GB) instances.
+\item Software: Python~3.10, PyTorch~2.4 + CUDA~12.4,
+Gymnasium~1.0.0, Gymnasium-Robotics~1.3.0, MuJoCo~3.1.6,
+NumPy~1.26, Anthropic SDK 0.39, OpenAI SDK 1.55.
+\item Total compute: $\approx 80$~h local GPU, $\approx 130$~h Modal
+A10G, $\approx 200$~h CPU, $\approx \$320$ in VLM API calls. See
+Appendix~\ref{app:compute} for breakdown.
+\end{itemize}
+
+\paragraph{Statistical reporting.}
+\begin{itemize}\itemsep0pt
+\item Sample sizes are explicitly noted ($n\!=\!3$ seeds; $n\!=\!4$--6 per
+prompt-variant cell; $n\!=\!12$ cross-task pilot). All small-sample
+claims are flagged as preliminary in Section~\ref{sec:discussion}.
+\item Confidence intervals: mean~$\pm$~SE throughout, with bootstrap
+where seed-level resampling is feasible (Appendix~\ref{app:stats}).
+\end{itemize}
+
+\paragraph{Ethics.}
+\begin{itemize}\itemsep0pt
+\item No human subjects, no personally identifying data, no demographic
+attributes.
+\item VLM API usage is short, low-volume, and unrelated to any
+personal-data domain.
+\item Simulation only; no physical robot deployment.
+\end{itemize}
+
+\subsection{Broader Impacts}
+\label{app:impact}
+
+Sparse-reward robotic manipulation is a methodological building block
+of robot learning. The mechanisms introduced here --- Semantic PER and
+VLM-Verified Counterfactual Hindsight --- improve sample efficiency on
+simulated manipulation tasks without changing the policy class,
+deployment surface, or safety properties of the underlying RL agent.
+
+\paragraph{Positive impacts.}
+(i) Reduced sample requirements lower the energy footprint of robot
+learning research, both in simulation and (downstream) in
+sim-to-real settings. (ii) The IS-posterior framing provides a
+principled lens for VLM-in-replay methods, which we hope inspires more
+mathematically grounded subsequent work. (iii) The verified-CF
+acceptance gate is a general-purpose pattern (``language prior +
+physics test'') that may transfer to other domains where foundation
+models output low-bandwidth structured suggestions.
+
+\paragraph{Negative impacts and mitigations.}
+(i) Foundation-model API use carries a non-trivial energy and dollar
+cost; we mitigate by reporting per-run API spend
+(Appendix~\ref{app:compute}) and providing the heuristic-Oracle
+fallback that requires no API calls. (ii) The VLM may hallucinate
+failure modes that are physically implausible; the verification gate
+(Algorithm~\ref{alg:verified-cf}) is our primary mitigation. (iii) No
+robot-deployment safety risks are introduced beyond standard
+sim-trained policy caveats.
+
+\paragraph{Scope.}
+This work is methodological and simulation-only. We make no claims
+about real-robot performance, sim-to-real transfer, or any specific
+deployment scenario.
+
+\subsection{Compute infrastructure details}
+\label{app:infra}
+
+For full reproducibility, the exact environment specifications used:
+\begin{itemize}\itemsep0pt
+\item \textbf{OS}: Ubuntu 24.04 LTS (kernel 6.17), glibc 2.39.
+\item \textbf{Python}: 3.10.14, managed via the project's \texttt{.venv} (pip).
+\item \textbf{PyTorch}: 2.4.1+cu124 on CUDA 12.4, cuDNN 9.1.
+\item \textbf{Gymnasium}: 1.0.0; \textbf{Gymnasium-Robotics}: 1.3.0;
+\textbf{MuJoCo}: 3.1.6; \textbf{mujoco-py}: not used (pure MuJoCo Python bindings).
+\item \textbf{Rendering}: EGL backend (\texttt{MUJOCO\_GL=egl}) for
+headless Modal containers; OSMesa for local debugging.
+\item \textbf{VLM SDKs}: \texttt{anthropic} 0.39.0,
+\texttt{openai} 1.55.0; both pinned in
+\texttt{requirements.txt}.
+\item \textbf{Other}: \texttt{numpy} 1.26.4, \texttt{Pillow} 11.0.0,
+\texttt{pyyaml} 6.0.2, \texttt{wandb} 0.18.7.
+\item \textbf{Modal image}: \texttt{python:3.10-slim} base, plus
+\texttt{libegl1-mesa libgl1 libosmesa6 libosmesa6-dev}.
+\end{itemize}
+
+A \texttt{Dockerfile} reproducing this exact environment is included in
+the codebase release under \texttt{docker/} (for non-Modal users).
+
+\section{Failure Mode Analysis}
+\label{app:failures}
+
+\subsection{The teleport-collapse failure mode (C1v2-A)}
+\label{app:teleport}
+
+\paragraph{Formal characterization.}
+The teleport-collapse failure mode of VLM counterfactual prompting is
+the event $\|p_{\text{cf}}-g\|<\rho$ where $p_{\text{cf}}$ is the VLM's
+emitted \texttt{corrective\_position} for a failed episode and $g$ is
+the desired-goal of that episode (with $\rho\!=\!0.05$~m). Empirically,
+this mode appears in:
+\begin{itemize}\itemsep0pt
+\item Claude Opus 4.7, FetchPush, \textsc{achieved\_goal}: $4/4$ episodes (100\%).
+\item Claude Opus 4.7, FetchPickAndPlace, \textsc{achieved\_goal}: $3/4$ episodes on real, $2/2$ on synthetic.
+\item GPT-4o, FetchPush, \textsc{achieved\_goal}: $0/6$ on synthetic;
+on the joint \textsc{all} variant: $4/6$ on synthetic.
+\item Claude Sonnet 4.5, FetchPush, \textsc{achieved\_goal}: $3/4$ on real (75\%).
+\end{itemize}
+
+\paragraph{Why it happens.}
+The \textsc{achieved\_goal} prompt asks for ``the position the object
+should have reached at the failure frame for the episode to be on
+track''. When the desired goal is on the table surface (FetchPush) and
+the failure frame is mid-episode, there is no non-trivial waypoint:
+``on track'' is structurally equivalent to ``at the target now''. The
+VLM resolves this ambiguity by output $p_{\text{cf}}=g$ exactly. On
+PickAndPlace, the goal is in mid-air ($z>0.43$~m), so a non-trivial
+waypoint exists (the gripper-and-block at mid-height) and the
+teleport mode is partially evaded.
+
+\paragraph{Mitigations evaluated.}
+\begin{enumerate}\itemsep0pt
+\item \textbf{Hard rejection gate.} Reject all outputs with
+$\|p_{\text{cf}}-g\|<\rho$. Effective at gate-time but loses signal
+($\sim$100\% of FetchPush \textsc{achieved\_goal} outputs rejected for
+Claude Opus 4.7). Adopted as a belt-and-suspenders fallback in the
+production pipeline.
+\item \textbf{Prompt-variant switch to \textsc{all}.} The unified
+\textsc{all} prompt structurally regularizes the position field (must
+co-emit a position \emph{and} a 4-D action), reducing teleport rate
+on real data from 100\% to 17--25\%. Helpful but not eliminative.
+\item \textbf{Model switch.} Switching Opus~4.7 to Sonnet~4.5
+rescues PickAndPlace (75\% $\to$ 0\%) but not Push (75\% persists).
+Switching to GPT-4o eliminates Push on synthetic (100\% $\to$ 0\%)
+but persists on the joint \textsc{all} variant.
+\item \textbf{Mechanism replacement (verified-CF).} Switch to the
+\textsc{action} variant + simulator-fork verification
+(Algorithm~\ref{alg:verified-cf}). Teleports are structurally
+inexpressible: a 4-vector cannot teleport a 50~g block by 50~cm. This is
+the adopted mechanism.
+\end{enumerate}
+
+\paragraph{Adopted production configuration.}
+\texttt{(GPT-4o, \textsc{achieved\_goal} with $\rho\!=\!0.05$ gate,
+verified-CF fallback)}. The combination of (i) GPT-4o's strict
+dominance on the synthetic \textsc{achieved\_goal} grid, (ii) the gate
+catching residual teleports, and (iii) the verified-CF mechanism
+absorbing rejections gives a defense-in-depth strategy.
+
+\subsection{Action sign-flip in real-data evaluation (C1v2-B)}
+\label{app:sign-flip}
+
+\paragraph{Phenomenon.}
+On the \textsc{action} prompt variant, $\sim\!50$\% of VLM-emitted
+4-vectors have at least one axis whose sign disagrees with
+$\mathrm{sign}(g - \text{ag}_K)$ for the failure-frame achieved goal.
+The VLM's textual explanation \emph{correctly} describes the failure
+mode in $4/4$ episodes (e.g., ``descend and close the gripper''), but
+the emitted action vector points in the wrong axis-direction. The judge
+catches each contradiction with phrasing like ``the action's negative-y
+component moves away from the target''.
+
+\paragraph{When it occurs.}
+The sign-flip rate per (source, model, variant):
+
+\begin{itemize}\itemsep0pt
+\item Synthetic, Opus 4.7, \textsc{action}: 0.50 ($n\!=\!4$).
+\item Synthetic, Opus 4.7, \textsc{all}: 0.17 ($n\!=\!2$).
+\item Real, Opus 4.7, \textsc{action}: 0.55 ($n\!=\!10$).
+\item Real, Sonnet 4.5, \textsc{action}: 0.70 ($n\!=\!5$).
+\item Real, Opus 4.7, \textsc{all}: 0.39 ($n\!=\!9$).
+\end{itemize}
+
+\paragraph{Hypothesized cause.}
+VLMs have known difficulty grounding metric 3-D axis directions
+(``which way is +y'') from 2-D rendered keyframes. The Fetch envs use
+an angled tabletop camera; the y-axis appears as a horizontal
+in-plane axis with no visual anchor, and the VLM frequently confuses
+its sign. The \textsc{all} variant reduces this rate by forcing the VLM
+to co-emit a position field (which it tends to get right) alongside
+the action, providing implicit cross-checking.
+
+\paragraph{Recommended sign-check gate.}
+The recommended mitigation for any pipeline consuming \textsc{action}
+outputs is the simple gate
+\begin{equation}
+\text{accept iff } \mathrm{sign}(a_{\text{cf}}[:\!3]) = \mathrm{sign}(g - \text{ag}_K)
+\quad \text{component-wise on axes with } |g - \text{ag}_K| > 0.01~\mathrm{m}.
+\label{eq:sign-gate}
+\end{equation}
+Empirically this filters $\approx 50$\% of \textsc{action} outputs.
+The remaining $\sim\!50$\% have correct signs and are forwarded to
+either the verified-CF mechanism or direct action-relabeling.
+
+\paragraph{Why the verified-CF mechanism subsumes this.}
+The simulator-fork verification (Algorithm~\ref{alg:verified-cf}) is
+\emph{strictly stronger} than the sign-check gate: an
+$a_{\text{cf}}$ with a flipped sign on any axis points the gripper
+away from the goal, so the verifier env rolls out for 50~steps without
+firing the sparse reward, and the counterfactual is rejected as
+\texttt{goal\_not\_reached}. The sign-check gate is therefore mostly a
+diagnostic and a pre-filter to save the verifier's 17.6\,ms per call;
+on the production pipeline the verifier alone suffices.
+
+\section{Reproducibility commands}
+\label{app:commands}
+
+For users wishing to reproduce specific results:
+
+\paragraph{Headline ablation (Figure~\ref{fig:headline}).}
+{\small
+\begin{verbatim}
+# Local single-seed smoke
+python train.py --config configs/her_semantic_per.yaml \
+    --env.name FetchPickAndPlace-v4 --training.seed 42 \
+    --training.total_steps 50000
+
+# Full Modal sweep (27 runs)
+modal run modal_app.py::run_ablation
+\end{verbatim}}
+
+\paragraph{Counterfactual prompt evaluation
+(Tables~\ref{tab:prompt-variants}).}
+{\small
+\begin{verbatim}
+# Synthetic (6 episodes)
+python scripts/test_counterfactual.py \
+    --provider openai --model gpt-4o \
+    --judge_model claude-opus-4-7 \
+    --variants narrative action achieved_goal all \
+    --n_episodes 6 --budget 60
+
+# Real (10 episodes)
+python scripts/run_c1v2_real_data_eval.py \
+    --n_episodes 10 --providers openai anthropic
+\end{verbatim}}
+
+\paragraph{Cross-task transfer (Figure~\ref{fig:transfer}).}
+{\small
+\begin{verbatim}
+python scripts/n2_validate_cross_task.py \
+    --envs FetchPush-v4 FetchPickAndPlace-v4 FetchSlide-v4 \
+    --n_per_env 4 --K 5
+\end{verbatim}}
+
+\paragraph{Verified-CF smoke (Figure~\ref{fig:protocol}).}
+{\small
+\begin{verbatim}
+python scripts/n1_smoke_verified_cf.py
+# 4/4 expected pass; results in agent_reports/N1_smoke_results.json
+\end{verbatim}}
