@@ -80,15 +80,18 @@ def oracle_cf_push(trajectory: Dict[str, Any]) -> Optional[List[Counterfactual]]
     """FetchPush oracle.
 
     Strategy: at the frame where the ee-block distance is maximised, output
-    a CF that places the block on the line between ee and desired_goal, just
-    behind the block from the goal's perspective — i.e. the "approach the
-    block from the right side" insight.
+    a CF that places the block on the line between *the block* and
+    desired_goal — i.e. the "the block should be partway to the goal" insight.
 
-    Implementation: cf_xyz = midpoint(ee_at_K, desired_goal). The block
-    being there is a useful HER target because (a) it lies inside the
-    workspace, (b) it's spatially close to states the agent will reach
-    in the next few steps, (c) it implicitly teaches "drive the block
-    toward the goal" without leaking the goal directly.
+    Implementation: cf_xyz = midpoint(block_pos[k], desired_goal). Previously
+    used midpoint(ee[k], desired_goal), but at max ee-block divergence the
+    ee is in an arbitrary location (agent has lost the block), making that
+    midpoint a random workspace region. Using block_pos[k] anchors the CF
+    to a physically meaningful state — "the block was actually here, treat
+    a point partway to the goal as a useful intermediate target."
+
+    This is a CODE-REVIEWER-flagged bugfix: the prior ee-midpoint variant
+    underperformed HER by 0.33 on FetchPush in the 2026-05-11 KILL run.
     """
     ee  = trajectory["ee_pos"]
     obj = trajectory["object_pos"]
@@ -100,7 +103,8 @@ def oracle_cf_push(trajectory: Dict[str, Any]) -> Optional[List[Counterfactual]]
     k = int(np.argmax(dist_ee_block))
     # Don't pick a frame in the first 10% (cold-start noise) or after T-2.
     k = int(np.clip(k, max(2, T // 10), T - 2))
-    cf_xyz = 0.5 * (ee[k] + g)
+    # Use block_pos[k] (not ee[k]) — see docstring.
+    cf_xyz = 0.5 * (obj[k] + g)
     cf_xyz = _clip_to_workspace(cf_xyz)
     return [(k, cf_xyz, 1.0)]
 

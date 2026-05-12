@@ -80,8 +80,17 @@ def train_remote(config_path: str, overrides: Optional[List[str]] = None):
         overrides:   List of "key.subkey=value" CLI-style overrides.
                      e.g. ["env.name=FetchPush-v4", "training.seed=42"]
     """
+    import os
     import sys
     sys.path.insert(0, "/root")  # project root inside container
+
+    # B2 fix (CODE-REVIEWER): the Modal secret bakes WANDB_ENTITY=djrgvc, but
+    # the W&B API key belongs to the `d-grant` user (a member of the
+    # `d-grant-uc-berkeley` team), so writes to `djrgvc/RL_project` are denied.
+    # Override before any wandb import so logger.py picks up the right entity.
+    # This mirrors the a1-her-baselines fix.
+    os.environ["WANDB_PROJECT"] = "RL_project"
+    os.environ["WANDB_ENTITY"] = "d-grant-uc-berkeley"
 
     overrides = list(overrides or [])
     # Redirect outputs to the persistent volume so data survives container restarts
