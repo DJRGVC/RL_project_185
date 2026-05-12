@@ -424,83 +424,145 @@ strings:
 \label{app:is-derivation}
 
 This section gives the step-by-step IS argument referenced in
-Section~\ref{sec:theory}. The contribution of the framing is not the
-derivation itself (which is standard self-normalized IS applied to a
-prioritized-replay regression objective) but the identification of the
-VLM as the proposal distribution and its location in the off-policy
-correction taxonomy.
+Section~\ref{sec:theory}. The derivation itself is standard
+importance-sampling applied to a prioritized-replay regression
+objective; the framing contribution is the identification of the
+VLM posterior $q_\phi$ as a per-trajectory proposal modifier and the
+location of the resulting estimator in the off-policy correction
+taxonomy (Table~\ref{tab:taxonomy}). We work throughout over a finite
+buffer $\mathcal{D}_B$ of size $N\!:=\!|\mathcal{D}_B|$ and write
+expectations as discrete sums; $\delta_i(\theta)$ is the per-slot TD error
+under critic $\theta$ and $\ell$ is a fixed scalar loss (squared error
+or Huber). Self-normalization---rescaling weights by their batch
+maximum---is a numerical-stability device applied at minibatch level and
+is treated separately at the end of Step~3.
 
 \paragraph{Step 1: the target objective.}
 Off-policy value learning targets the Bellman-residual loss under
 \emph{uniform replay}:
 \begin{equation}
 \mathcal{L}_U(\theta) \;=\; \mathbb{E}_{i\sim\mu_U}\bigl[\ell(\delta_i(\theta))\bigr]
-\;=\; \frac{1}{|\mathcal{D}_B|}\sum_{i=1}^{|\mathcal{D}_B|} \ell(\delta_i(\theta)),
+\;=\; \frac{1}{N}\sum_{i=1}^{N} \ell(\delta_i(\theta)),
+\qquad \mu_U(i)=1/N,
 \label{eq:target}
 \end{equation}
-where $\ell$ is squared error or Huber. Equation~\eqref{eq:target} is
-unbiased: the empirical-mean gradient targets the population gradient.
+where the empirical mean is over the current contents of $\mathcal{D}_B$.
+The gradient of \eqref{eq:target} targets the population gradient under
+$\mu_U$ exactly; the construction below modifies the proposal $\mu$ used
+at minibatch draw time while keeping $\mathcal{L}_U$ as the estimand.
 
 \paragraph{Step 2: importance-sampled estimator with a non-uniform proposal.}
-For any proposal $\mu$ with $\mu(i)>0$ wherever $\mu_U(i)>0$, we have
-the IS identity
+For any proposal $\mu$ that is \emph{absolutely continuous} with respect
+to $\mu_U$ (i.e., $\mu(i)>0$ for every $i$ with $\mu_U(i)>0$, which on a
+finite buffer collapses to $\mu(i)>0$ for all $i$), the IS identity holds:
 \begin{equation}
 \mathcal{L}_U(\theta) \;=\; \mathbb{E}_{i\sim\mu}\!\left[\frac{\mu_U(i)}{\mu(i)}\,
 \ell(\delta_i(\theta))\right]
-\;=\; \mathbb{E}_{i\sim\mu}\!\left[\frac{1}{|\mathcal{D}_B|\,\mu(i)}\,\ell(\delta_i(\theta))\right].
+\;=\; \mathbb{E}_{i\sim\mu}\!\left[\frac{1}{N\,\mu(i)}\,\ell(\delta_i(\theta))\right],
 \label{eq:is-identity}
 \end{equation}
-This estimator is unbiased for $\mathcal{L}_U$ whenever the IS ratio is
-non-zero on the support of $\mu_U$. The variance is minimized when $\mu$
-is proportional to the integrand $\ell(\delta_i)$ --- precisely the
-motivation for PER.
+where the second equality substitutes $\mu_U(i)=1/N$.
+The estimator is unbiased for $\mathcal{L}_U$ for any such $\mu$;
+its variance is minimized when $\mu(i)\propto\ell(\delta_i)$
+(the textbook zero-variance proposal), which motivates priority-by-error.
 
-\paragraph{Step 3: PER's annealed estimator.}
-Schaul et al.'s PER chooses
-$\mu_P(i)\propto(|\delta_i|+\varepsilon)^\alpha$ and \emph{anneals}
-the IS exponent:
+\paragraph{Step 3: PER as a special case and the annealing knob.}
+Standard PER \citep{schaul2016per} chooses
+$\mu_P(i)\propto(|\delta_i|+\varepsilon)^\alpha$ with priority floor
+$\varepsilon\!>\!0$ (which keeps $\mu_P$ strictly positive and hence
+absolutely continuous w.r.t.\ $\mu_U$), and replaces the IS exponent
+$-1$ by an \emph{annealed} exponent $-\beta_t$ that interpolates
+between uniform-weight ($\beta_0=0.4$) and exact correction ($\beta=1$):
 \begin{equation}
 \widehat{\mathcal{L}}_P(\theta) \;=\; \mathbb{E}_{i\sim\mu_P}\!\left[
-\bigl(|\mathcal{D}_B|\,\mu_P(i)\bigr)^{-\beta_t}\,\ell(\delta_i(\theta))
+\bigl(N\,\mu_P(i)\bigr)^{-\beta_t}\,\ell(\delta_i(\theta))
 \right], \qquad \beta_t\colon \beta_0=0.4 \to 1.
 \label{eq:per-anneal}
 \end{equation}
-At $\beta_t=1$ this is exactly the unbiased estimator of
-$\mathcal{L}_U$. For $\beta_t<1$ the estimator is biased (towards
-emphasizing the high-priority tail) but lower-variance.
+Substituting $\beta_t\!=\!1$ into~\eqref{eq:per-anneal} recovers
+\eqref{eq:is-identity} verbatim and so equals $\mathcal{L}_U$ exactly;
+$\beta_t\!<\!1$ trades bias (toward the high-priority tail) for
+variance, with the bias monotone in $1\!-\!\beta_t$. In implementation,
+PER additionally rescales the IS weights by the per-batch maximum
+$w_{\max}^{\text{batch}}\!=\!\max_{j\in\mathcal{B}}(N\mu_P(j))^{-\beta_t}$
+as a numerical stabilizer (Schaul et al., Algorithm~1); this is a
+self-normalization that leaves the estimand $\mathcal{L}_U$ unchanged in
+expectation under stop-gradient on $\mu_P$ (Appendix~\ref{app:unbiased},
+condition (A3)).
 
 \paragraph{Step 4: Semantic PER as IS with a product proposal.}
-We introduce the VLM posterior $q_\phi(t^\star\!\mid\!\tau)$ over
-outcome-causing timesteps and the per-transition semantic boost
-$w_{\text{sem}}(i;\tau_i)$ (Eq.~\ref{eq:wsem}). The Semantic-PER proposal
-is the product
+Let $q_\phi(t^\star\!\mid\!\tau)$ be the VLM's posterior over the
+outcome-causing timestep and $w_{\text{sem}}(i;\tau_i)$ the
+per-transition semantic boost from Eq.~\eqref{eq:wsem}, with
+$w_{\text{sem}}\!\in\![1,w_{\max}]$. The Semantic-PER proposal is the
+normalized product
 \begin{equation}
-\mu_{\text{Sem}}(i) \;=\; \frac{\mu_P(i)\,w_{\text{sem}}(i;\tau_i)}
-{\sum_j \mu_P(j)\,w_{\text{sem}}(j;\tau_j)}.
+\mu_{\text{Sem}}(i) \;=\; \frac{\mu_P(i)\,w_{\text{sem}}(i;\tau_i)}{Z},
+\qquad
+Z \;=\; \sum_{j=1}^{N} \mu_P(j)\,w_{\text{sem}}(j;\tau_j),
 \label{eq:sem-prop}
 \end{equation}
-By Step~2, the strictly-correct IS-corrected estimator is
+where the floor $\varepsilon^\alpha\!>\!0$ on $\mu_P$ and the lower bound
+$w_{\text{sem}}\!\ge\!1$ together imply $\mu_{\text{Sem}}(i)\!>\!0$ for
+every slot, preserving absolute continuity w.r.t.\ $\mu_U$. Plugging
+$\mu_{\text{Sem}}$ into~\eqref{eq:is-identity} gives the
+\emph{strictly-corrected} Semantic-PER estimator:
 \begin{equation}
-\widehat{\mathcal{L}}_{\text{Sem}}(\theta) = \mathbb{E}_{i\sim\mu_{\text{Sem}}}\!\left[
-\bigl(|\mathcal{D}_B|\,\mu_{\text{Sem}}(i)\bigr)^{-\beta_t}\,\ell(\delta_i)\right].
+\widehat{\mathcal{L}}_{\text{Sem}}(\theta) \;=\; \mathbb{E}_{i\sim\mu_{\text{Sem}}}\!\left[
+\bigl(N\,\mu_{\text{Sem}}(i)\bigr)^{-\beta_t}\,\ell(\delta_i(\theta))\right].
 \label{eq:sem-corrected}
 \end{equation}
-This estimator is the principled multiplicative reweighting referred to in
-Equation~\eqref{eq:headline}. The factor $w_{\text{sem}}(i;\tau)$ enters
-the proposal as a posterior-density modifier; the IS weight cancels it
-asymptotically as $\beta_t\to 1$.
+At $\beta_t\!=\!1$, expanding the inner factor yields
+$(N\mu_{\text{Sem}}(i))^{-1}\ell(\delta_i) \cdot \mu_{\text{Sem}}(i)
+=\ell(\delta_i)/N$ inside the implicit $\sum_i$ of the expectation,
+so $\widehat{\mathcal{L}}_{\text{Sem}}$ equals $\mathcal{L}_U$ identically
+(not merely in expectation). This is the precise sense in which
+\eqref{eq:sem-corrected} is a ``principled multiplicative reweighting''
+of \eqref{eq:headline}: the boost $w_{\text{sem}}$ enters the proposal
+without altering the estimand. As $\beta_t\!\to\!1$, the
+$w_{\text{sem}}$-induced concentration on the failure window is
+exactly cancelled by the IS denominator; for $\beta_t\!<\!1$ that
+cancellation is partial and the residual is Step~5's bias.
 
 \paragraph{Step 5: the under-correction we actually run.}
-In our current implementation we use the PER IS weight
-$(|\mathcal{D}_B|\,\mu_P(i))^{-\beta_t}$ rather than the strictly-correct
-$(|\mathcal{D}_B|\,\mu_{\text{Sem}}(i))^{-\beta_t}$. The ratio is
-$(w_{\text{sem}}(i;\tau_i))^{\beta_t}\ge 1$: semantic-boosted slots are
-under-corrected by exactly the boost factor (in $\beta_t$-power). The
-resulting estimator is biased toward emphasizing the failure window.
-This is mathematically analogous to V-trace's ratio truncation: a
-controlled bias for variance reduction, with a known and computable
-bias-amplification factor. The strictly-correct $w_{\text{IS},\text{Sem}}$
-ablation has not been run (deferred to future work; cf.\ Limitations).
+Our running implementation uses the PER IS weight
+$w_{\text{IS},P}(i)\!=\!(N\,\mu_P(i))^{-\beta_t}$ rather than the
+strictly-correct $w_{\text{IS},\text{Sem}}(i)\!=\!(N\,\mu_{\text{Sem}}(i))^{-\beta_t}$.
+The ratio at any slot is
+$w_{\text{IS},P}/w_{\text{IS},\text{Sem}}=(\mu_{\text{Sem}}/\mu_P)^{\beta_t}
+=(w_{\text{sem}}(i;\tau_i)/Z)^{\beta_t}$, where
+$Z=\sum_j \mu_P(j)\,w_{\text{sem}}(j;\tau_j)\!\in\![1,w_{\max}]$ is the
+$\mu_P$-weighted average semantic boost (using $\sum_j\mu_P(j)\!=\!1$).
+Since $w_{\text{sem}}\!\ge\!1$ and $Z\!\le\!w_{\max}$ is bounded by the
+same ceiling as the boost, semantic-boosted slots are systematically
+under-corrected by a factor in $[1, w_{\max}^{\beta_t}]$.
+The resulting estimator is biased toward emphasizing the failure
+window---a controlled, computable bias-for-variance tradeoff that is
+structurally analogous to V-trace's ratio truncation
+(\S\ref{app:vtrace}); the per-step bound is given in
+\S\ref{app:unbiased}, Eq.~\eqref{eq:bias-bound}. The
+strictly-correct ablation (Eq.~\eqref{eq:sem-corrected} with
+$\beta_t\!=\!1$ and $w_{\text{IS},\text{Sem}}$) has not been run
+in this work and is the natural follow-on; the limitations
+(\S\ref{sec:discussion}) flag this explicitly.
+
+\paragraph{Scope of the derivation.}
+Three things in Steps~1--5 are standard: (a) the IS identity
+\eqref{eq:is-identity}; (b) the priority-by-error form of $\mu_P$ and
+its annealed IS weight \eqref{eq:per-anneal}; (c) the bias--variance
+character of $\beta_t\!<\!1$. Two things are specific to this paper:
+(d) the identification of a frozen VLM's posterior as the
+trajectory-conditional modifier $w_{\text{sem}}$, which keeps the
+IS correction \emph{tractable} because $w_{\text{sem}}$ is
+$\theta$-independent (Appendix~\ref{app:unbiased}, (A3)) and bounded
+(A1); (e) the resulting bias of the under-corrected variant
+\eqref{eq:bias-bound}, whose two-regime degradation behavior under
+$q_\phi$-miscalibration is given in
+Appendix~\ref{app:unbiased}'s closing paragraphs and separated cleanly
+from the verified-CF channel's signal-extinction regime
+(\S\ref{sec:method:verified}; \S\ref{sec:discussion} bullet (ix)).
+Items~(d)--(e) are where the framing earns its place beyond a textbook
+IS application.
 
 \subsection{Connection to V-trace and Retrace}
 \label{app:vtrace}
