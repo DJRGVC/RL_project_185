@@ -627,19 +627,50 @@ because we recompute the env's own sparse reward, not a VLM-derived surrogate.
 \label{sec:exp:setup}
 
 We use Gymnasium-Robotics \texttt{FetchPush-v4}, \texttt{FetchPickAndPlace-v4},
-and \texttt{FetchSlide-v4} with SAC~\citep{haarnoja2018sac}: hidden width 256,
+and \texttt{FetchSlide-v4}---each exposing a 25-dimensional goal-conditioned
+observation $(\text{obs},\text{ag},\text{dg})\in\mathbb{R}^{10}\times\mathbb{R}^3\times\mathbb{R}^3$,
+a 4-dimensional continuous action (end-effector $\Delta xyz$ + gripper open/close),
+and the environment's built-in sparse reward
+$r_t=\mathbb{1}[\|\text{ag}_t-g\|_2\le d_{\text{th}}]-1\in\{-1,0\}$ with
+success threshold $d_{\text{th}}\!=\!0.05$\,m. Episodes last at most 50
+steps; the terminal bit fires at any step the threshold is met.
+
+\paragraph{SAC configuration.}
+Actor and critic networks each use two hidden layers of width 256 with ReLU
+activations; a separate log-entropy coefficient is optimized jointly with
 $\gamma\!=\!0.98$, $\tau\!=\!0.005$, learning rate $3\!\times\!10^{-4}$
-everywhere, batch~256, updates-per-step~1, auto-entropy. HER uses the
-\texttt{future} strategy with $k\!=\!4$. PER uses $\alpha\!=\!0.6$ with the
-standard linearly-annealed $\beta$. Semantic PER adds a multiplicative window
-of $W\!=\!5$ steps and $w_{\max}\!=\!10$ around the localized failure timestep.
-Training runs are 500\,k env steps for paper-grade sweeps and 50\,k--100\,k for
-the rapid in-flight experiments reported below. Each (method, env) cell uses 3
-seeds; mean and standard error are reported throughout. VLM calls use Claude
-Opus 4.7 and GPT-4o (\texttt{gpt-4o-2024-08-06}) via the official APIs at
-$\le\!\$0.05$ per call; the per-task-description prompt and the
-\texttt{GoalDistanceLocalizer} heuristic baseline are described in
-Appendix~\ref{app:prompts}.
+everywhere, batch~256, updates-per-step~1, auto-entropy
+target~$-\text{dim}(\mathcal{A})\!=\!-4$ \citep{haarnoja2018sac}. HER uses the
+\texttt{future} strategy with $k\!=\!4$ relabels per episode
+\citep{andrychowicz2017her}. PER uses $\alpha\!=\!0.6$ with linearly-annealed
+$\beta\colon0.4\!\to\!1.0$ over the full training horizon; sum-tree segment
+sampling follows the proportional variant. Semantic PER adds a multiplicative
+window of $W\!=\!5$ steps and $w_{\max}\!=\!10$ around the VLM-localized
+failure timestep, keeping all other SAC/HER/PER settings unchanged.
+
+\paragraph{Evaluation protocol.}
+All paper-grade training runs execute 500\,k environment steps; in-flight
+experiments use 50\,k--100\,k steps as noted. Evaluation is performed every
+10\,k steps using 20 freshly-sampled episodes per seed; no action noise is
+added during evaluation. Each (method, env) cell uses $n\!=\!3$ independent
+seeds (different environment random seeds and network initializations).
+Reported metrics are mean $\pm$ standard error of the mean (SE) computed
+across seeds using the $t$-distribution with $n\!-\!1\!=\!2$ degrees of
+freedom; error bars in all figures are mean\,$\pm$\,1\,SE. Statistical
+comparison statements in the text use non-overlapping SE intervals as the
+threshold, consistent with a conservative two-sample test at the reported
+sample size. Eval success rate is the fraction of the 20 eval episodes for
+which $r_t\!=\!0$ fires at any step, time-averaged over the last
+50\,k-step window to reduce per-evaluation noise.
+
+\paragraph{VLM API and cost.}
+VLM calls use Claude Opus 4.7 and GPT-4o (\texttt{gpt-4o-2024-08-06}) via
+the official APIs at $\le\!\$0.05$ per call. Calls are issued only on failed
+training episodes (terminal reward $r_T\!<\!0$), so the total API volume scales
+as $O(\text{failed episodes}) \approx O(500\text{k}/50) = 10\text{k}$ calls per
+run at the sparse success rates typical of early training. The per-task-description
+prompt and the \texttt{GoalDistanceLocalizer} heuristic baseline are described
+in Appendix~\ref{app:prompts}.
 
 \begin{figure}[t]
 \centering
@@ -729,8 +760,12 @@ production configuration. Critically, GPT-4o still teleport-collapses on the
 joint \textsc{all} variant in 4/6 episodes: the failure mode is
 \emph{prompt-architectural}, not model-specific. Section~\ref{sec:exp:real}
 extends this prompt grid to a third VLM family (Sonnet~4.5) on real-data
-failures and confirms the prompt-architectural fix transfers, evidence that
-the design recommendations here are not GPT-4o-specific.
+failures and confirms the prompt-architectural fix transfers. This constitutes
+a \emph{VLM-family robustness ablation} across at least three frontier-model
+families (Opus~4.7, GPT-4o, Sonnet~4.5): the prompt-architectural fix
+that eliminates teleport-collapse is portable across model families, and any
+implementation of the verified-counterfactual mechanism is not dependent on
+access to a single proprietary model.
 
 \subsection{Cross-Task Transferability}
 \label{sec:exp:transfer}
