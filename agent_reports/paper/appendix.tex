@@ -721,7 +721,12 @@ complementary contributions and audits them separately in
 Tables~\ref{tab:hparams-sac}--\ref{tab:hparams-vlm} list every
 hyperparameter used in the paper. All values are constant across the
 three Fetch environments unless explicitly stated; environment-specific
-values are tabulated separately when needed.
+values are tabulated separately when needed. The SAC table
+(Table~\ref{tab:hparams-sac}) now includes full network architecture
+and optimizer details sufficient for an independent reimplementation; the
+HER table (Table~\ref{tab:hparams-her}) includes a note on the
+HER$+$Semantic-PER buffer interaction (Appendix~\ref{app:hparams},
+post-table note).
 
 \begin{table}[t]
 \centering
@@ -732,16 +737,31 @@ values are tabulated separately when needed.
 \toprule
 Parameter & Value & Notes \\
 \midrule
-Hidden dim & 256 & Two-layer MLP for actor and critic \\
+\multicolumn{3}{l}{\textit{Network architecture}} \\
+Hidden dim & 256 & Per layer; two layers for actor trunk and each Q head \\
+Number of hidden layers & 2 & MLP trunk: \texttt{Linear(in,256)}$\to$\texttt{ReLU}$\to$\texttt{Linear(256,256)}$\to$\texttt{ReLU} \\
+Activation & ReLU & Applied after each hidden layer; no LayerNorm or BatchNorm \\
+Actor output & Gaussian (tanh-squashed) & Mean + log-std heads; $\log\sigma$ clamped to $[-5,2]$ \\
+Critic architecture & Twin-Q & Two independent $Q_1, Q_2$ heads; target uses min$(Q_1,Q_2)$ \\
+Obs.\ dimension & 25 (goal-conditioned) & Fetch: 10 robot obs + 3 obj pos + 3 obj vel + 6 rel + 3 desired goal \\
+Action dimension & 4 & $[\Delta x,\Delta y,\Delta z,\text{gripper}]\in[-1,1]^4$ \\
+\midrule
+\multicolumn{3}{l}{\textit{Optimization}} \\
 Learning rate (actor/critic/$\alpha$) & $3\!\times\!10^{-4}$ & Adam optimizer \\
+Adam $(\beta_1,\beta_2)$ & $(0.9,\,0.999)$ & PyTorch defaults \\
+Adam $\varepsilon$ & $10^{-8}$ & PyTorch default \\
+Weight decay & 0 & No L2 regularization \\
 Discount $\gamma$ & 0.98 & Fetch-standard \\
 Polyak coefficient $\tau_{\text{SAC}}$ & 0.005 & Target-critic update \\
-Initial temperature & 0.2 & Soft-actor entropy scale \\
-Auto entropy tuning & enabled & Haarnoja et al.\ 2018 \\
+Initial temperature $\alpha_0$ & 0.2 & Soft-actor entropy scale; auto-tuned thereafter \\
+Target entropy $\bar{H}$ & $-d_a = -4$ & $d_a$ = action dimension; Haarnoja et al.\ 2018 \\
+Auto entropy tuning & enabled & $\alpha$ updated jointly with actor/critic \\
+\midrule
+\multicolumn{3}{l}{\textit{Training schedule}} \\
 Batch size & 256 & \\
 Updates per env step & 1 & \\
 Total env steps & 500k--1M & Paper-grade sweeps; 50k--100k for in-flight \\
-Warm-up steps & 10k & Random-policy data before SAC update \\
+Warm-up steps & 10k & Uniform-random policy; no SAC updates \\
 Eval interval & 5k steps & 20 eval episodes, deterministic policy \\
 Random seeds & 42, 123, 999 & 3 seeds per (method, env) cell \\
 Replay capacity & $10^6$ & Ring buffer with sum-tree priorities \\
@@ -760,10 +780,19 @@ Parameter & Value & Notes \\
 \midrule
 Strategy & \texttt{future} & Andrychowicz et al.\ 2017 \\
 Relabel multiplier $k_{\text{HER}}$ & 4 & 4 hindsight transitions per real transition \\
-Goal sampler & uniform over future ts & \\
+Goal sampler & uniform over future ts & Samples $g'\!\sim\!\mathrm{Uniform}(\{\text{ag}_{t'}\}_{t'>t})$ \\
+Effective buffer ratio (real:HER) & $1\!:\!4$ & Each real transition produces 5 buffer entries \\
+\midrule
+\multicolumn{3}{l}{\textit{HER$\,+\,$Semantic-PER interaction (see note below)}} \\
+Semantic weight inheritance & Yes & HER copies inherit $w_{\text{sem}}$ of originating transition \\
+Buffer cardinality $|\mathcal{D}_B|$ in IS weight & $10^6$ & Ring-buffer \emph{slot} count; not episode count \\
+HER-augmented effective boost & $\le 5\!\times\!w_{\max}$ & $\le 5$ copies per slot $\times$ boost cap 10; bounded by slot capacity \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\noindent\textbf{Note on HER$\,+\,$Semantic-PER interaction.}
+When HER inserts a hindsight-relabeled copy of slot~$i$ (with goal $g'\!\neq\!g$) into the buffer, it occupies a \emph{new} ring-buffer slot $i'$ whose semantic weight is initialized to the same $w_i$ as the originating transition (line~9 of Algorithm~\ref{alg:sem-per}).  The practical effect is that the failure-window boost is inherited by HER copies of failure-window transitions.  The IS correction at line~13 uses the ring-buffer slot count $|\mathcal{D}_B|\!=\!10^6$ (a constant throughout training, since the buffer is pre-allocated) regardless of how many slots contain HER vs.\ real transitions; at steady state approximately $80\%$ of occupied slots are HER copies.  The worst-case effective boost for a failure-window slot is therefore $w_{\max}\!=\!10$ (unchanged), because both the real transition and its 4 HER copies are sampled from the same sum-tree and each has the same leaf priority $p_i\!=\!(|\delta_i|+\varepsilon)^\alpha\!\cdot\!w_{\text{sem}}$.  The number of semantically-boosted \emph{slots} increases by the HER multiplier (1 real $+$ 4 HER $=$ 5 slots per failure-window timestep), but the per-slot boost factor is unchanged.  We note this interaction explicitly here for reimplementers.
 
 \begin{table}[t]
 \centering
@@ -792,12 +821,17 @@ $\varepsilon$ (priority floor) & $10^{-6}$ & \\
 \toprule
 Parameter & Value & Notes \\
 \midrule
-Window half-width $W$ & 5 timesteps & Boost around $t_{\text{fail}}$ \\
-Boost cap $w_{\max}$ & 10 & Multiplicative on PER priority \\
-Keyframes $K$ & 5 & Uniformly sampled per failed episode \\
+\multicolumn{3}{l}{\textit{Semantic PER}} \\
+Window half-width $W$ & 5 timesteps & Priority-boost half-width around $t_{\text{fail}}$; slots $i$ with $|\tau_i - t_{\text{fail}}| \le W$ get $w_i = w_{\max}$ \\
+Boost cap $w_{\max}$ & 10 & Multiplicative factor on PER priority (Eq.~\ref{eq:headline}); $w_i \in \{1, w_{\max}\}$ \\
+Semantic blend $\alpha_{\text{sem}}$ & 0.7 & \texttt{semantic\_alpha}; applies $w_i$ via $p_i = (|\delta_i|+\varepsilon)^{\alpha_{\text{PER}}} \cdot w_i^{\alpha_{\text{sem}}}$; controls boost magnitude continuously \\
+Keyframes $K$ & 5 & Uniformly-spaced frames per failed episode for VLM query \\
 VLM call interval & every failed episode & \texttt{vlm\_call\_interval}=1 \\
 VLM provider & GPT-4o (production) & \texttt{gpt-4o-2024-08-06} \\
-Heuristic localizer & GoalDistanceLocalizer & Privileged-state oracle \\
+Heuristic localizer & GoalDistanceLocalizer & Privileged-state oracle; no VLM call \\
+\midrule
+\multicolumn{3}{l}{\textit{Oracle-CF and VLM-CF buffer}} \\
+CF relabel window & 4 timesteps & \texttt{cf\_window}; hindsight-goal relabeling window around $K^\star$ (distinct from Sem-PER's $W$) \\
 \midrule
 \multicolumn{3}{l}{\textit{Verified-CF}} \\
 Verifier rollout horizon $N$ & 50 steps & One Fetch episode \\
@@ -806,7 +840,7 @@ Teleport reject radius $\rho$ & 0.05 m & $\|p_{\text{cf}}-g\| < \rho \Rightarrow
 CF prompt variant (production) & \textsc{achieved\_goal} & cf.\ Sec.~\ref{sec:exp:prompt} \\
 Min VLM self-confidence & 0.5 & Soft filter; under-utilized \\
 Verifier env action repeat & 1 (default) & \\
-Verifier env reseed strategy & disabled & State restored explicitly \\
+Verifier env reseed strategy & disabled & State restored explicitly via MuJoCo \texttt{mj\_forward} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1047,7 +1081,16 @@ are stated in Appendix~\ref{app:unbiased}.
 \item \textbf{Algorithm pseudocode.} Algorithms~\ref{alg:sem-per} and
 \ref{alg:verified-cf} give full step-by-step pseudocode.
 \item \textbf{Hyperparameters.} Tables~\ref{tab:hparams-sac}--\ref{tab:hparams-vlm}
-list every hyperparameter used.
+list every hyperparameter used. Table~\ref{tab:hparams-sac} includes
+full network architecture details (number of layers, activation,
+twin-Q setup, Adam optimizer $(\beta_1,\beta_2,\varepsilon)$, target
+entropy formula) sufficient for an independent reimplementation.
+Table~\ref{tab:hparams-semper} includes the \texttt{semantic\_alpha}
+blend parameter ($\alpha_{\text{sem}}\!=\!0.7$) and the CF relabel
+window (\texttt{cf\_window}$=4$) not previously tabulated.  The
+HER$+$Semantic-PER buffer interaction (semantic-weight inheritance by
+HER copies, IS-weight buffer cardinality) is explained in the note
+following Table~\ref{tab:hparams-her}.
 \end{itemize}
 
 \paragraph{Code and data.}
