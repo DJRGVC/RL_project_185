@@ -53,10 +53,10 @@
     "_depends_on": ["a1_sweep_complete"],
     "_per_task_vlm_models": {
       "FetchPickAndPlace-v4": {"vlm_provider": "anthropic", "vlm_model": "claude-sonnet-4-5"},
-      "FetchPush-v4":         {"vlm_provider": "anthropic", "vlm_model": "claude-sonnet-4-5"},
-      "FetchSlide-v4":        {"vlm_provider": "anthropic", "vlm_model": "claude-sonnet-4-5"}
+      "FetchPush-v4":         {"vlm_provider": "openai",    "vlm_model": "gpt-4o"},
+      "FetchSlide-v4":        {"vlm_provider": "openai",    "vlm_model": "gpt-4o"}
     },
-    "_per_task_vlm_models_note": "Phase 2 retry 2026-05-12: normalized to Anthropic/Sonnet-4.5 across all envs after OpenAI gpt-4o-mini RPD cap exhaustion stalled attempts 1-3.",
+    "_per_task_vlm_models_note": "Phase 2 attempt 5 (2026-05-12): split-provider per C1v2 per-task best-model finding. PnP -> Anthropic Sonnet-4.5 (task-aware mid-air waypoints, lowest collapse rate). Push/Slide -> OpenAI GPT-4o (full, not mini: 0% teleport-collapse on achieved_goal per C1v2-A, plus much higher Tier 1 RPM headroom than Anthropic). Attempt 3 hit OpenAI Tier 1 RPD on gpt-4o-mini; attempt 4 hit Anthropic 5 RPM on Sonnet across all envs. Split + cf_call_interval=16 keeps each provider <=3 parallel runs ~90 RPM at peak.",
     "runs": [
       {"id": "vcf_pp_s42",    "config": "configs/vlm_cf.yaml",      "env": "FetchPickAndPlace-v4", "seed": 42,  "run_name": "path_c_vlm_cf_pp_s42",      "tags": ["path_c_overnight_2026-05-11","path_c_vlm","vlm_cf","FetchPickAndPlace-v4","sonnet45"]},
       {"id": "vcf_pp_s123",   "config": "configs/vlm_cf.yaml",      "env": "FetchPickAndPlace-v4", "seed": 123, "run_name": "path_c_vlm_cf_pp_s123",     "tags": ["path_c_overnight_2026-05-11","path_c_vlm","vlm_cf","FetchPickAndPlace-v4","sonnet45"]},
@@ -82,7 +82,7 @@
       "training.eval_interval=10000",
       "training.save_interval=100000",
       "training.log_interval=1000",
-      "replay.cf_call_interval=8",
+      "replay.cf_call_interval=16",
       "logging.use_wandb=true"
     ]
   },

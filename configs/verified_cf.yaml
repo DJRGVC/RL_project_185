@@ -14,7 +14,7 @@ replay:
   p_counterfactual: 0.25
   cf_min_confidence: 0.5
   cf_fallback_to_achieved: true
-  cf_call_interval: 8
+  cf_call_interval: 16            # Phase 2 attempt 5: doubled from 8 to halve provider RPM after attempts 3+4 hit caps
   cf_window: 4
   reject_teleport_radius_m: 0.05
 
