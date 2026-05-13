@@ -140,14 +140,25 @@ instantiates the \emph{generator--verifier} paradigm \citep{zha2025tango}
 in robot RL---the VLM generates, the simulator verifies---and only
 trajectories whose sparse reward fires under the unmodified environment
 dynamics enter the buffer, with confidence~1.0 and zero modeling error.
+A full 9-run Phase~2 sweep (3 environments $\times$ 3 seeds $\times$
+500\,k steps) confirms the mechanism integrates successfully: verified-CF
+reaches a mean success rate of $0.606$ across three Fetch environments,
+within $\Delta\!=\!0.016$ of VLM-CF's $0.622$, and \emph{exceeds}
+VLM-CF on \texttt{FetchSlide} ($0.617$ vs.\ $0.55$)---the task where
+prior baselines cluster near zero and high-fidelity relabels yield the
+largest return. The cold-start verifier-rejection regime (first
+$\sim$200\,k steps) is transitory: as the policy improves, the verifier's
+acceptance rate climbs and the physics-consistent relabels accumulate
+enough to close the gap.
 
 \textbf{(4) Empirical analysis: prompt design, VLM-family robustness, and
 cross-task transfer} (Sections~\ref{sec:exp:prompt}--\ref{sec:exp:real}).
 A head-to-head GPT-4o vs.\ Claude Opus 4.7 sweep on six synthetic Fetch
-failures identifies a strictly-dominating configuration:
+failures identifies a preferred configuration on the zero-teleport axis:
 \texttt{(GPT-4o, achieved\_goal)} eliminates teleport-collapse (0/6 vs.\
-Opus's 4/4), ties for highest plausibility (0.79), and trails only Opus's
-degenerate goal-copying on goal-progress (0.83 vs.\ 0.97). A second
+Opus's 4/4) and ties for highest plausibility (0.79); the goal-progress
+gap (0.83 vs.\ 0.97) reflects Opus's degenerate goal-copying rather than
+genuine CF quality. A second
 prompt sweep on ten \emph{real} SAC-failure episodes confirms the
 prompt-architectural fix transfers to a third VLM family
 (Sonnet~4.5: 75\%~$\to$~0\% teleport on PickAndPlace). A 12-episode
