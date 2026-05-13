@@ -36,7 +36,8 @@
 
 \paragraph{Problem.}
 Sparse-reward goal-conditioned manipulation is a temporal credit-assignment
-problem: in Gymnasium-Robotics Fetch (Push / PickAndPlace / Slide), a
+problem: in Gymnasium-Robotics Fetch~\citep{delazcano2024gymrobotics}
+(Push / PickAndPlace / Slide), a
 randomly-initialized policy succeeds in $<\!1\%$ of episodes, and the lone
 terminal reward bit at the end of a 50-step trajectory decays exponentially
 through TD bootstrapping. Hindsight Experience Replay (HER) relabels failed
@@ -112,8 +113,10 @@ most instructive transition (the one where failure became inevitable)
 receives no special treatment.
 
 Recent work uses foundation Vision-Language Models (VLMs) as ``oracles''
-inside the RL loop, both for reward shaping \citep{rocamonde2024vlmreward,lee2025kagi}
-and replay-buffer prioritization \citep{sharony2026vlmrb}. We frame these
+inside the RL loop, both for reward shaping
+\citep{rocamonde2024vlmreward,lee2025kagi}, replay-buffer prioritization
+\citep{sharony2026vlmrb}, and failure detection in manipulation
+\citep{duan2025aha}. We frame these
 uses as \emph{importance-sampled stochastic optimization with a
 foundation-model proposal distribution}: the VLM is a frozen approximation
 to the (intractable) posterior $p(t^\star\mid\tau)$ over which transitions
@@ -135,8 +138,8 @@ FetchPush: the VLM returns \texttt{corrective\_position}~=~\texttt{desired\_goal
 a degenerate zero-information output. We close this loophole \emph{by
 construction} by asking instead for a corrective \emph{action sequence}
 and executing it in a fork of the training simulator. A four-vector
-action cannot teleport a 50\,g block by 50\,cm under MuJoCo dynamics; the
-failure mode is structurally inexpressible. The mechanism instantiates the
+action cannot teleport a 50\,g block by 50\,cm under MuJoCo
+\citep{todorov2012mujoco} dynamics; the failure mode cannot be expressed. The mechanism instantiates the
 \emph{generator--verifier} paradigm \citep{zha2025tango} in robot RL.
 
 \textbf{(3) Empirical analysis: prompt design, VLM-family robustness, and
@@ -163,9 +166,9 @@ Hindsight Experience Replay \citep{andrychowicz2017her} with the
 \texttt{future} relabel strategy and $k\!=\!4$ remains the dominant
 solution to sparse-reward goal-conditioned manipulation. Recent
 extensions touch the \emph{relabel target}
-\citep{ozgur2025nextfuture,sayar2023cebp}, the \emph{relabel proposal}
-\citep{urpi2024caiac,hu2026echo,ding2026agentHER}, or add a
-\emph{verification step} \citep{chuck2025hint,lei2025gchr};
+\citep{ozgur2025nextfuture,sayar2023cebp,zhao2018energy}, the
+\emph{relabel proposal} \citep{urpi2024caiac,hu2026echo,ding2026agentHER,mesnard2021cca},
+or add a \emph{verification step} \citep{chuck2025hint,lei2025gchr};
 our verified-CF mechanism (\S\ref{sec:method:verified}) is in the
 third family but verifies in the \emph{exact training simulator}
 (zero modeling error) on an \emph{action sequence} rather than a
@@ -242,7 +245,8 @@ degenerate to PER. Defaults: $w_{\max}\!=\!10$, $W\!=\!5$, $\alpha\!=\!0.6$.
 $\mu_{\text{Sem}}\propto\mu_P\cdot w_{\text{sem}}$ the trajectory-conditional
 $w_{\text{sem}}$ factor cancels in the normalized
 $\mathbb{E}_{\mu_{\text{Sem}}}[w_{\text{IS},P}\ell]$, so using the PER
-weight as an under-correction yields a bounded V-trace-analogous bias:
+weight as an under-correction yields a bounded V-trace-analogous bias
+\citep{espeholt2018impala,munos2016retrace}:
 $|\widehat{\mathcal{L}}_{\text{under}} - \mathcal{L}_U|
 \le C(w_{\max}^{\beta_t}-1)((2W+1)/T)\|\ell\|_\infty$
 (full derivation: GitHub
@@ -361,7 +365,7 @@ cross-horizon comparisons should be read as efficiency claims.}
 \textbf{FetchPush (500k).} \emph{vlm\_cf} reaches $0.95\!\pm\!0.03$ and
 \emph{verified\_cf} reaches $0.85\!\pm\!0.10$, both substantially above
 HER@250k ($0.617$) and matching the PER@3M asymptote
-($\sim\!0.95$,~\citealp{plappert2018multigoal}).
+($\sim\!0.95$ from our 36-run prior ablation suite; see Contributions).
 \textbf{FetchPickAndPlace (500k).} \emph{vlm\_cf} reaches
 $0.367\!\pm\!0.08$ and \emph{verified\_cf} reaches $0.35\!\pm\!0.076$
 (tied within noise), both above HER@250k ($0.183$).
