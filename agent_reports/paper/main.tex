@@ -1436,6 +1436,13 @@ The pilot evidence at $n\!=\!12$ is consistent with (but does not conclusively
 establish) the stronger claim that foundation-VLM posteriors generalize
 within the Fetch task family; Section~\ref{sec:discussion} pre-registers the
 $n\!\ge\!30$-per-task sweep and non-Fetch transfer as the quantitative follow-on.
+Convergent evidence comes from the Phase~2 VLM-CF sweep
+(Section~\ref{sec:exp:inflight}, part~(C)): the same prompt template---varying
+only the single task-description sentence---drove the VLM credit oracle across
+all three Fetch environments for 500\,k steps, successfully generating relabels
+that produced the task-performance gains reported in~(C) and~(D). The
+cross-environment operation required no prompt re-engineering, consistent with
+the single-template transfer claim of this section.
 
 \subsection{Real-Data Validation}
 \label{sec:exp:real}
