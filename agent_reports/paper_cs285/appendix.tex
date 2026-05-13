@@ -197,21 +197,17 @@ failure frame one step earlier at the decisive grip sequence.
 \section{Broader Impacts and Reproducibility}
 \label{app:impact}
 
-\paragraph{Broader impact.}
-This is methodological work, simulation-only --- we make no
-real-robot or sim-to-real claims. \emph{Positive:} fewer environment
-steps lower GPU-hours; the IS-posterior framing offers a principled
-lens on VLM-in-replay; and the verified-CF gate is a transferable
-``language prior $+$ physics test'' pattern. \emph{Negative +
-mitigations:} VLM-API energy and dollar costs are non-trivial
-(per-run spend is reported; a heuristic Oracle fallback is available);
-the simulator gate rejects hallucinated actions that fail the sparse
-reward; no robot-deployment risks remain beyond the usual
-sim-trained-policy caveats.
-
-\paragraph{Reproducibility.}
-Code, configs, pseudocode, prompt texts, the V-trace/Retrace
-specialization, the two-regime $q_\phi$ proof, the reproducibility
-checklist, W\&B run identifiers, and a pre-staged
-VLM-RB \citep{sharony2026vlmrb} reproduction (head-to-head deferred to
-camera-ready) accompany the submission.
+\paragraph{Broader impact and reproducibility.}
+This is methodological, simulation-only work; we make no real-robot
+or sim-to-real claims. \emph{Positive:} fewer environment steps lower
+GPU-hours; the IS-posterior framing is a principled lens on
+VLM-in-replay; the verified-CF gate is a transferable
+``language prior $+$ physics test'' pattern.
+\emph{Negative + mitigations:} VLM-API energy and dollar costs are
+non-trivial (per-run spend reported; heuristic Oracle fallback
+available); the simulator gate rejects hallucinated actions that fail
+the sparse reward; no robot-deployment risks remain beyond the usual
+sim-trained-policy caveats. Code, configs, pseudocode, prompt texts,
+the V-trace specialization, the two-regime $q_\phi$ proof, W\&B run
+identifiers, and a pre-staged VLM-RB \citep{sharony2026vlmrb}
+reproduction accompany the submission.

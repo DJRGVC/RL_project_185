@@ -104,32 +104,30 @@ VLM-RB head-to-head is pre-staged for camera-ready.
 \label{sec:intro}
 
 Sparse-reward manipulation is a credit-assignment problem in disguise.
-A 50-step Fetch episode hands the learner exactly one bit at the very
-end, and the TD-error has to walk it backward; by construction the
-gradient decays as it travels. Most transitions, then, never see a
-usable signal at all. Worse: a fresh policy on Gymnasium-Robotics Fetch
-clears fewer than 1\% of episodes, so the replay buffer holds almost no
-positive signal to propagate in the first place.
+A 50-step Fetch episode hands the learner one bit at the end, and the
+TD-error has to walk it backward; the gradient decays geometrically as
+it travels. Most transitions never see usable signal. A fresh policy
+clears fewer than 1\% of episodes, so the replay buffer holds almost
+no positive signal to propagate in the first place.
 PER \citep{schaul2016per} skews sampling toward transitions with large
 TD-errors, but that sharpening lives downstream of a signal which has
 already faded away from the rare goal-achievement timestep. HER
-\citep{andrychowicz2017her} works around the issue in a different way:
-it relabels a failed trajectory as a success against whatever goal the
-agent actually reached. But HER's relabel target is fixed to what the
-agent did, not to where it should have gone. The one transition we'd
-most like flagged --- the instant the failure became unavoidable ---
-gets no special treatment.
+\citep{andrychowicz2017her} sidesteps the problem differently: it
+relabels a failed trajectory as a success against whatever goal the
+agent did reach. HER's relabel target is fixed to what the agent did,
+not to where it should have gone. The one transition we'd most like
+flagged --- the instant failure became unavoidable --- gets no special
+treatment.
 
 Recent work has begun plugging frozen VLMs into the RL loop as
 ``oracles'' for reward shaping
 \citep{rocamonde2024vlmreward,lee2025kagi}, for replay-buffer
 prioritization \citep{sharony2026vlmrb}, and for failure detection in
-manipulation \citep{duan2025aha}. We find it useful to read all of these
-through a common lens: importance-sampled stochastic optimization with a
-foundation-model proposal distribution. In that view the VLM is just a
-frozen approximation to the (intractable) posterior
-$p(t^\star\mid\tau)$ over which transitions actually caused an episode's
-outcome. Four contributions follow.
+manipulation \citep{duan2025aha}. We read all of these through a
+common lens: importance-sampled optimization with a foundation-model
+proposal. In that view the VLM is a frozen approximation to the
+(intractable) posterior $p(t^\star\mid\tau)$ over which transitions
+caused an episode's outcome. Four contributions follow.
 
 \textbf{(1) IS-posterior framing of VLM-guided replay} (\S\ref{sec:method}).
 We re-derive PER inside a non-uniform-replay taxonomy, putting our
@@ -327,23 +325,22 @@ Under MuJoCo dynamics, a 4-D end-effector action cannot move a 50\,g
 block 50\,cm in a 50-step rollout. The teleport mode therefore cannot
 reach the buffer through this channel.
 
-A 4/4 smoke check pins down each design assertion. Teleport
-counterfactuals are killed before the first rollout step.
-Sensible-but-off actions land at \texttt{final\_distance} $0.32$\,m
-and $0.16$\,m, and are likewise rejected. One hand-crafted near-goal
-action is verified at $\text{final\_distance}\!=\!0.030$\,m. Snapshot
-round-trip equality holds to \texttt{0.00e+00} on all four Fetch envs.
-CPU cost per verification: $17.6$\,ms, or roughly $0.4\%$ overhead.
+A 4/4 smoke check pins down each design assertion: teleport
+counterfactuals are killed before the first rollout step;
+sensible-but-off actions ($0.32$\,m, $0.16$\,m
+\texttt{final\_distance}) are likewise rejected; one hand-crafted
+near-goal action is verified at $0.030$\,m. Snapshot round-trip
+equality holds to \texttt{0.00e+00} on all four Fetch envs. CPU cost
+per verification is $17.6$\,ms (${\sim}0.4\%$ overhead).
 
 \paragraph{Asymmetric failure modes.}
 The two channels rot differently when the VLM is wrong. Semantic PER
-treats $q_\phi$ as a re-weighting prior: a miscalibrated VLM blows up
-sampling variance, and the blow-up is bounded (App.~\ref{app:bias-bound}).
-The verifier treats $q_\phi$ as a candidate proposal: a miscalibrated
-VLM just gets rejected a little more often. Either way the buffer
-never sees a biased write, because what actually gets recorded is the
-env's own sparse reward, recomputed inside the rolled-out verifier
-fork --- not anything the VLM said about reward.
+treats $q_\phi$ as a re-weighting prior: a miscalibrated VLM inflates
+sampling variance, bounded (App.~\ref{app:bias-bound}). The verifier
+treats $q_\phi$ as a candidate proposal: a miscalibrated VLM gets
+rejected more often. Either way the buffer never sees a biased
+write, because what we record is the env's own sparse reward,
+recomputed inside the verifier fork --- not anything the VLM said.
 
 \section{Experiments}
 \label{sec:exp}
@@ -501,27 +498,26 @@ at half the budget. None of this retracts the kill.
 \label{sec:discussion}
 
 \paragraph{Cold-start verifier-rejection regime (the main limitation).}
-The simulator-as-verifier gate trades recall for precision by design.
-What gets through is, every time, sparse-reward-positive. The price:
-admission needs two events to line up at once --- the VLM has to
-propose a corrective action \emph{and} that sequence has to cross the
-5\,cm threshold in $\le\!N\!=\!50$ verifier steps. Early on, the joint
-event is rare. The snapshot $\sigma$ sits far from $g$ because the
-policy hasn't yet learned to carry the gripper near the object. On
-FetchPickAndPlace, seed~42 spent its first ${\sim}80$ VLM calls at
-$100\%$ verifier-rejection --- from the gradient's point of view that
-stretch was plain SAC+HER, except with VLM-API bills attached. The
-regime ends once the policy starts bringing the gripper near the
-object: snapshots fall closer to $g$, the per-state pass rate
-$m_{\text{ver}}(\sigma)$ climbs, the verifier finally admits relabels,
-and the small handful that gets through delivers a low-variance,
-physics-consistent training signal.
+The simulator-as-verifier gate trades recall for precision. What gets
+through is sparse-reward-positive every time. The price: admission
+needs two events to line up --- the VLM has to propose a corrective
+action \emph{and} that sequence has to cross the 5\,cm threshold in
+$\le\!N\!=\!50$ verifier steps. Early on, the joint event is rare. The
+snapshot $\sigma$ sits far from $g$ because the policy hasn't yet
+learned to carry the gripper near the object. On FetchPickAndPlace,
+seed~42 spent its first ${\sim}80$ VLM calls at $100\%$
+verifier-rejection --- from the gradient's point of view that stretch
+was plain SAC+HER with VLM-API bills attached. The regime ends once
+the policy starts bringing the gripper near the object: snapshots
+fall closer to $g$, the verifier admits relabels, and the small
+handful that gets through delivers low-variance, physics-consistent
+signal.
 So the two methods rot asymmetrically. Semantic PER reads $q_\phi$ as
-a re-weighting prior, so $q_\phi$-degeneracy shows up as bounded
-variance amplification. Verified-CF reads $q_\phi$ as a candidate
-proposal, so degeneracy shows up as signal extinction --- unbounded in
-the cold-start limit. Three knobs against this are pre-registered but
-not run here: base-policy warm-up, a longer $N$, and a soft acceptance
+a re-weighting prior, so degeneracy shows up as bounded variance
+amplification. Verified-CF reads $q_\phi$ as a candidate proposal, so
+degeneracy shows up as signal extinction --- unbounded in the
+cold-start limit. Three knobs against this are pre-registered but not
+run here: base-policy warm-up, a longer $N$, and a soft acceptance
 $r\!\ge\!-\rho_r$.
 
 \paragraph{Oracle-CF kill bounds the headroom.}
@@ -551,18 +547,14 @@ A faithful VLM-RB \citep{sharony2026vlmrb} reproduction is pre-staged
 in our codebase, with the head-to-head deferred to camera-ready.
 
 \paragraph{Conclusion.}
-The multiplicative form of Semantic PER admits a clean IS correction.
-The additive VLM-RB mixture does not --- it quietly retargets the
-Bellman loss. VLM-Verified Counterfactual Hindsight asks the VLM for
-a 4-vector action sequence and accepts only sparse-reward-positive
-rollouts, so the $100\%$-teleport-collapse mode (Opus~4.7, FetchPush)
-cannot reach the buffer at all. At 500k steps, verified-CF averages
-$0.606$ on the three Fetch envs ($0.85 / 0.35 / 0.617$ on
-Push / PickAndPlace / Slide), ties VLM-CF in aggregate
-($\Delta\!=\!-0.016$), and posts a higher mean on Slide ($+0.067$,
-inside seed variance at $n\!=\!3$). The pre-registered Oracle-CF kill
-on PickAndPlace at 250k ($\Delta\!=\!-0.066$) caps the
-credit-assignment headroom on Fetch at this horizon. We honored it.
+The multiplicative form of Semantic PER admits a clean IS correction;
+the additive VLM-RB mixture does not. Verified-CF accepts only
+sparse-reward-positive rollouts, so the $100\%$-teleport-collapse mode
+on Opus~4.7/FetchPush cannot reach the buffer. At 500k steps,
+verified-CF averages $0.606$ across the three Fetch envs and ties
+VLM-CF in aggregate ($\Delta\!=\!-0.016$); the pre-registered
+Oracle-CF kill at 250k ($\Delta\!=\!-0.066$) caps the
+credit-assignment headroom on Fetch at this horizon, and we honored it.
 
 \section*{Contributions}
 \label{sec:contributions}
