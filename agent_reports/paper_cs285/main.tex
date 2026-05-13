@@ -64,30 +64,22 @@ and admitting only physics-consistent, reward-positive relabels into the
 buffer (confidence~1.0, zero modeling error).
 
 \paragraph{Headline findings.}
-(i) \textbf{Verified-CF matches VLM-CF in aggregate and wins on Slide.}
-At 500k SAC+HER+verified-CF updates, the simulator-verified counterfactual
-agent reaches mean success $0.606$ across the three Fetch environments
-($0.85\!\pm\!0.14$ / $0.35\!\pm\!0.10$ / $0.617\!\pm\!0.03$ on
-Push / PickAndPlace / Slide), tying VLM-CF in aggregate
-($0.622\!=\!(0.95+0.367+0.55)/3$, $\Delta\!=\!-0.016$) and
-\emph{exceeding} VLM-CF on \texttt{FetchSlide} ($0.617$ vs.\ $0.55$), the
-task on which prior baselines cluster near zero
-($+0.45$ over PER@3M, $+0.43$ over HER@250k). Fig.~\ref{fig:headline}.
-(ii) \textbf{Pre-registered kill verdict; 1M re-run reported as transparency.}
-The Phase-1 Oracle-CF study violated the $+0.10$ kill threshold on
-FetchPickAndPlace at the 250k decision horizon ($\Delta\!=\!-0.05$); the
-kill criterion fired and we pivoted the headline to the IS-posterior
-framing (\S\ref{sec:theory}, \S\ref{sec:method:sper}) and the
-simulator-verified counterfactual mechanism (\S\ref{sec:method:verified}).
-A post-hoc, not-pre-registered Oracle-CF re-run to 1M steps reaches mean
-$\approx\!0.40$ on \texttt{FetchPickAndPlace} (vs.\ HER@250k of $0.167$),
-indicating substantial headroom above the 250k kill horizon; we honor the
-pre-registered verdict and report the re-run as transparency.
-(iii) \textbf{Prompt-architectural failure.} A two-vendor, three-model
+(i) \textbf{Verified-CF matches VLM-CF in aggregate, wins on Slide.} At
+500k SAC+HER+verified-CF updates the verified-CF agent reaches mean
+success $0.606$ across the three Fetch envs ($0.85 / 0.35 / 0.617$ on
+Push / PickAndPlace / Slide), tying VLM-CF ($0.622$ mean, $\Delta\!=\!-0.016$)
+and \emph{exceeding} it on FetchSlide ($0.617$ vs.\ $0.55$;
+$+0.45$ over PER@3M, $+0.43$ over HER@250k); Fig.~\ref{fig:headline}.
+(ii) \textbf{Pre-registered kill verdict, honored.} The Phase-1 Oracle-CF
+study violated the $+0.10$ kill threshold on FetchPickAndPlace at the
+250k decision horizon ($\Delta\!=\!-0.05$); we honored the kill and
+pivoted the headline to the IS-posterior framing and the verifier. A
+post-hoc 1M re-run reaches mean $\approx\!0.40$ on PickAndPlace
+(vs.\ HER@250k of $0.167$); we report it as transparency, not retraction.
+(iii) \textbf{Prompt-architectural failure.} A two-vendor three-model
 sweep (GPT-4o / Opus~4.7 / Sonnet~4.5) on 6 synthetic and 10 real Fetch
-failures locates teleport-collapse as prompt-architectural
-($0/6$ vs.\ $4/4$ for \texttt{(GPT-4o, achieved\_goal)} vs.\ Opus on
-the same variant), not model-specific.
+failures locates teleport-collapse as prompt-architectural ($0/6$ vs.\
+$4/4$ for \texttt{(GPT-4o, achieved\_goal)} vs.\ Opus), not model-specific.
 (iv) \textbf{Cross-task transfer.} A single prompt template yields $12/12$
 parse / task-relevance / plausibility on Push / PickAndPlace / Slide.
 

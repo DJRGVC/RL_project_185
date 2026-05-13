@@ -1671,3 +1671,200 @@ python scripts/n2_validate_cross_task.py \
 python scripts/n1_smoke_verified_cf.py
 # 4/4 expected pass; results in agent_reports/N1_smoke_results.json
 \end{verbatim}}
+
+\section{Counterfactual Prompt Design: Extended Analysis}
+\label{app:c1v2-stats}
+
+This appendix expands the §\ref{sec:exp:prompt} prompt-design ablation along
+four axes the main body refers to but does not develop in detail.
+
+\paragraph{Mechanism of the position-copy attractor.}
+\S\ref{sec:method:prompt} gives the mechanistic account at the output-schema
+level; the empirical signature is that the four \textsc{achieved\_goal} Opus
+calls matched \texttt{corrective\_position} to \texttt{desired\_goal} within
+$\le\!1$\,cm in $4/4$ cases; on \textsc{all} the match held in $2/2$ Opus
+calls. GPT-4o's $0/6$ on \textsc{achieved\_goal} vs.\ $4/6$ on \textsc{all}
+is the discriminating signature: the only structural difference between the
+two prompts is the inclusion of the full action-history block in
+\textsc{all}, which lengthens the prompt and crowds out the late-prompt
+discouragement of position-copying. This is consistent with prompt-length-dependent
+attentional dilution: the in-context goal triplet remains the strongest
+local numerical attractor while the discouraging instruction is pushed out.
+The interpretation is testable: shortening the \textsc{all} variant's action
+history should monotonically reduce GPT-4o's teleport-collapse rate. We flag
+this as a falsifiable prediction for the camera-ready follow-on.
+
+\paragraph{Judge-bias and inter-rater reliability.}
+The judge for Table~\ref{tab:prompt-variants} is Claude Opus 4.7, which is
+also one of the two candidate models. This same-vendor judge-candidate
+overlap is the most direct external-validity threat to the table: the
+$0.97$ goal-progress score that Opus's degenerate goal-copy receives is
+exactly the failure mode a self-preferring judge would amplify, since the
+prediction matches the rubric's ``goal-progress'' anchor mechanically. We
+mitigate in three ways. (i) The teleport-collapse metric is computed by
+predicate $\mathbb{1}[\|\hat p\!-\!g\|_2\!\le\!d_{\text{th}}]$, so the
+load-bearing $0/6$ vs.\ $4/4$ comparison is judge-independent. (ii)
+Plausibility is computed against a fixed 5-point rubric in the system
+prompt (Appendix~\ref{app:prompts}), which constrains the response space
+relative to free-form scoring. (iii) The §\ref{sec:exp:real} replication on
+real data uses Sonnet~4.5 as the candidate, removing the same-vendor
+judge-candidate edge case for the load-bearing GPT-4o comparison. If
+Opus-as-judge over-weights the Opus \textsc{narrative} $0.79$ relative to
+ground truth, the table's effect would be to inflate Opus's plausibility
+rank, biasing \emph{against} the GPT-4o adoption claim---the safer of the
+two mis-specifications.
+
+\paragraph{Statistical power and pre-registered falsification.}
+Cell sizes are $n\!=\!6$ on the GPT-4o rows and $n\!=\!2$--$4$ on the Opus
+rows (Opus calls re-used from C1's partial grid to avoid re-billing). At
+$n\!=\!6$ a $0/6$ outcome is consistent with any true teleport-collapse
+rate $\le\!0.39$ at $\alpha\!=\!0.05$ (Clopper--Pearson upper); at $n\!=\!4$
+a $4/4$ outcome is consistent with any true rate $\ge\!0.40$. The two
+intervals are disjoint, so the $0/6$ vs.\ $4/4$ contrast between
+\texttt{(GPT-4o, achieved\_goal)} and \texttt{(Opus, achieved\_goal)} is
+the strongest single binary-classification claim the table makes. The
+plausibility/goal-progress numbers are weaker, with $n\!=\!4$ SEs of
+$0.04$--$0.18$ that admit ranking swaps under any single retry. We
+pre-register the following falsification: a $30$-episode re-evaluation of
+\texttt{(GPT-4o, achieved\_goal)} on FetchPickAndPlace with the production
+prompt should show a teleport-collapse rate $\le\!5\%$. A higher rate
+falsifies the prompt-architectural claim and reverts the recommendation to
+\textsc{action} alone.
+
+\paragraph{IS-posterior precondition framing.}
+The prompt-design ablation sits upstream of the §\ref{sec:theory}
+posterior framing: $q_\phi$ is measured here in the specific case where
+the localization is of a \emph{corrective} timestep, not a
+\emph{failure-causing} one. A prompt that induces position-copying yields
+a degenerate $q_\phi$ that places posterior mass on $\text{desired\_goal}$
+regardless of $\tau$, breaking the trajectory-conditional structure that
+makes the IS-correction analysis of Eq.~\eqref{eq:headline} go through.
+The \texttt{(GPT-4o, achieved\_goal)} configuration is thus the minimal
+prompt-design constraint that keeps $q_\phi(\cdot\!\mid\!\tau)$
+$\tau$-dependent at all. Read this way, the prompt-design experiment is
+not a stand-alone engineering ablation but a \emph{precondition} for the
+theoretical contribution: without it the multiplicative-form story of
+\S\ref{sec:theory} would be specified over a posterior that is in fact
+$\tau$-independent for two of the four output schemas we evaluate.
+
+\paragraph{Output-type-to-$q_\phi$ degeneracy map.}
+The teleport-collapse predicate $\|\hat p\!-\!g\|_2\!\le\!d_{\text{th}}$
+is the empirical signature of a trajectory-independent posterior
+$q_\phi(\hat p\!\mid\!\tau)=\delta(\hat p\!-\!g)$, and the two-regime
+taxonomy of Appendix~\ref{app:unbiased} (``Two regimes of
+$q_\phi$-degeneracy'') fixes the operational meaning of that Dirac on the
+verifier channel of \S\ref{sec:method:verified}. The four-by-two map is:
+(\textsc{narrative}, any model) $\Rightarrow$ $m_{\text{gen}}\!=\!0$ on
+the verifier channel (the schema does not produce an executable
+4-vector); (\textsc{achieved\_goal} or \textsc{all}, position-emitting
+model) $\Rightarrow$ Dirac $q_\phi$, $m_{\text{ver}}\!\to\!0$;
+(\textsc{action}, any model) $\Rightarrow$ non-degenerate $q_\phi$
+(numerical attractor absent by construction). The production
+\texttt{(GPT-4o, achieved\_goal)} configuration and the verified-CF
+mechanism therefore occupy different cells of this map---the former with
+the rejection gate retained as defense in depth, the latter relying on
+\textsc{action} for structural immunity.
+
+\section{Cross-Task Transfer: Per-Episode Details}
+\label{app:transfer-details}
+
+The cross-task transfer pilot of §\ref{sec:exp:transfer} tested 12
+failed episodes (4 per Fetch env) with the single format-string prompt
+of Appendix~\ref{app:prompts} differing only in the task-description
+sentence. The judge-rated metrics (parse rate, task-relevance,
+plausibility) are 12/12 on every axis. The tolerant keyframe agreement
+gradient---Slide ($4/4$) $>$ Push ($3/4$) $>$ PickAndPlace ($2/4$)---is
+attributable to heuristic Oracle under-localization rather than VLM
+error: on Slide the ballistic heuristic and the keyframe images both
+identify the puck launch event; on Push the contact-loss event is
+visually salient; on PickAndPlace the ``grip failed'' failure spans
+$\sim\!1$--$3$ consecutive timesteps with little frame-to-frame visual
+change, so the heuristic argmin localizes to closest-approach while the
+VLM assigns the failure one step earlier at the decisive grip
+sequence---a different but arguably more physically-correct localization.
+We pre-register the $n\!\ge\!30$-per-task sweep and non-Fetch transfer
+(Adroit, OGBench, MiniGrid for a head-to-head with VLM-RB) as the
+quantitative follow-on.
+
+\section{Real-Data Validation: Extended Caveats}
+\label{app:c1v2-real-details}
+
+\paragraph{Episode collection.}
+The 10 real failures of §\ref{sec:exp:real} were drawn from two SAC+HER
+checkpoints trained from scratch under the §\ref{sec:exp:setup}
+hyperparameters: FetchPickAndPlace-v4 for 50k steps and FetchPush-v4 for
+30k steps, both deliberately stopped at $\sim\!5\%$ deterministic eval
+success---well below the $\sim\!500$k/$\sim\!80$k convergence horizons.
+Stochastic 50-step rollouts (actor mean plus tanh-squashed Gaussian tail)
+yielded 10 failures (6 PickAndPlace from seeds 50000--50102, 4 Push from
+seeds 60000--60051; data-collection success rate $\approx\!7\%$). The
+heuristic localizer's mid-clip safety rule did not engage on any of the
+10 real episodes.
+
+\paragraph{Two-vendor reframe.}
+The synthetic sweep paired Claude Opus~4.7 against OpenAI GPT-4o. For the
+real-data sweep the OpenAI key returned a hard \texttt{insufficient\_quota}
+block, so we substituted Claude Sonnet~4.5 as the second generator.
+Empirically Sonnet behaves closer to GPT-4o on PickAndPlace ($0/6$ vs.\
+Opus's $3/4$) and closer to Opus on Push ($3/4$ vs.\ Opus's $4/4$): the
+intra-vendor variation spans most of the cross-vendor range. The
+appropriate strength of claim is therefore that teleport-collapse is
+prompt-architectural and task-conditioned, not vendor-/family-specific.
+We pre-register an open-weights VLM extension (LLaVA-NeXT or
+Qwen2.5-VL-7B \citep{chen2024promptable}) as the natural next robustness
+check.
+
+\paragraph{Caveats.}
+(i) $n\!=\!10$ episodes is a pilot, not a powered sweep; we pre-register
+$n\!\ge\!30$ per environment with bootstrapped CIs. (ii) The OpenAI quota
+block prevented a within-pipeline GPT-4o real-data comparison; the
+Sonnet~4.5 substitution is informative for the intra-vendor question
+but does not replace GPT-4o on real data. (iii) The judge (Opus~4.7)
+overlaps with one of the generators on the synthetic side; the
+Sonnet-vs-Opus contrast is internally valid because the \emph{same}
+judge scores both generators. A cross-judge sanity check (Sonnet~4.5 or
+GPT-4o judging the same outputs) is on the open-work list.
+
+\section{Additional Limitations}
+\label{app:additional-limitations}
+
+The main body (§\ref{sec:discussion}) discusses four limitations; this
+appendix records five additional ones that the body refers to.
+
+\paragraph{(v) Cross-task evidence beyond Fetch.}
+Our cross-task evidence is at $n\!=\!12$ in three Fetch envs; transfer to
+non-Fetch tasks (Adroit, OGBench, robosuite---and to VLM-RB's MiniGrid
+benchmark for a head-to-head comparison) is the natural follow-on.
+
+\paragraph{(vi) VLM-family robustness.}
+Our robustness sweep covers three models from two vendors (Opus~4.7 and
+Sonnet~4.5 from Anthropic; GPT-4o from OpenAI); in terms of pre-training
+lineage it is effectively a two-family comparison, since Opus and Sonnet
+share substantial common corpus and RLHF pipeline. Open-weights VLMs
+(LLaVA-NeXT, Qwen2.5-VL, Pixtral) are not evaluated; the relative
+magnitude of the prompt-architectural teleport failure on smaller open
+VLMs is an open question.
+
+\paragraph{(vii) Simulator-fork requirement.}
+The simulator-as-verifier assumption requires a forkable training
+environment; tasks with non-deterministic or real-robot dynamics would
+need an additional verification layer.
+
+\paragraph{(viii) Single-timestep vs.\ clip granularity.}
+Single-timestep localization vs.\ clip-level aggregation is an untested
+trade-off. VLM-RB's 32-frame sub-trajectory signal averages over more
+visual context and may be more robust to single-frame VLM attention
+errors; we adopt the single-timestep form because it is a prerequisite
+for the counterfactual relabeling step (clip-level signals cannot
+identify a snapshot from which to fork the simulator). Whether the
+localization granularity independently improves credit assignment
+remains unablated.
+
+\paragraph{(ix) Architectural-vs.-empirical differentiation from VLM-RB.}
+The methodological differentiation from VLM-RB \citep{sharony2026vlmrb}
+in Table~\ref{tab:differentiation} rests on five axes, but the
+comparison is \emph{architectural}, not empirical: we do not run
+Semantic~PER on MiniGrid or OGBench, nor VLM-RB on FetchPickAndPlace.
+Our Sharony reproduction in the codebase (§\ref{sec:exp:inflight}~(D))
+is pre-staged for head-to-head evaluation on Fetch but the comparison
+sweep has not yet launched.
