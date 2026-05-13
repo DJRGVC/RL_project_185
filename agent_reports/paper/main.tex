@@ -235,8 +235,13 @@ clips per-step IS ratios to bound the trace's variance under
 truncation-induced bias; V-trace~\citep{espeholt2018impala} doubly-clips the
 target and behavior ratios in a distributed actor-learner setup. In each
 case the proposal is a fixed behavior or policy distribution; the
-correction inherits its form from the proposal--target ratio. The
-PER lineage in 2024--2026 has explored \emph{auxiliary} proposal signals
+correction inherits its form from the proposal--target ratio.
+The critical structural point---maintained by PER, Retrace, and
+V-trace alike---is that the IS weight and the proposal are paired: changing
+one without changing the other breaks the corrected-estimator guarantee and
+implicitly retargets the loss.
+
+The PER lineage in 2024--2026 has explored \emph{auxiliary} proposal signals
 beyond raw TD-error while preserving the multiplicative
 ``$\mu_P\!\cdot\!g$'' structure: ReaPER multiplies the PER priority by a
 per-transition reliability estimate~\citep{pleiss2025reaper};
@@ -255,12 +260,15 @@ a \emph{proposal-shaping} scheme whose auxiliary signal $w_{\text{sem}}$
 critic-internal estimate), (ii)~is \emph{trajectory-level} (one VLM call
 per failed episode, then a kernel-smeared weight applied to every slot in
 that episode), and (iii)~combines \emph{multiplicatively} with $\mu_P$,
-which is the family choice that preserves PER's IS-correction
-interpretation as derived in \S\ref{sec:theory}. The contrasting design
-choice in the very recent VLM-RB~\citep{sharony2026vlmrb} is an
-\emph{additive} mixture
-$\lambda\mu_{\text{VLM}}\!+\!(1-\lambda)\mu_U$; we return to this
-contrast in Table~\ref{tab:taxonomy} and in
+which is the family choice that keeps the IS-weight and the proposal
+paired---preserving PER's corrected-estimator interpretation as derived
+in \S\ref{sec:theory}. The contrasting design choice in the very recent
+VLM-RB~\citep{sharony2026vlmrb} is an \emph{additive} mixture
+$\lambda\mu_{\text{VLM}}\!+\!(1-\lambda)\mu_U$; this separates the
+effective proposal from PER's IS weight, implicitly retargeting the
+gradient to a $\lambda$-weighted objective that VLM-RB does not correct
+for---precisely the structural failure mode the paragraph above identifies.
+We return to this contrast in Table~\ref{tab:taxonomy} and in
 Section~\ref{sec:method:sper}.
 
 \paragraph{Foundation models in RL.}
