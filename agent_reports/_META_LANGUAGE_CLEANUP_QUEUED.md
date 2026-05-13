@@ -72,6 +72,30 @@ INVENTORY OF CONFIRMED ARTIFACTS (from baseline grep on 2026-05-13 10:35 PDT)
 - "rollout" (5) — standard RL term
 - "post-hoc" (1) — standard academic
 
+### 🔴 FIX TYPOGRAPHY: inline (i)/(ii)/(iii) renders as one dense paragraph
+
+**User-reported issue 2026-05-13 10:42 PDT:** the Extended Abstract's "Headline findings" paragraph (main.tex lines 72-93) has four items (i)–(iv) with bold titles but NO paragraph breaks between them — they flow as one dense wall of text. Same likely at lines 540-547 (Discussion limitations).
+
+**Fix:** Convert both to proper `enumerate` environments with roman-numeral labels:
+
+```latex
+\paragraph{Headline findings.}
+\begin{enumerate}[label=(\roman*),leftmargin=*,itemsep=0pt,topsep=2pt]
+\item \textbf{Verified-CF matches VLM-CF; wins on Slide.} After 500k...
+\item \textbf{[kill verdict title].} The Phase-1 Oracle-CF...
+\item \textbf{Teleport-collapse is a prompt-architectural failure...} Across six...
+\item \textbf{Cross-task transfer.} A single format-string template...
+\end{enumerate}
+```
+
+Use `enumitem` package if not already loaded (`\usepackage{enumitem}` in preamble). The NeurIPS 2025 sty may or may not include it — verify and add if missing.
+
+Page-count guardrail: `enumerate` with `itemsep=0pt, topsep=2pt` is tighter than inline-with-paragraph-breaks, so 11pp ceiling should hold. Re-compile + visually verify.
+
+If page count overflows: tighten to `itemsep=-1pt, parsep=0pt` or remove the bold titles and just lead each item with a key noun.
+
+Apply same conversion to lines 540-547 (Limitations) if they have the same one-block rendering.
+
 ### 🟢 KEEP / DO NOT touch §7 Contributions
 The Contributions section uses some of these words (Daniel wrote them); leave unchanged.
 
