@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.11)  13 MAY 2026 11:35
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.11)  13 MAY 2026 11:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -581,51 +581,43 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `cmtt' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-
-Underfull \hbox (badness 6691) in paragraph at lines 73--94
- []\T1/ptm/b/n/10 (+20) Main find-ings.[] \T1/ptm/m/n/10 (+20) (i) \T1/ptm/b/n/
-10 (+20) Verified-CF matches VLM-CF; wins on Slide. \T1/ptm/m/n/10 (+20) Af-ter
- 500k
- []
-
-[1
+ [1
 
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-di
 st/fonts/enc/dvips/base/8r.enc}]
-Underfull \vbox (badness 1264) has occurred while \output is active []
+LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 1
+35.
+ (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
+File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
+)
+[2]
+Underfull \vbox (badness 1189) has occurred while \output is active []
 
- [2]
-[3]
-Underfull \hbox (badness 10000) in paragraph at lines 355--375
+ [3]
+Underfull \hbox (badness 10000) in paragraph at lines 370--389
  []\T1/ptm/b/n/10 (+20) Setup.[] \T1/ptm/m/n/10 (+20) We test on three envs fro
-m Gymnasium-Robotics: \T1/cmtt/m/n/10 FetchPush-v4\T1/ptm/m/n/10 (+20) ,
+m Gymnasium-Robotics [[]]: \T1/cmtt/m/n/10 FetchPush-v4\T1/ptm/m/n/10 (+20) ,
  []
 
 
-Underfull \hbox (badness 1342) in paragraph at lines 355--375
+Underfull \hbox (badness 1342) in paragraph at lines 370--389
 \T1/cmtt/m/n/10 FetchPickAndPlace-v4\T1/ptm/m/n/10 (+20) , and \T1/cmtt/m/n/10 
 FetchSlide-v4 \T1/ptm/m/n/10 (+20) (see Fig. []2[] and Ap-pendix []A[]). The ob
 -ser-
  []
 
-<fig_headline_v5.pdf, id=190, 558.97272pt x 310.99261pt>
-File: fig_headline_v5.pdf Graphic file (type pdf)
-<use fig_headline_v5.pdf>
-Package pdftex.def Info: fig_headline_v5.pdf  used on input line 385.
-(pdftex.def)             Requested size: 377.60951pt x 210.08652pt.
 
-Underfull \vbox (badness 2221) has occurred while \output is active []
+Underfull \vbox (badness 3503) has occurred while \output is active []
 
  [4]
-Underfull \vbox (badness 1102) has occurred while \output is active []
+<fig_headline_v5.pdf, id=181, 558.97272pt x 310.99261pt>
+File: fig_headline_v5.pdf Graphic file (type pdf)
+<use fig_headline_v5.pdf>
+Package pdftex.def Info: fig_headline_v5.pdf  used on input line 399.
+(pdftex.def)             Requested size: 377.60951pt x 210.08652pt.
 
- [5 <./fig_headline_v5.pdf>] [6]
-LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 5
-78.
- (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
-File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
-) (./main.bbl [7] [8]) (./appendix.tex
+[5 <./fig_headline_v5.pdf>] [6] [7] (./main.bbl [8]) (./appendix.tex
 Underfull \hbox (badness 10000) in paragraph at lines 14--20
 []\T1/cmtt/m/n/9 You are an expert robotics analyst. The robot is attempting th
 e
@@ -655,31 +647,28 @@ Underfull \hbox (badness 10000) in paragraph at lines 14--20
 : i,
  []
 
-<fig_envs.pdf, id=360, 468.07275pt x 403.40436pt>
+[9]
+<fig_envs.pdf, id=354, 468.07275pt x 403.40436pt>
 File: fig_envs.pdf Graphic file (type pdf)
 <use fig_envs.pdf>
 Package pdftex.def Info: fig_envs.pdf  used on input line 46.
 (pdftex.def)             Requested size: 397.48499pt x 342.57523pt.
-[9] [10 <./fig_envs.pdf>])
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [11]
-[12] (./main.aux)
+ [10 <./fig_envs.pdf>] [11]) [12] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 926F95EA1EC991296C2B6B4C637D9D37;3609.
+(rerunfilecheck)             Checksum: D9F8A6988B9F8FF103C0CA6A848408B6;3192.
  ) 
 Here is how much of TeX's memory you used:
- 14198 strings out of 476182
- 217750 string characters out of 5795595
- 1940975 words of memory out of 5000000
- 35543 multiletter control sequences out of 15000+600000
- 634025 words of font info for 321 fonts, out of 8000000 for 9000
+ 14104 strings out of 476182
+ 216280 string characters out of 5795595
+ 1941975 words of memory out of 5000000
+ 35515 multiletter control sequences out of 15000+600000
+ 629753 words of font info for 288 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 75i,13n,79p,1001b,607s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,13n,79p,1001b,579s stack positions out of 10000i,1000n,20000p,200000b,200000s
  </home/daniel-grant/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0
 900.600pk> </home/daniel-grant/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/
 ec/ectt1000.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
@@ -700,10 +689,10 @@ are/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/sha
 re/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texm
 f-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/ty
 pe1/urw/times/utmri8a.pfb>
-Output written on main.pdf (12 pages, 717379 bytes).
+Output written on main.pdf (12 pages, 704170 bytes).
 PDF statistics:
- 673 PDF objects out of 1000 (max. 8388607)
- 354 compressed objects within 4 object streams
- 88 named destinations out of 1000 (max. 500000)
- 70803 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 653 PDF objects out of 1000 (max. 8388607)
+ 340 compressed objects within 4 object streams
+ 71 named destinations out of 1000 (max. 500000)
+ 68747 words of extra memory for PDF output out of 74296 (max. 10000000)
 
