@@ -496,7 +496,31 @@ counterfactual relabels in the same simulator on which the policy trains.
 \section{Theoretical Motivation: VLM-Guided PER as Posterior Reweighting}
 \label{sec:theory}
 
-\paragraph{Setup.}
+\paragraph{Setup: what this section formalizes.}
+Sections~\ref{sec:related}'s differentiation of Semantic PER from VLM-RB,
+Section~\ref{sec:method:sper}'s headline construction
+$\mu_{\text{Sem}}\!\propto\!\mu_P\!\cdot\!w_{\text{sem}}$, and
+Section~\ref{sec:method:verified}'s verifier gate all rest on a single
+structural principle which we state here once, formally, before the
+derivation: the \emph{IS-pairing requirement}. A non-uniform replay scheme is
+specified by a pair $(\mu,w_{\text{IS}})$---a proposal distribution over
+buffer transitions and an importance-sampling correction weight applied to
+the sampled gradient---and any change to $\mu$ must be matched by a change
+to $w_{\text{IS}}$ that returns the corrected estimator to the same target
+objective $\mathbb{E}_U[\ell]$. Changing $\mu$ without adjusting
+$w_{\text{IS}}$ does not produce a noisier estimator of the same objective;
+it produces a clean estimator of a \emph{different} objective. The rest of
+this section turns this pairing requirement into a concrete derivation
+(\S\ref{sec:theory}, Eq.~\ref{eq:headline}) and into a falsifiable
+empirical prediction (the closing paragraph of this subsection): a
+correctly-paired multiplicative VLM proposal should track PER closely when
+the VLM is poorly calibrated and pull ahead when it is reliable, and
+crucially \emph{cannot} exceed the privileged-information ceiling set by an
+oracle counterfactual relabeler on the same buffer-shape---a prediction
+borne out empirically by the HER@1M $=$ Oracle-CF@1M $= 0.583$ tie on
+FetchPickAndPlace (\S\ref{sec:exp:inflight}, $\Delta = 0.000$), which bounds
+the headroom for any exogenous-FM-proposal scheme on that task family.
+
 Let $\tau=(s_0,a_0,r_0,\dots,s_T)$ be an episode trajectory and
 $i\in\{0,\dots,T\!-\!1\}$ a transition index. Off-policy value learning solves a
 regression problem on a replay-sampling distribution $\mu(i)$ over a buffer
@@ -507,19 +531,27 @@ $\mathcal{D}_B$:
   \delta_i = r_i + \gamma\,Q\bigl(s_{i+1},\pi(s_{i+1})\bigr) - Q(s_i,a_i).
   \label{eq:loss}
 \end{equation}
-Uniform replay $\mu_U(i)=1/|\mathcal{D}_B|$ is unbiased but variance-heavy.
-Prioritized replay~\citep{schaul2016per} uses
-$\mu_P(i)\propto(|\delta_i|+\varepsilon)^\alpha$ and recovers (an annealed
-estimator of) the uniform objective by reweighting each gradient by the IS
-correction
+Uniform replay $\mu_U(i)=1/|\mathcal{D}_B|$ is the canonical
+unbiased-but-variance-heavy choice: the pair $(\mu_U,w_{\text{IS}}\!=\!1)$
+trivially satisfies the pairing requirement because no reweighting is
+needed when the proposal already equals the target distribution.
+Prioritized replay~\citep{schaul2016per} is the first non-trivial example:
+the proposal $\mu_P(i)\propto(|\delta_i|+\varepsilon)^\alpha$ concentrates
+mass on high-error transitions, and the paired IS correction
 \begin{equation}
   w_{\text{IS}}(i) \;=\; \bigl(|\mathcal{D}_B|\cdot\mu_P(i)\bigr)^{-\beta},
   \qquad \beta\colon\beta_0 \to 1.
   \label{eq:per-is}
 \end{equation}
-This is an instance of self-normalized importance sampling: the proposal $\mu_P$
-concentrates on high-error transitions; the IS-weight returns the target to
-$\mathbb{E}_U[\ell]$ in expectation.
+recovers (an annealed estimator of) the uniform objective: in the
+$\beta\!=\!1$ limit the reweighted gradient is an unbiased self-normalized
+IS estimator of $\mathbb{E}_U[\ell]$, with $\mu_P$ supplying variance
+reduction~\citep[Sec.~3.4]{schaul2016per}. The proposal and the correction
+move together; one cannot be modified in isolation. This is the pairing
+template every subsequent construction in the section inherits, and the
+choice of multiplicative versus additive proposal-shaping
+(Eq.~\ref{eq:headline} versus the additive VLM-RB mixture) is the choice
+of \emph{which} pairing-preserving family one writes the modification in.
 
 \paragraph{The VLM as a posterior.}
 A frozen VLM that answers ``which timestep caused this trajectory's outcome?''

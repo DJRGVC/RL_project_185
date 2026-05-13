@@ -1,40 +1,39 @@
-# Section Dive 2335 — §4.2 Counterfactual Prompting and Teleport-Collapse
+# Section dive 2335 — §3 Setup paragraph: formalize IS-pairing requirement
 
-**Target chosen.** §4.2 ("Counterfactual Prompting and the Teleport-Collapse
-Failure Mode"). Skipped per the start-of-shift logic: §4.1 (22:29), §4.3
-(22:30 DEEP-LIT-WRITER add but partial), §5.1/§5.3 (23:13), §5.6/abstract/
-conclusion (22:38), and §3 ("why multiplicative" subsection 22:30). §4.2 had
-not been touched since the original section was first drafted and was the
-weakest-developed of the method-section subsections: 17 lines, no definition
-box, no mechanistic account of *why* teleport-collapse occurs, and no
-explicit connection to either the IS-posterior framing (§3) or the
-generator–verifier framing that DEEP-LIT-WRITER added to §4.3. Given §4.2 is
-the bedrock empirical observation justifying §4.3's existence, it deserved
-substantive treatment, not just a stub.
+**Target:** `agent_reports/paper/main.tex` (NeurIPS preprint only). CS 285
+variant untouched per page-lock guardrail.
 
-**Improvement delivered.** The subsection is rewritten end-to-end (17 → ~85
-lines) with five substantive additions, not a copy-edit. (1) A formal
-**Definition (Teleport-collapse) box** as `\fbox{}` (Figure
-\ref{fig:teleport-def}) that gives the literal predicate
-$\|\hat{p}-g\|_2\!\le\!d_{\text{th}}$, an IS-posterior interpretation
-($q_\phi=\delta(\hat{p}-g)$, connecting back to §3), an HER-invariant
-violation argument, and a detectability note that explicitly motivates the
-post-hoc rejection gate cited in §5.5 as defense-in-depth. (2) A
-**2$\times$2 output-type design space** (output kind × goal-conditioning)
-that organizes the four prompt variants as principled cells rather than an
-unmotivated list, with each cell cited to its lineage paper (AHA for
-narrative \citep{duan2025aha}, HER for achieved\_goal \citep{andrychowicz2017her}).
-(3) A **mechanistic account** of *why* teleport-collapse occurs (in-context
-goal triplet → position-copy bias; non-position variants are immune by
-schema, not by model), explaining the prompt-architectural verdict
-empirically rather than asserting it. (4) An **explicit bridge** to
-§4.3's generator–verifier framing showing that the \textsc{action} output
-type simultaneously (i) removes the numerical attractor and (ii) is what
-the symbolic verifier can consume—so the two design choices co-design
-rather than each standing alone. (5) A tightened **production
-configuration** paragraph that distinguishes the position-emitting analysis
-(adopts achieved\_goal+gate) from the verified-CF mechanism itself (uses
-action). Compile: 0 overfull boxes, 29 pages, visual-quality-gate PASS.
-No new figures, citations all from existing refs.bib (`duan2025aha`,
-`andrychowicz2017her`, `zha2025tango`—all already in bibliography),
-no overlap with concurrent paper-iter sections.
+**Edit summary.** Rewrote the opening "Setup" paragraph of §3 (Theoretical
+Motivation, line ~499). Prior version dove straight into the trajectory
+notation and the PER regression target without naming the conceptual axis
+the section formalizes. Since 1735 the IS-pairing principle has been woven
+into §1 (intro + bullets (1)(2)), §2.1 (HER closing connector), §2.2 (PER),
+and §2.4 (generator-verifier adaptive-filter); but §3 — the section that
+*derives* it — only invoked the term obliquely. The new opening now states
+the requirement formally as a property of the pair $(\mu, w_{\text{IS}})$,
+notes that changing $\mu$ alone produces a clean estimator of a *different*
+objective (not a noisier estimator of the same objective), and threads
+forward to the multiplicative vs additive choice that the rest of the
+section adjudicates. The original PER derivation paragraph is preserved
+below, with one small consolidation: the second paragraph now opens by
+casting $(\mu_U,1)$ as the trivial pair satisfying the requirement, then
+casts PER as the first non-trivial pair, which re-anchors Schaul et al.
+[Sec. 3.4]'s self-normalized-IS argument as a *pairing-preserving*
+construction rather than just an estimator-recovery move.
+
+**Empirical tie-in landed.** The new Setup paragraph closes with a
+falsifiable prediction that the IS-pairing framing makes: a correctly-paired
+multiplicative VLM proposal cannot exceed the privileged-information
+ceiling set by an oracle counterfactual relabeler on the same buffer-shape,
+and the 23:27 HER@1M = Oracle-CF@1M = 0.583 tie on FetchPickAndPlace
+(Delta = 0.000 at the 1M convergence horizon, n=3 seeds each) is exactly
+the empirical bound the framing predicts. This converts the kill result
+from a section-5 negative finding into a *§3 sanity check on the
+derivation*, which is the load-bearing role the new data deserves. Page
+count went 47 -> 48 (still 2pp inside the 50pp NeurIPS budget). One
+pre-existing undefined reference (`tab:vlm_comparison`) is orthogonal and
+was present before this edit; all cross-refs introduced by the new
+paragraph (sec:related, sec:method:sper, sec:method:verified, sec:theory,
+sec:exp:inflight, eq:headline) resolve cleanly. Compile via
+`paper/build.sh`. No conflict with the :13/:38 paper-iter slots — those
+target intro/related-work bullets and §5.x sub-analyses, not §3.
