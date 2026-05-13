@@ -399,6 +399,45 @@ assumption about the RL task. We use the training simulator directly,
 which eliminates all three failure modes at the cost of additional
 sim-fork compute per counterfactual proposal.
 
+\textbf{Adaptive-filter behavior under a symbolic verifier.}
+A second consequence of pairing the VLM generator with the \emph{training
+simulator itself} as verifier---rather than a learned or proxy
+verifier---is that the acceptance rate is a monotone function of policy
+precision. Concretely: a VLM-proposed action sequence is accepted iff the
+forked rollout (started from the failed episode's snapshot) crosses
+$d_{\text{th}}\!=\!0.05$\,m of the goal under the unmodified sparse
+reward. The probability that an arbitrarily-proposed 4-vector sequence
+satisfies this predicate depends on how close the snapshot's gripper and
+object configuration already are to the goal manifold; in
+sparse-reward manipulation that distance is itself an inverse function
+of the current policy's competence. The verifier therefore acts as an
+\emph{adaptive filter} whose pass-band widens as the policy improves: at
+cold-start the snapshot states are far from the goal manifold,
+short-horizon corrective actions cannot cross $d_{\text{th}}$, and the
+VLM-proposed candidate stream is rejected wholesale; as the policy
+approaches near-success behavior, the snapshot states cluster near the
+goal manifold, the same VLM proposals (now near-success completions) cross
+$d_{\text{th}}$, and verified-CF transitions begin to accumulate. The
+two failure modes the verifier guards against---teleport-collapse (a
+prompt-architectural pathology, \S\ref{sec:method:prompt}) and
+sparse-reward zero-information writes (the analysis in
+\S\ref{sec:method:verified})---are both suppressed at every regime, but
+their suppression mechanism shifts: at cold-start the verifier rejects
+\emph{everything} (so neither failure mode contaminates the buffer), and
+in the convergent regime the verifier rejects \emph{only the
+miscalibrated subset} while admitting an in-distribution stream of
+physics-consistent relabels. This adaptive-filter view is what makes the
+cold-start verifier-rejection regime structurally \emph{transitory}
+rather than a permanent throughput tax: Phase~2's
+$0.617$~$\to$~\texttt{vlm\_cf}'s~$0.55$ crossover on
+\texttt{FetchSlide} (\S\ref{sec:exp:inflight}) is the empirical
+realization of this prediction. A learned-verifier choice
+\citep{chuck2025hint,wu2025rlvrworld} can in principle attain the same
+asymptotic acceptance rate, but its acceptance threshold drifts as the
+learned model's own training distribution shifts under the policy's data,
+breaking the monotone-in-policy-precision structure that the symbolic
+verifier inherits for free.
+
 \paragraph{Differentiation from VLM-RB.}
 The concurrent (Feb~2026) VLM-RB \citep{sharony2026vlmrb} is the closest
 published work: a frozen VLM scores sub-trajectory clips for prioritized
