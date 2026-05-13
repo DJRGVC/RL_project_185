@@ -1,0 +1,33 @@
+defaults: base
+
+# Wave C — VLM model-scale ablation (frontier OpenAI).
+# Copy of vlm_cf.yaml with vlm_model swapped to gpt-4o.
+# See configs/ablation_vlm_scale_haiku45.yaml for the full sweep design.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: vlm
+  cf_input_kind: vlm
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 16
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  # VLM provider — TIER VARIABLE
+  vlm_provider: openai
+  vlm_model: gpt-4o               # ← tier variable (frontier-OpenAI)
+  vlm_keyframes: 5
+  vlm_variant: achieved_goal
+  vlm_task_description: ""
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: ablation_vlm_scale_gpt4o

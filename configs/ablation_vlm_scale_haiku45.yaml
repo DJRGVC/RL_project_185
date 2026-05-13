@@ -1,0 +1,59 @@
+defaults: base
+
+# Wave C — VLM model-scale ablation (NEW mid-tier Anthropic point).
+# Copy of vlm_cf.yaml with vlm_model swapped to claude-haiku-4-5.
+#
+# Rationale (Wave C, post-Wave-B preprint timeline, NOT CS 285 submission):
+#   The existing 250k vlmtier ablation (configs/ablation_vlmtier_v{0..3}.yaml)
+#   covers {gpt-4o-mini, gpt-4o, claude-sonnet-4-5, claude-opus-4-7}. The
+#   conspicuous gap is the *mid-tier Anthropic* slot — a frontier-quality
+#   small Anthropic model. claude-haiku-4-5 fills it and lets us claim a
+#   genuine $0.005 / $0.02 / $0.03 / $0.05 / $0.15-per-call cost arc
+#   spanning ~30x rather than the existing 4-tier sweep that skips Haiku.
+#
+# Sweep grid (configs/ablation_vlm_scale_<slug>.yaml, all use vlm_cf
+# pipeline at 500k steps to match Wave B horizon):
+#   gpt4omini   : gpt-4o-mini          (OpenAI,    ~$0.005/call)
+#   gpt4o       : gpt-4o               (OpenAI,    ~$0.05/call)
+#   haiku45     : claude-haiku-4-5     (Anthropic, ~$0.02/call)  ← THIS FILE
+#   sonnet45    : claude-sonnet-4-5    (Anthropic, ~$0.03/call)
+#   opus47      : claude-opus-4-7      (Anthropic, ~$0.15/call)
+#
+# Hypothesis: 5-model cost curve is roughly flat at the production p=0.25
+# operating point; mini and haiku are within ±0.10 SR of sonnet/opus on PnP.
+#
+# Difference from the 250k vlmtier ablation:
+#   - 500k steps (paper-grade matched horizon with Wave B and HER@500k).
+#   - 5 seeds (R1 W2 demands n>=5 for significance claims).
+#   - vlm_cf pipeline (NOT verified_cf) — isolates VLM-quality effect from
+#     the simulator-verifier gate. Verified-CF version is configs/
+#     ablation_vlmtier_v{0..3}.yaml; this sweep is its UN-gated complement.
+#   - Adds Haiku as a 5th tier (mid-Anthropic).
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: vlm
+  cf_input_kind: vlm
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 16            # match production vlm_cf.yaml
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  # VLM provider — TIER VARIABLE
+  vlm_provider: anthropic
+  vlm_model: claude-haiku-4-5     # ← tier variable (mid-Anthropic, NEW)
+  vlm_keyframes: 5
+  vlm_variant: achieved_goal      # C1v2-A bake-off winner
+  vlm_task_description: ""        # filled per env in train.py
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: ablation_vlm_scale_haiku45

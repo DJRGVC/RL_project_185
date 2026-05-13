@@ -397,6 +397,82 @@ def run_path_c_waveB_sharony():
 
 
 @app.local_entrypoint()
+def run_path_c_vlm_scale_ablation():
+    """Wave C — VLM model-scale (cost) ablation on FetchPickAndPlace.
+
+    Design doc: agent_reports/ablation_vlm_scale_design.md
+    Spec       : agent_reports/overnight_path_c_plan.json :: phase_waveC_vlm_scale
+
+    25 runs = 5 models x 5 seeds x 1 env (PnP) x 500k steps. Each run uses
+    configs/ablation_vlm_scale_<slug>.yaml. The 5 models span ~30x in
+    per-call cost ($0.005 - $0.15) so that the failure point of the
+    cost-effective-deployment claim, if any, surfaces as a tier gap on
+    the eval-success-vs-cost curve.
+
+    Tier table (config_slug, vlm_provider, model_id, tag):
+       gpt4omini   openai     gpt-4o-mini         ~$0.005 / call
+       gpt4o       openai     gpt-4o              ~$0.05  / call
+       haiku45     anthropic  claude-haiku-4-5    ~$0.02  / call  (NEW)
+       sonnet45    anthropic  claude-sonnet-4-5   ~$0.03  / call
+       opus47      anthropic  claude-opus-4-7     ~$0.15  / call
+
+    Pipeline: HER + VLM-CF (NOT verified-CF) — isolates VLM-quality
+    effect from the sim-fork verifier. Verified-CF tier sweep lives in
+    configs/ablation_vlmtier_v{0..3}.yaml (run at 250k); Wave C is its
+    500k, n=5, +Haiku complement.
+
+    All runs tagged `path_c_vlm_scale_2026-05-13` for one-shot W&B filter.
+
+    DEPENDENCIES: Wave B (her_per, sharony, 2x2) + matched-horizon
+    HER@500k + PER@500k must have COMPLETED before launching to avoid
+    Modal A10G pool contention. The script
+    scripts/run_ablation_vlm_scale.sh enforces idempotency via the flag
+    agent_reports/_VLM_SCALE_LAUNCHED.flag.
+    """
+    TIERS = [
+        # (config_slug, model_tag_for_wandb)
+        ("gpt4omini", "gpt4omini"),
+        ("gpt4o",     "gpt4o"),
+        ("haiku45",   "haiku45"),
+        ("sonnet45",  "sonnet45"),
+        ("opus47",    "opus47"),
+    ]
+    # n=5 seeds: addresses R1 W2 (n>=5 for any significance claim).
+    SEEDS = [42, 123, 999, 7, 2026]
+    ENV_NAME = "FetchPickAndPlace-v4"
+    env_slug = _ENV_SLUGS[ENV_NAME]
+    TAG_BASE = "path_c_vlm_scale_2026-05-13"
+
+    common_overrides = _waveB_common_overrides(ENV_NAME)
+
+    spawned = 0
+    for cfg_slug, model_tag in TIERS:
+        config = f"configs/ablation_vlm_scale_{cfg_slug}.yaml"
+        for seed in SEEDS:
+            run_name = (
+                f"path_c_vlm_scale_{env_slug}_{model_tag}_s{seed}_seed{seed}"
+            )
+            overrides = list(common_overrides) + [
+                f"training.seed={seed}",
+                f"logging.run_name={run_name}",
+            ]
+            tags = ",".join([
+                TAG_BASE,
+                "vlm_scale",
+                model_tag,
+                "waveC",
+                "pathc_lead",
+                ENV_NAME,
+            ])
+            train_remote.spawn(config, overrides, wandb_tags=tags)
+            spawned += 1
+            print(f"spawned: {run_name}")
+    print(f"\nLaunched {spawned} Wave C (VLM model-scale) jobs onto Modal.")
+    print("Track progress at "
+          "https://wandb.ai/d-grant-uc-berkeley/RL_project?tags=path_c_vlm_scale_2026-05-13")
+
+
+@app.local_entrypoint()
 def run_path_c_waveB_2x2():
     """Wave B3 — 2x2 numeric × blind prompt ablation on PnP.
 

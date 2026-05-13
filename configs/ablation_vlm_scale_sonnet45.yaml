@@ -1,0 +1,36 @@
+defaults: base
+
+# Wave C — VLM model-scale ablation (frontier Anthropic; production anchor).
+# Copy of vlm_cf.yaml with vlm_model fixed to claude-sonnet-4-5 (the
+# production default for PnP). Re-runs at the 500k Wave C horizon with
+# n=5 seeds to give a paper-grade SE for the central tier and to
+# stitch into the side-by-side scale figure.
+# See configs/ablation_vlm_scale_haiku45.yaml for the full sweep design.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: vlm
+  cf_input_kind: vlm
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 16
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  # VLM provider — TIER VARIABLE
+  vlm_provider: anthropic
+  vlm_model: claude-sonnet-4-5    # ← tier variable (frontier-Anthropic)
+  vlm_keyframes: 5
+  vlm_variant: achieved_goal
+  vlm_task_description: ""
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: ablation_vlm_scale_sonnet45

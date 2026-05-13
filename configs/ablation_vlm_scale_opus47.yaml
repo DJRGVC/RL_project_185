@@ -1,0 +1,35 @@
+defaults: base
+
+# Wave C — VLM model-scale ablation (premium Anthropic anchor).
+# Copy of vlm_cf.yaml with vlm_model fixed to claude-opus-4-7.
+# Establishes the upper-cost anchor of the 5-tier curve (~$0.15/call,
+# 30x the gpt-4o-mini floor).
+# See configs/ablation_vlm_scale_haiku45.yaml for the full sweep design.
+
+replay:
+  type: cf_her
+  her_k: 4
+  her_strategy: future
+
+  cf_provider: vlm
+  cf_input_kind: vlm
+  p_counterfactual: 0.25
+  cf_min_confidence: 0.5
+  cf_fallback_to_achieved: true
+  cf_call_interval: 16
+  cf_window: 4
+  reject_teleport_radius_m: 0.05
+
+  # VLM provider — TIER VARIABLE
+  vlm_provider: anthropic
+  vlm_model: claude-opus-4-7      # ← tier variable (premium-Anthropic)
+  vlm_keyframes: 5
+  vlm_variant: achieved_goal
+  vlm_task_description: ""
+
+vlm:
+  max_tokens: 512
+  temperature: 0.0
+
+logging:
+  run_name: ablation_vlm_scale_opus47

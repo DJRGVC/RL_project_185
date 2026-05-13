@@ -185,5 +185,74 @@
       "training.log_interval=1000",
       "logging.use_wandb=true"
     ]
+  },
+  "phase_waveC_vlm_scale": {
+    "_target_runtime_minutes": 30,
+    "_target_total_steps": 500000,
+    "_modal_concurrency": 10,
+    "_gpu": "modal-A10G",
+    "_depends_on": ["phase_waveB_complete", "matched_horizon_500k_complete"],
+    "_design_doc": "agent_reports/ablation_vlm_scale_design.md",
+    "_shell_script": "scripts/run_ablation_vlm_scale.sh",
+    "_modal_entrypoint": "modal_app.py::run_path_c_vlm_scale_ablation",
+    "_idempotency_flag": "agent_reports/_VLM_SCALE_LAUNCHED.flag",
+    "_purpose": "Wave C — VLM model-scale (cost) ablation. 5 models * 5 seeds * 1 env (PnP) * 500k = 25 runs at the production p=0.25 / vlm_cf operating point. Adds claude-haiku-4-5 as a new mid-Anthropic tier (the existing 4-tier 250k vlmtier ablation skips Haiku). Re-runs the other 4 tiers at 500k with n=5 (vs 250k, n=3) so the result is paper-grade and addresses R1 W2 (>=5 seeds for significance).",
+    "_hypothesis": "At the production p=0.25 / cf_call_interval=16 / achieved_goal operating point, the 5-tier cost arc (~30x range) yields equivalent final SR on FetchPickAndPlace within +-0.10 across all (model_i, model_j) pairs at n=5 seeds.",
+    "_falsification": "If any frontier model (opus-4-7 or sonnet-4-5 or gpt-4o) beats either cheap-tier model (gpt-4o-mini or claude-haiku-4-5) by >= 0.10 mean SR at 500k, the cost-effective-deployment claim of paper section 5.1 is retracted and the per-tier curve becomes the new method-design finding.",
+    "_paper_insertion": "New section 5.6 (VLM Cost-Scale Sweep) with a cost-on-log-x / SR-on-y figure (5 points + HER baseline reference line) and a 5-row table. Caption target: 'Across a ~30x cost arc, final eval success at 500k is statistically equivalent (max-min gap < 0.10 SR).'",
+    "_estimated_cost_usd": 197,
+    "_estimated_gpu_hours": 12.5,
+    "_dollar_breakdown": {
+      "modal_a10g":        6.25,
+      "gpt-4o-mini":       3.75,
+      "claude-haiku-4-5": 15.00,
+      "gpt-4o":           37.50,
+      "claude-sonnet-4-5":22.50,
+      "claude-opus-4-7": 112.50
+    },
+    "tiers": [
+      {"slug": "gpt4omini", "vlm_provider": "openai",    "vlm_model": "gpt-4o-mini",       "cost_per_call_usd": 0.005, "config": "configs/ablation_vlm_scale_gpt4omini.yaml"},
+      {"slug": "gpt4o",     "vlm_provider": "openai",    "vlm_model": "gpt-4o",            "cost_per_call_usd": 0.05,  "config": "configs/ablation_vlm_scale_gpt4o.yaml"},
+      {"slug": "haiku45",   "vlm_provider": "anthropic", "vlm_model": "claude-haiku-4-5",  "cost_per_call_usd": 0.02,  "config": "configs/ablation_vlm_scale_haiku45.yaml"},
+      {"slug": "sonnet45",  "vlm_provider": "anthropic", "vlm_model": "claude-sonnet-4-5", "cost_per_call_usd": 0.03,  "config": "configs/ablation_vlm_scale_sonnet45.yaml"},
+      {"slug": "opus47",    "vlm_provider": "anthropic", "vlm_model": "claude-opus-4-7",   "cost_per_call_usd": 0.15,  "config": "configs/ablation_vlm_scale_opus47.yaml"}
+    ],
+    "seeds": [42, 123, 999, 7, 2026],
+    "env": "FetchPickAndPlace-v4",
+    "runs": [
+      {"id": "vscale_gpt4omini_pp_s42",   "config": "configs/ablation_vlm_scale_gpt4omini.yaml", "env": "FetchPickAndPlace-v4", "seed": 42,   "run_name": "path_c_vlm_scale_pp_gpt4omini_s42_seed42",   "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","gpt4omini","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_gpt4omini_pp_s123",  "config": "configs/ablation_vlm_scale_gpt4omini.yaml", "env": "FetchPickAndPlace-v4", "seed": 123,  "run_name": "path_c_vlm_scale_pp_gpt4omini_s123_seed123", "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","gpt4omini","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_gpt4omini_pp_s999",  "config": "configs/ablation_vlm_scale_gpt4omini.yaml", "env": "FetchPickAndPlace-v4", "seed": 999,  "run_name": "path_c_vlm_scale_pp_gpt4omini_s999_seed999", "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","gpt4omini","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_gpt4omini_pp_s7",    "config": "configs/ablation_vlm_scale_gpt4omini.yaml", "env": "FetchPickAndPlace-v4", "seed": 7,    "run_name": "path_c_vlm_scale_pp_gpt4omini_s7_seed7",     "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","gpt4omini","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_gpt4omini_pp_s2026", "config": "configs/ablation_vlm_scale_gpt4omini.yaml", "env": "FetchPickAndPlace-v4", "seed": 2026, "run_name": "path_c_vlm_scale_pp_gpt4omini_s2026_seed2026","tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","gpt4omini","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_gpt4o_pp_s42",       "config": "configs/ablation_vlm_scale_gpt4o.yaml",     "env": "FetchPickAndPlace-v4", "seed": 42,   "run_name": "path_c_vlm_scale_pp_gpt4o_s42_seed42",       "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","gpt4o","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_gpt4o_pp_s123",      "config": "configs/ablation_vlm_scale_gpt4o.yaml",     "env": "FetchPickAndPlace-v4", "seed": 123,  "run_name": "path_c_vlm_scale_pp_gpt4o_s123_seed123",     "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","gpt4o","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_gpt4o_pp_s999",      "config": "configs/ablation_vlm_scale_gpt4o.yaml",     "env": "FetchPickAndPlace-v4", "seed": 999,  "run_name": "path_c_vlm_scale_pp_gpt4o_s999_seed999",     "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","gpt4o","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_gpt4o_pp_s7",        "config": "configs/ablation_vlm_scale_gpt4o.yaml",     "env": "FetchPickAndPlace-v4", "seed": 7,    "run_name": "path_c_vlm_scale_pp_gpt4o_s7_seed7",         "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","gpt4o","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_gpt4o_pp_s2026",     "config": "configs/ablation_vlm_scale_gpt4o.yaml",     "env": "FetchPickAndPlace-v4", "seed": 2026, "run_name": "path_c_vlm_scale_pp_gpt4o_s2026_seed2026",   "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","gpt4o","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_haiku45_pp_s42",     "config": "configs/ablation_vlm_scale_haiku45.yaml",   "env": "FetchPickAndPlace-v4", "seed": 42,   "run_name": "path_c_vlm_scale_pp_haiku45_s42_seed42",     "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","haiku45","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_haiku45_pp_s123",    "config": "configs/ablation_vlm_scale_haiku45.yaml",   "env": "FetchPickAndPlace-v4", "seed": 123,  "run_name": "path_c_vlm_scale_pp_haiku45_s123_seed123",   "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","haiku45","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_haiku45_pp_s999",    "config": "configs/ablation_vlm_scale_haiku45.yaml",   "env": "FetchPickAndPlace-v4", "seed": 999,  "run_name": "path_c_vlm_scale_pp_haiku45_s999_seed999",   "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","haiku45","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_haiku45_pp_s7",      "config": "configs/ablation_vlm_scale_haiku45.yaml",   "env": "FetchPickAndPlace-v4", "seed": 7,    "run_name": "path_c_vlm_scale_pp_haiku45_s7_seed7",       "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","haiku45","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_haiku45_pp_s2026",   "config": "configs/ablation_vlm_scale_haiku45.yaml",   "env": "FetchPickAndPlace-v4", "seed": 2026, "run_name": "path_c_vlm_scale_pp_haiku45_s2026_seed2026", "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","haiku45","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_sonnet45_pp_s42",    "config": "configs/ablation_vlm_scale_sonnet45.yaml",  "env": "FetchPickAndPlace-v4", "seed": 42,   "run_name": "path_c_vlm_scale_pp_sonnet45_s42_seed42",    "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","sonnet45","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_sonnet45_pp_s123",   "config": "configs/ablation_vlm_scale_sonnet45.yaml",  "env": "FetchPickAndPlace-v4", "seed": 123,  "run_name": "path_c_vlm_scale_pp_sonnet45_s123_seed123",  "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","sonnet45","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_sonnet45_pp_s999",   "config": "configs/ablation_vlm_scale_sonnet45.yaml",  "env": "FetchPickAndPlace-v4", "seed": 999,  "run_name": "path_c_vlm_scale_pp_sonnet45_s999_seed999",  "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","sonnet45","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_sonnet45_pp_s7",     "config": "configs/ablation_vlm_scale_sonnet45.yaml",  "env": "FetchPickAndPlace-v4", "seed": 7,    "run_name": "path_c_vlm_scale_pp_sonnet45_s7_seed7",      "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","sonnet45","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_sonnet45_pp_s2026",  "config": "configs/ablation_vlm_scale_sonnet45.yaml",  "env": "FetchPickAndPlace-v4", "seed": 2026, "run_name": "path_c_vlm_scale_pp_sonnet45_s2026_seed2026","tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","sonnet45","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_opus47_pp_s42",      "config": "configs/ablation_vlm_scale_opus47.yaml",    "env": "FetchPickAndPlace-v4", "seed": 42,   "run_name": "path_c_vlm_scale_pp_opus47_s42_seed42",      "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","opus47","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_opus47_pp_s123",     "config": "configs/ablation_vlm_scale_opus47.yaml",    "env": "FetchPickAndPlace-v4", "seed": 123,  "run_name": "path_c_vlm_scale_pp_opus47_s123_seed123",    "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","opus47","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_opus47_pp_s999",     "config": "configs/ablation_vlm_scale_opus47.yaml",    "env": "FetchPickAndPlace-v4", "seed": 999,  "run_name": "path_c_vlm_scale_pp_opus47_s999_seed999",    "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","opus47","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_opus47_pp_s7",       "config": "configs/ablation_vlm_scale_opus47.yaml",    "env": "FetchPickAndPlace-v4", "seed": 7,    "run_name": "path_c_vlm_scale_pp_opus47_s7_seed7",        "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","opus47","waveC","FetchPickAndPlace-v4"]},
+      {"id": "vscale_opus47_pp_s2026",    "config": "configs/ablation_vlm_scale_opus47.yaml",    "env": "FetchPickAndPlace-v4", "seed": 2026, "run_name": "path_c_vlm_scale_pp_opus47_s2026_seed2026",  "tags": ["path_c_vlm_scale_2026-05-13","vlm_scale","opus47","waveC","FetchPickAndPlace-v4"]}
+    ],
+    "common_overrides": [
+      "training.total_steps=500000",
+      "training.eval_interval=10000",
+      "training.save_interval=100000",
+      "training.log_interval=1000",
+      "replay.cf_call_interval=16",
+      "logging.use_wandb=true"
+    ]
   }
 }
