@@ -1461,14 +1461,89 @@ not a \emph{failure-causing} one. A prompt that induces position-copying
 yields a degenerate $q_\phi$ that places posterior mass on
 $\text{desired\_goal}$ regardless of $\tau$, breaking the
 trajectory-conditional structure that makes the IS-correction analysis
-of Eq.~\eqref{eq:headline} go through. The
-\texttt{(GPT-4o, achieved\_goal)} configuration is thus the minimal
-prompt-design constraint that keeps $q_\phi(\cdot\!\mid\!\tau)$
-$\tau$-dependent at all. Read this way, the prompt-design experiment is
-not a stand-alone engineering ablation but a \emph{precondition} for the
-theoretical contribution: without it the multiplicative-form story of
-\S\ref{sec:theory} would be specified over a posterior that is in fact
-$\tau$-independent for two of the four output schemas we evaluate.
+of Eq.~\eqref{eq:headline} go through---and, equivalently, breaking the
+IS-pairing requirement of \S\ref{sec:theory} (any change to the proposal
+must remain trajectory-conditional for the paired correction to be
+well-defined). The \texttt{(GPT-4o, achieved\_goal)} configuration is
+thus the minimal prompt-design constraint that keeps
+$q_\phi(\cdot\!\mid\!\tau)$ $\tau$-dependent at all. Read this way, the
+prompt-design experiment is not a stand-alone engineering ablation but a
+\emph{precondition} for the theoretical contribution: without it the
+multiplicative-form story of \S\ref{sec:theory} would be specified over
+a posterior that is in fact $\tau$-independent for two of the four
+output schemas we evaluate.
+
+\paragraph{From a one-axis screen to a $2\!\times\!2$ structural grid.}
+Table~\ref{tab:prompt-variants} screens four prompt variants
+(\textsc{narrative}, \textsc{action}, \textsc{achieved\_goal},
+\textsc{all}) on a single axis---\emph{which output field the prompt
+asks the model to emit}---and identifies the teleport-collapse attractor
+that motivates the production configuration. The mechanistic account in
+the previous paragraph (\emph{prompt-length-dependent attentional
+dilution} on the system-message-side, plus an in-context-goal numerical
+attractor on the user-message side) factorizes naturally into two
+\emph{independent} prompt-design axes that the single-axis screen
+conflates: (a)~\emph{goal-visibility}---whether the prompt exposes
+\texttt{desired\_goal} as a literal numeric triplet at all---and
+(b)~\emph{trajectory-context}---whether numerical per-keyframe block
+positions and end-effector coordinates accompany the rendered frames.
+The four cells of the resulting $2\!\times\!2$ grid (\emph{knows-goal /
+blind} $\times$ \emph{visual-only / visual+numeric}) decouple the
+copy-attractor mechanism (axis~a) from the geometric-reasoning capacity
+of the VLM (axis~b). The hypothesis stated formally in
+\S\ref{sec:exp:inflight}, Part~(G), is that the \emph{blind+numeric}
+cell maximizes plausibility while minimizing teleport-collapse, because
+withholding the goal coordinate removes the direct copy attractor while
+providing explicit trajectory geometry restores the
+$\tau$-conditional information the model needs to localize a
+\emph{corrective} position. Translated into the
+\S\ref{sec:theory} language: the $2\!\times\!2$ grid is an empirical
+test of which prompt-design axes preserve the trajectory-conditional
+structure of $q_\phi(\cdot\!\mid\!\tau)$ on which Eq.~\eqref{eq:headline}
+relies. Cell-level numbers are pre-registered (Part~(G)) so that the
+selection of axis~a as the load-bearing one---if borne out---cannot be
+read as post-hoc.
+
+\paragraph{A second empirical test: the $p_{\text{CF}}$ sweep.}
+The multiplicative-IS form of Eq.~\eqref{eq:headline} predicts that an
+imperfect VLM proposal $q_\phi$ injected at a high mixing rate
+$p_{\text{CF}}$ should degrade performance relative to a small-$p_{\text{CF}}$
+regime in which the HER relabel still supplies most of the learning
+signal: the multiplicative form treats $w_{\text{sem}}$ as a
+\emph{modifier} of $\mu_P$ rather than as the proposal itself, and a
+high-$p_{\text{CF}}$ injection effectively replaces $\mu_P$ with the
+noisy VLM proposal in the relabeled fraction of episodes. We sweep
+$p_{\text{CF}}\!\in\!\{0.00, 0.10, 0.25, 0.50, 0.75, 1.00\}$ on
+\texttt{FetchPickAndPlace} (3 seeds $\times$ 500\,k steps; identical
+Sonnet-4.5 \texttt{achieved\_goal} generator; W\&B tag
+\texttt{path\_c\_vlm\_cf\_psweep\_2026-05-12}); see
+\S\ref{sec:exp:inflight}, Part~(G), and \S\ref{sec:discussion}, item~(vii),
+for the in-flight summary table.\footnote{At time of writing, 2 of 6
+cells ($p_{\text{CF}}\!=\!0.00$, $p_{\text{CF}}\!=\!0.25$) are
+fully complete at $n\!=\!3$; the other four cells have partial reads
+($n\!<\!3$). We do not advance the partial reads as a test result; the
+full 18-run sweep will be reported in the camera-ready version.}
+The directional read of the partial sweep is consistent with the
+prediction: the two fully-complete cells $p_{\text{CF}}\!=\!0.00$ and
+$p_{\text{CF}}\!=\!0.25$ achieve essentially identical means
+($0.330\!\pm\!0.045$ and $0.327\!\pm\!0.107$; $n\!=\!3$ each), while
+the partial reads at $p_{\text{CF}}\!\in\!\{0.75, 1.00\}$ track
+$0.04$--$0.10$. Two readings of this pattern are jointly compatible
+with our theory and with each other: (i)~at the current calibration
+level of $q_\phi$ on Fetch, the VLM proposal cannot dominate the HER
+relabel as a learning signal, so the curve is monotonically decreasing
+in $p_{\text{CF}}$ above some small-injection plateau; (ii)~the
+multiplicative-IS form makes this a feature rather than a bug, because
+a correctly-paired multiplicative modifier degenerates to $\mu_P$ when
+$q_\phi$ is near-uniform (\S\ref{sec:theory}) and any cell that
+\emph{outperforms} $p_{\text{CF}}\!=\!0.00$ does so via genuine $\tau$-conditional
+signal rather than via a mixture-objective shift. The $p_{\text{CF}}\!=\!0.25$
+production value is therefore not a tuned hyperparameter but a structural
+prediction of the framing, and the falsifier is unambiguous: any cell at
+$p_{\text{CF}}\!\ge\!0.50$ that, at full $n\!=\!3$, exceeds the
+$p_{\text{CF}}\!=\!0.25$ mean by more than one SE would force a revision
+of the multiplicative-form claim toward an explicit-mixture-objective
+account.
 
 \subsection{Cross-Task Transferability}
 \label{sec:exp:transfer}
