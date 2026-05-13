@@ -1,0 +1,315 @@
+Berkeley CS 185/285
+
+Deep Reinforcement Learning, Decision Making, and Control
+
+Spring 2026
+
+Final Project Outline
+[CS185] Default project released March 6th
+[CS285] Project proposal due March 6th
+
+1
+
+Introduction
+
+In this final project, you will delve deeper into the concepts we’ve covered in class and beyond. The goal of this
+project is to implement, evaluate, and analyze a research idea, documenting it in a workshop submission-style
+paper. The final project will be run slightly differently for CS185 (undergraduate) vs. CS285 (graduate)
+students, as described below. The deliverables for the project will consist of an initial project proposal (for
+285 section students only), a brief milestone report, and a final project report. The 185 section students will
+be provided a project proposal as their starting point.
+Note: Unless otherwise specified, all deadlines are at 11:59 pm through Gradescope.
+Before asking a question on Ed, please take a look at the Q & A (see section 6)!
+
+2
+
+First steps
+1. Find a team. Teams of 2-3 people are allowed. Refer to the Ed thread to help find team members.
+Note that we will expect larger teams to undertake projects with a larger scope, and we will generally
+grade based on an expectation of effort proportional to the number of team members.
+Note: For students in the 285 section (grad students), you are permitted to have outside collaborators,
+but they must be listed on your final submission and their (and your) contributions must be clearly
+described. Outside collaborators (i.e. students not in CS185/285) are not permitted for students in the
+185 section.
+2. If you are in the 285 section, you will be following the custom proposal route in which you will
+choose your own project idea and submit a short proposal for review. This proposal is due March 6th,
+2026 at 11:59 pm on Gradescope.
+3. If you are in the 185 section, you will be provided a default project direction. We highly recommend
+that all CS185 students go this route. Otherwise, you will need to receive express permission from the
+teaching team to pursue a custom project (see section 6). The project outline will be released March
+6th, 2026.
+
+3
+
+Timeline & Milestones
+
+The deliverable/milestone timeline for the final project is as follows:
+
+Component
+Project proposal
+Milestone
+Final Report
+
+Section
+CS185
+CS285
+Released March 6th Due March 6th
+Due April 6th
+Due April 6th
+Due May 13th
+Due May 13th
+
+4
+
+Final Project Components
+
+4.1
+
+[CS285] Project Proposal
+
+You will submit a project proposal to show a problem you have scoped out and would like to tackle for the
+final project. This proposal should be very brief and is meant to give the teaching team an idea of what you
+will be tackling, and if it is reasonable/feasible to do within the time frame of the class.
+1
+
+Berkeley CS 185/285
+
+Deep Reinforcement Learning, Decision Making, and Control
+
+Spring 2026
+
+This project can be on anything you want, as long as it is related to the content of the class. In general, your
+proposal should answer these questions:
+1. Which tasks or problems will you study? Where will you get your data or simulator (or real-world
+system)?
+2. What is the main research hypothesis your project will investigate? All projects should at least attempt
+to evaluate novel ideas that pertain to deep RL or its applications.
+3. How does the topic of your project relate to deep RL?
+This proposal should be no more than 1 page. It should also clearly state who your group members
+are (including external collaborators, if any). Proposals will be graded by the course staff, and feedback will
+be provided. Feel free to come to GSI/prof. office hours to discuss ideas.
+Format: You can use LaTeX, Word, Docs, or any other writing software. It should be submitted as a PDF
+to Gradescope.
+NOTE: Submit one proposal per group.
+
+4.2
+
+Milestone Report
+
+The final project milestone will serve as a check-in on your progress at the midway point of the project. You
+will be asked to provide:
+1. A brief (1/2 - 1 page) overview of the progress you’ve made so far. Specifically, describe at least one
+experiment you’ve performed (which need not be successful). If you’ve made changes to your hypothesis,
+describe what these are.
+2. A training curve (from WandB or elsewhere) that demonstrates you have a method that trains, but
+it does not need to be your final method.
+Format: You can use LaTeX, Word, Docs, or any other writing software. It should be submitted as a PDF
+to Gradescope.
+NOTE: Submit one milestone report per group.
+
+4.3
+
+Final Report
+
+The final report will compile your method, results, and discussion. The goal of the report is to describe your
+research process and provide the necessary components to convince a reviewer (the teaching team) that you
+have done something novel and valuable to the research community. However, don’t worry if your project
+didn’t pan out as expected, as research often does, but present both the positive and negative results of your
+work.
+Your report should generally include these sections, but feel free to modify the structure if you deem it
+appropriate.
+• Extended Abstract. Your report should start with a 1-page extended abstract, which provides a
+complete description of what you did and the main findings. Think of this extended abstract as a
+summary of your accomplishments (the ”what”). The method section will provide the technical details
+(the ”how”). We will primarily use the extended abstract for grading, and refer to your
+methods and experiments if we need to better understand the correctness of the solution.
+• Introduction. Give more context about the problem and introduce the key contributions of your work.
+• Related Work. Describe how your work is differentiated/positioned relative to other work in the field.
+This section can be brief.
+• Method. Describe how your approach works.
+• Experiments/Results. Give an overview of how you conduct your experiments and the results of your
+experiments. Discuss the results and how they prove (or don’t prove) your hypothesis.
+2
+
+Berkeley CS 185/285
+
+Deep Reinforcement Learning, Decision Making, and Control
+
+Spring 2026
+
+• Discussion & Limitations. Summarize the results of your work and describe its limitations.
+• Contributions. Give a one-line (per team member) description of their contribution to the project.
+This is not typically a section in conference papers, though some papers do have it.
+The full report should be about 8 pages in length; we will not penalize shorter or longer reports, but please
+keep the length reasonable.
+Format: You should preferably use LaTeX, and you are welcome to use the NeurIPS template. The final
+report should be submitted as a PDF to Gradescope.
+
+5
+
+Grading & Rubric
+
+The final project is worth 20% of your final grade. We break down the grading as follows:
+Weight(%)
+CS185 CS285
+0%
+2.5%
+5%
+2.5%
+15%
+15%
+
+Component
+Project Proposal
+Milestone
+Final report
+
+The proposal and milestone components will be graded for inclusion of the specified components.
+We use the following rubric to grade the final report. A more detailed rubric for 185 section students
+will be released with the final project outline.
+Good (75-90%)
+
+Excellent (90-100%)
+
+Replicates existing
+work with some
+modifications.
+
+Substantively original
+implementation or
+perspectives.
+
+Relatively little
+implementation or
+analysis effort
+per group member.
+
+Nearly ambitious
+enough for a
+workshop paper,
+with some missed
+opportunities.
+
+Similar scope
+to a conference
+workshop paper.
+
+Analysis
+
+No comparison with
+baselines or ablations.
+Experiments do not
+evaluate the proposed
+problem.
+
+Experiments are
+trivial/superficial/do
+not test the proposed
+setting. Inappropriate
+baselines or ablations.
+
+Solid comparison
+with multiple
+baselines and some
+ablations. Experiments
+effectively test
+the problem setting.
+
+Compares with
+several baselines
+and ablations.
+Experiments are
+well thought-out
+and explain why
+the methods work
+or don’t work.
+
+Complete
+-ness
+
+No results due
+to incomplete
+implementation or
+training failure.
+Key elements are
+missing or not
+functional.
+
+Implementation
+with significant
+issues. Experiments
+fail to effectively
+compare methods
+(e.g. all methods
+are identical).
+
+Substantially complete.
+Experimental results
+differentiate between
+methods but may
+lack some discussion.
+
+All experiments
+are complete and
+results are
+discussed fully.
+
+Novelty
+
+Scope
+
+6
+
+Poor (0-50%)
+Replicates existing
+work without
+new contributions
+or perspectives.
+No implementation
+effort, e.g.,
+running existing
+code on existing
+problem without
+in-depth analysis.
+
+Fair (50-75%)
+Applies existing
+work to a new
+environment without
+novel perspective.
+
+Q&A
+
+If you have any questions, please do not hesitate to post your question on Ed using the tag “Final Project”.
+Feel free to also come and discuss project ideas with us at office hours.
+3
+
+Berkeley CS 185/285
+
+Deep Reinforcement Learning, Decision Making, and Control
+
+Spring 2026
+
+I am a grad student (285 section) doing research in a Berkeley lab. Can I use my project for
+the final project? Yes. If you are working on research sufficiently related to the course material, and you
+are a lead author on the project. If you are uncertain if it is sufficiently related, come to office hours to discuss
+with a GSI, or you will be given feedback on your proposal that the scope is not close enough to the course
+material (so please preempt this by coming to office hours!)
+I am an undergraduate student (185 section) doing research in a Berkeley lab. Can I use my
+project for the final project? Yes. If you are working on research sufficiently related to the course material
+and are contributing significantly (lead author). However, you must contact the teaching team at our
+course email (cs285-staff-sp2026@lists.eecs.berkeley.edu) ASAP to get permission to do this, and
+must list your collaborators on your report. Otherwise, we will assume you will be doing the default project.
+I am an undergraduate student (185 section), and I want to work with a grad student in the
+class. Can I do this? Yes. You must similarly get permission from the teaching team to do this, as with
+the previous question, and must list your collaborators on your report.
+I am a grad student (285 section), and I want to follow the default project instead. Can I do
+this? Yes. You will be graded according to the same rubric as the 185 section students.
+Can I work alone on the project? Maybe. If you are working on a research project in a lab, you may be
+the only person in the class working on the project. In this case, you can work alone but you must list your
+outside collaborators on your report and please notify the teaching team. Otherwise, we expect teams of 2-3
+people.
+
+4
+
+

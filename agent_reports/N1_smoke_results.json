@@ -1,0 +1,125 @@
+{
+  "cases": [
+    {
+      "label": "teleport",
+      "env_name": "FetchPush-v4",
+      "seed": 1251,
+      "variant": "achieved_goal",
+      "vlm_corrective_pos": [
+        1.3436225652694702,
+        0.7023731470108032,
+        0.42489221692085266
+      ],
+      "vlm_corrective_act": null,
+      "vlm_confidence": 0.7,
+      "vlm_explanation": "At the midpoint of the episode, the block should already be at (or very near) the target location so the remaining timesteps can stabilize within the 5 cm success threshold.",
+      "verified": false,
+      "verified_at_step": null,
+      "final_distance": NaN,
+      "rejection_reason": "no_corrective_action_provided",
+      "achieved_at_failure": [
+        1.5010639429092407,
+        0.15842653810977936,
+        0.023198554292321205
+      ],
+      "desired_goal": [
+        1.3436225652694702,
+        0.7023731470108032,
+        0.42489221692085266
+      ]
+    },
+    {
+      "label": "action_pp",
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 2234,
+      "variant": "action",
+      "vlm_corrective_pos": null,
+      "vlm_corrective_act": [
+        0.2,
+        -0.3,
+        -0.5,
+        -1.0
+      ],
+      "vlm_confidence": 0.4,
+      "vlm_explanation": "At Frame 2 the gripper is above the table but the block appears to have been lost/left behind; the robot should descend toward the block location and close the gripper to grasp it before lifting to the target.",
+      "verified": false,
+      "verified_at_step": null,
+      "final_distance": 0.3164815604686737,
+      "rejection_reason": "goal_not_reached (best_dist=0.316)",
+      "achieved_at_failure": [
+        1.0737420320510864,
+        0.6856391429901123,
+        0.4369052052497864
+      ],
+      "desired_goal": [
+        1.353895664215088,
+        0.8328583240509033,
+        0.42489221692085266
+      ]
+    },
+    {
+      "label": "composite",
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 9095,
+      "variant": "all",
+      "vlm_corrective_pos": [
+        1.466,
+        0.862,
+        0.425
+      ],
+      "vlm_corrective_act": [
+        0.0,
+        0.0,
+        -0.2,
+        -1.0
+      ],
+      "vlm_confidence": 0.8,
+      "vlm_explanation": "At Frame 1 the gripper was above the block but failed to descend and close; it should have moved down and closed the gripper to grasp the block instead of knocking it off the table.",
+      "verified": false,
+      "verified_at_step": null,
+      "final_distance": 0.16434481739997864,
+      "rejection_reason": "goal_not_reached (best_dist=0.164)",
+      "achieved_at_failure": [
+        1.3315792083740234,
+        0.9565588235855103,
+        0.4445575177669525
+      ],
+      "desired_goal": [
+        1.4660083055496216,
+        0.8620176315307617,
+        0.42489221692085266
+      ]
+    },
+    {
+      "label": "handcraft_success",
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 2234,
+      "variant": "handcraft",
+      "vlm_corrective_pos": null,
+      "vlm_corrective_act": [
+        0.884580671787262,
+        0.4648422300815582,
+        -0.037930820137262344,
+        0.0
+      ],
+      "vlm_confidence": 0.9,
+      "vlm_explanation": "Hand-crafted: push directly toward goal.",
+      "verified": true,
+      "verified_at_step": 0,
+      "final_distance": 0.030636776238679886,
+      "rejection_reason": null,
+      "achieved_at_failure": [
+        1.0737420320510864,
+        0.6856391429901123,
+        0.4369052052497864
+      ],
+      "desired_goal": [
+        1.100279451929839,
+        0.6995844100631776,
+        0.4357672806302803
+      ]
+    }
+  ],
+  "pass_count": 4,
+  "total": 4
+}

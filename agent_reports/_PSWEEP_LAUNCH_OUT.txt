@@ -1,0 +1,45 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/agile-quadrupeds/main/ap-NRYpqbAgLKspwPdJRjZ1xx
+✓ Created objects.
+├── 🔨 Created mount 
+│   /home/daniel-grant/Berkeley/Spring2026/DeepRL/FinalProject/RL_project_185/mo
+│   dal_app.py
+├── 🔨 Created mount evaluate.py
+├── 🔨 Created mount train.py
+├── 🔨 Created mount 
+│   /home/daniel-grant/Berkeley/Spring2026/DeepRL/FinalProject/RL_project_185/co
+│   nfigs
+├── 🔨 Created mount 
+│   /home/daniel-grant/Berkeley/Spring2026/DeepRL/FinalProject/RL_project_185/sr
+│   c
+├── 🔨 Created function train_remote.
+└── 🔨 Created function run_ablation.
+spawned: path_c_vlm_cf_psweep_p00_pp_s42_seed42
+spawned: path_c_vlm_cf_psweep_p00_pp_s123_seed123
+spawned: path_c_vlm_cf_psweep_p00_pp_s999_seed999
+spawned: path_c_vlm_cf_psweep_p10_pp_s42_seed42
+spawned: path_c_vlm_cf_psweep_p10_pp_s123_seed123
+spawned: path_c_vlm_cf_psweep_p10_pp_s999_seed999
+spawned: path_c_vlm_cf_psweep_p25_pp_s42_seed42
+spawned: path_c_vlm_cf_psweep_p25_pp_s123_seed123
+spawned: path_c_vlm_cf_psweep_p25_pp_s999_seed999
+spawned: path_c_vlm_cf_psweep_p50_pp_s42_seed42
+spawned: path_c_vlm_cf_psweep_p50_pp_s123_seed123
+spawned: path_c_vlm_cf_psweep_p50_pp_s999_seed999
+spawned: path_c_vlm_cf_psweep_p75_pp_s42_seed42
+spawned: path_c_vlm_cf_psweep_p75_pp_s123_seed123
+spawned: path_c_vlm_cf_psweep_p75_pp_s999_seed999
+spawned: path_c_vlm_cf_psweep_p100_pp_s42_seed42
+spawned: path_c_vlm_cf_psweep_p100_pp_s123_seed123
+spawned: path_c_vlm_cf_psweep_p100_pp_s999_seed999
+
+Launched 18 Path C VLM-CF p-sweep jobs onto Modal.
+Track progress at https://wandb.ai/d-grant-uc-berkeley/RL_project?tags=path_c_vlm_cf_psweep_2026-05-12
+AdroitHandRelocateDense-v1, AdroitHandHammerDense-v1, AdroitHandDoorDense-v1 environment's reward functions were updated in v1.2.1 without an environment version update. Therefore, use gymnasium-robotics==1.2.0 for v1 reproducibility or use v2 in gymnasium-robotics>=1.4.3. See https://github.com/Farama-Foundation/Gymnasium-Robotics/pull/220 for more details
+AdroitHandRelocateDense-v1, AdroitHandHammerDense-v1, AdroitHandDoorDense-v1 environment's reward functions were updated in v1.2.1 without an environment version update. Therefore, use gymnasium-robotics==1.2.0 for v1 reproducibility or use v2 in gymnasium-robotics>=1.4.3. See https://github.com/Farama-Foundation/Gymnasium-Robotics/pull/220 for more details
+AdroitHandRelocateDense-v1, AdroitHandHammerDense-v1, AdroitHandDoorDense-v1 environment's reward functions were updated in v1.2.1 without an environment version update. Therefore, use gymnasium-robotics==1.2.0 for v1 reproducibility or use v2 in gymnasium-robotics>=1.4.3. See https://github.com/Farama-Foundation/Gymnasium-Robotics/pull/220 for more details
+AdroitHandRelocateDense-v1, AdroitHandHammerDense-v1, AdroitHandDoorDense-v1 environment's reward functions were updated in v1.2.1 without an environment version update. Therefore, use gymnasium-robotics==1.2.0 for v1 reproducibility or use v2 in gymnasium-robotics>=1.4.3. See https://github.com/Farama-Foundation/Gymnasium-Robotics/pull/220 for more details
+[modal-client] 2026-05-12T19:25:36-0700 Timed out waiting for final app logs.
+✓ App completed. View run at 
+https://modal.com/apps/agile-quadrupeds/main/ap-NRYpqbAgLKspwPdJRjZ1xx

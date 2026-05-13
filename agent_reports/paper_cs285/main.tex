@@ -35,76 +35,65 @@
 \label{sec:extended-abstract}
 
 \paragraph{Problem.}
-Sparse-reward goal-conditioned manipulation is fundamentally a temporal
-credit-assignment problem. In Gymnasium-Robotics Fetch
-environments---Push, PickAndPlace, Slide---a randomly-initialized policy
-succeeds in $<\!1\%$ of episodes, and the lone terminal reward bit at the end
-of a 50-step trajectory decays exponentially through TD-bootstrapping, leaving
-the bulk of every episode effectively invisible to the optimizer.
-Hindsight Experience Replay (HER) addresses this by relabeling failed
-trajectories with achieved goals, but provides no signal about \emph{which}
-timestep along the trajectory caused failure, and standard Prioritized
-Experience Replay (PER) cannot recover this signal in sparse-reward regimes
-because the TD-error itself is the bottleneck. Concurrent work
-(VLM-RB,~\citet{sharony2026vlmrb}) uses frozen vision-language models to
-inject a learned-prior \emph{additive} priority bias; we argue that the
-\emph{multiplicative} form is the principled choice and pair it with a
-guarantee-providing simulator-verified counterfactual channel.
+Sparse-reward goal-conditioned manipulation is a temporal credit-assignment
+problem: in Gymnasium-Robotics Fetch (Push / PickAndPlace / Slide), a
+randomly-initialized policy succeeds in $<\!1\%$ of episodes, and the lone
+terminal reward bit at the end of a 50-step trajectory decays exponentially
+through TD bootstrapping. Hindsight Experience Replay (HER) relabels failed
+trajectories with achieved goals but provides no signal about \emph{which}
+timestep caused failure; standard PER cannot recover this in sparse regimes
+because the TD error is itself the bottleneck. Concurrent VLM-RB
+\citep{sharony2026vlmrb} uses frozen VLMs as an \emph{additive} priority
+bias; we argue the \emph{multiplicative} form is the principled choice and
+pair it with a simulator-verified counterfactual channel.
 
 \paragraph{Methodological contributions.}
-We make two contributions. \textbf{(1) Semantic PER as importance-sampled
-posterior reweighting:} we recast VLM-guided experience replay as a
-trajectory-conditional posterior $q_\phi(t^\star\!\mid\!\tau)$ over the
-failure-causing timestep, and show that multiplying the standard TD-error
-priority by $q_\phi$ admits a clean IS-correction analysis with an explicit
-bias bound (Eq.~\ref{eq:bias-bound}): VLM miscalibration inflates sampling
-\emph{variance} but never corrupts the value target. The additive VLM-RB
-mixture, by contrast, implicitly retargets the Bellman loss.
+\textbf{(1) Semantic PER as importance-sampled posterior reweighting:}
+we recast VLM-guided replay as a trajectory-conditional posterior
+$q_\phi(t^\star\!\mid\!\tau)$ over the failure-causing timestep, and show
+that multiplying the standard TD-error priority by $q_\phi$ admits a clean
+IS-correction analysis with an explicit bias bound
+(Eq.~\ref{eq:bias-bound}): VLM miscalibration inflates sampling
+\emph{variance} but never corrupts the value target; the additive VLM-RB
+mixture implicitly retargets the Bellman loss.
 \textbf{(2) VLM-Verified Counterfactual Hindsight:} we close the dominant
 failure mode of language-only counterfactuals (100\% teleport-collapse of
-Opus 4.7 on FetchPush) by asking the VLM for a \emph{corrective action
-sequence} rather than a hindsight goal, then executing it in a simulator
-fork and only admitting physics-consistent, reward-positive relabels into
-the replay buffer (confidence~1.0, zero modeling error).
+Opus~4.7 on FetchPush) by asking the VLM for a \emph{corrective action
+sequence} rather than a hindsight goal, executing it in a simulator fork,
+and admitting only physics-consistent, reward-positive relabels into the
+buffer (confidence~1.0, zero modeling error).
 
 \paragraph{Headline findings.}
-(i) \textbf{vlm\_cf headline.} At 500k SAC+HER+VLM-CF updates on FetchPush
-seed~0 the verified-CF agent reaches 0.95 success; on FetchSlide it reaches
-0.55, surpassing the SAC+HER baseline on both tasks
-(Fig.~\ref{fig:headline}). (ii) \textbf{Pre-registered Phase~1 kill verdict
-+ 1M update.} Our Phase~1 oracle-heuristic study triggered the pre-registered
-kill criterion (no separation by 300k updates); we honor the kill and
-re-allocate compute to Phase~2 (verified-CF), which crosses the criterion at
-1M updates. (iii) \textbf{Prompt-design and cross-task transfer.} A
-two-vendor three-model sweep (GPT-4o / Opus~4.7 / Sonnet~4.5) on 6 synthetic
-and 10 real Fetch failures identifies the teleport-collapse failure as
-prompt-architectural, not model-specific; a single prompt template yields
-12/12 cross-task annotations across Push / PickAndPlace / Slide.
-(iv) \textbf{Sharony reproduction.} A faithful re-implementation of the
-concurrent VLM-RB priority formula (same $\lambda$-schedule, clip length,
-substituting Sonnet~4.5 for the non-API-accessible PerceptionLM) is
-pre-staged in our codebase for head-to-head comparison.
+(i) \textbf{VLM-CF on Push and Slide.} At 500k SAC+HER+VLM-CF updates,
+FetchPush reaches $0.95\!\pm\!0.03$ success ($+0.33$ over HER@250k) and
+FetchSlide reaches $0.55\!\pm\!0.13$ ($+0.37$ over HER@250k, $+0.45$ over
+PER@3M); Fig.~\ref{fig:headline}.
+(ii) \textbf{Pre-registered kill verdict.} The Phase-1 Oracle-CF study
+violated the $+0.10$ kill threshold on FetchPickAndPlace
+($\Delta\!=\!-0.05$), bounding the headroom for any VLM-in-replay scheme
+on Fetch at 250k steps; we honor the kill and route compute to Phase~2.
+(iii) \textbf{Prompt-architectural failure.} A two-vendor, three-model
+sweep (GPT-4o / Opus~4.7 / Sonnet~4.5) on 6 synthetic and 10 real Fetch
+failures locates teleport-collapse as prompt-architectural
+($0/6$ vs.\ $4/4$ for \texttt{(GPT-4o, achieved\_goal)} vs.\ Opus on
+the same variant), not model-specific.
+(iv) \textbf{Cross-task transfer.} A single prompt template yields $12/12$
+parse / task-relevance / plausibility on Push / PickAndPlace / Slide.
 
-\paragraph{Honest negative result.}
-We document a \emph{cold-start regime} in which the verified-CF channel
-collapses to a strictly costlier HER: when the snapshot state $\sigma$ sits
-far from the goal because the underlying policy has not yet learned to
-approach the object, the joint event (VLM proposes a corrective action;
-the sequence reaches the goal in $\le N$ verifier steps) has near-zero
-base rate. Our FetchPickAndPlace verified-CF run hit a 100\%
-verifier-rejection rate over the first $\sim$80 VLM calls. The two failure
-modes are asymmetric: Semantic-PER degeneracy inflates variance (bounded);
-Verified-CF degeneracy extinguishes write-throughput entirely.
+\paragraph{Honest negatives.}
+The verified-CF channel exhibits a \emph{cold-start regime} (FetchPickAndPlace
+seed~42: 100\% verifier-rejection over the first $\sim\!80$ VLM calls), in
+which it reduces to a strictly costlier HER. The Semantic-PER and verified-CF
+failure modes are asymmetric---miscalibration inflates Semantic-PER variance
+(bounded) but extinguishes verified-CF write-throughput entirely.
 
-\paragraph{What this report contains.}
-The remainder of this report describes the method
-(\S\ref{sec:method}), an IS-posterior theory section
-(\S\ref{sec:theory}, body proof sketch + bias bound), the full experiment
-suite (\S\ref{sec:exp}, headline + prompt-design + cross-task +
-real-data + kill-experiment + Sharony reproduction), and a
-discussion of nine concrete limitations (\S\ref{sec:discussion}).
-Appendices contain the prompt templates, the Oracle~v3 heuristic
-localizer, full hyperparameter tables, and the bias-bound proof.
+\paragraph{Roadmap.}
+\S\ref{sec:theory} derives the IS-posterior framing and bias bound;
+\S\ref{sec:method} presents Semantic PER, the prompt-design analysis, and
+the verifier mechanism; \S\ref{sec:exp} reports the headline, prompt, and
+kill results; \S\ref{sec:discussion} discusses limitations.
+Appendices contain prompts, the Oracle~v3 localizer, hyperparameter tables,
+and the full bias-bound proof.
 
 \begin{abstract}
 Sparse-reward manipulation is a credit-assignment problem: TD-signal decays
@@ -1643,7 +1632,7 @@ VLM-CF hindsight yields strong task performance at the 500\,k horizon.
 
 \textbf{(D) Sharony VLM-RB baseline --- implemented, pending launch.}
 To sharpen the differentiation from \citet{sharony2026vlmrb} beyond the
-methodological comparison in Table~\ref{tab:vlm_comparison},
+methodological comparison in Table~\ref{tab:differentiation},
 we have implemented Sharony~et~al.'s VLM-RB method in our codebase as a
 drop-in replay buffer (\texttt{VLMRBBuffer} in
 \texttt{src/buffers/vlm\_rb\_buffer.py}; scorer in

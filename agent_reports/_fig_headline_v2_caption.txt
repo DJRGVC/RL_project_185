@@ -1,0 +1,7 @@
+Figure 1 (proposed). Final evaluation success rate by method and environment.
+Methods are reported at their pre-registered training horizons (HER and
+Oracle-CF: 250k--1M; vlm_cf: 500k; PER/Uniform: 3M). Error bars and overlaid
+dots are +/-1 SE and individual seeds (n=3) respectively. The horizontal
+dashed line marks HER's per-env reference. vlm_cf attempt-5 (this work)
+matches PER's asymptotic Push performance at 1/6 the training and decisively
+beats all baselines on Slide and PnP at 1M Oracle horizon.

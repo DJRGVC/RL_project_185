@@ -1,0 +1,1 @@
+Figure X. Learning curves of evaluation success rate vs training steps, faceted by Fetch env. Shaded bands show ±1 SE across 3 random seeds. The HER baseline is truncated at 250k steps (its pre-registered horizon); Oracle-CF runs continue to 1M steps. Note Oracle-CF's substantial mid-training climb on PickAndPlace.

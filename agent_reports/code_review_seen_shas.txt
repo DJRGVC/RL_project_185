@@ -1,0 +1,17 @@
+# SHAs already reviewed by CODE-REVIEWER agent (started 2026-05-11 22:18 PDT)
+# Format: <sha>|<reviewed_at>|<branch>|<note>
+5a859f5323e79a107d8288beea21b4c20d44e865|2026-05-11T22:25:00|agent/pathc-lead|Path C: CF-HER integration (main review target)
+b393fe35eae291409733eff57aa13196e9fc3bdc|2026-05-11T22:25:00|agent/pathc-lead|Path C orchestrator + plan + Modal spawn
+8a5485eef8bc3c35ec81c1a5df37c85ead71634d|2026-05-11T22:30:00|agent/pathc-lead|Path C overnight handoff (docs only)
+1de84cfee7abaabf1059abb1beecc64b37bf9b93|2026-05-11T22:45:00|agent/pathc-lead|NeurIPS appendix B-H (docs only, no code review needed)
+50229af9d7ed267ac560cfb3f184aab4a8e7d7c3|2026-05-11T22:45:00|agent/pathc-lead|DEEP-LIT-WRITER deliverables (docs only)
+524a1169f6c8d65222eef71d228ad92451402985|2026-05-11T22:45:00|agent/pathc-lead|paper §4.1 deep rewrite (docs only)
+fd880a78dd573628972c552ebe1a30bc464d23a1|2026-05-11T22:55:00|agent/pathc-lead|paper polish (docs only)
+59a79020a61ce8e8bab6cc0deb82df9f32ec5186|2026-05-11T23:38:00|agent/pathc-lead|paper §5.1 expand (docs only)
+bbdee7e1b2a0dabbbe0f5720fec76a0d27ffcc1e|2026-05-11T23:38:00|agent/pathc-lead|paper §4.2 dive (docs only)
+0f3c779|2026-05-12T00:10:00|agent/pathc-lead|paper §5.4 dive (docs only — will mark fully after sha check)
+168518b4edf235e091d668db4a0aa2f46fd9f012|2026-05-12T00:10:00|agent/pathc-lead|Path C: fix verified_cf no-op (CLOSES BLOCKER B1) + tests + psweep configs
+6ac734ed4acc044d764f029ee3162f71db8d45b1|2026-05-12T00:22:00|agent/pathc-lead|Path C: VLM tier ablation (configs + launcher, not launching tonight)
+d7d224e5e67c40746214b3699b2c02ff8d3ba115|2026-05-12T00:35:00|agent/pathc-lead|paper iter 0038 (docs only)
+11d2dce0e41fb15ec96b577ad91facfdb95abc4e|2026-05-12T00:48:00|agent/pathc-lead|paper §5.5 dive (docs only)
+da36b9f9a540be8a64bd1664cd3068d3e9131d50|2026-05-12T01:02:00|agent/pathc-lead|paper §6 Limitations (docs only)

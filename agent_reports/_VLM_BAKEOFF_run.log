@@ -1,0 +1,95 @@
+AdroitHandRelocateDense-v1, AdroitHandHammerDense-v1, AdroitHandDoorDense-v1 environment's reward functions were updated in v1.2.1 without an environment version update. Therefore, use gymnasium-robotics==1.2.0 for v1 reproducibility or use v2 in gymnasium-robotics>=1.4.3. See https://github.com/Farama-Foundation/Gymnasium-Robotics/pull/220 for more details
+2026-05-12 11:38:01,940 | INFO | Loaded 10 episodes
+2026-05-12 11:38:01,941 | INFO | ======================================================================
+2026-05-12 11:38:01,941 | INFO | MODEL: anthropic:claude-opus-4-7
+2026-05-12 11:38:02,161 | INFO |   ep 1/10 env=FetchPickAndPlace-v4 seed=50000
+2026-05-12 11:38:05,807 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:38:08,255 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:38:08,255 | INFO |   judge: plaus=0.85 prog=0.9 spec=0.8
+2026-05-12 11:38:08,256 | INFO |   ep 2/10 env=FetchPickAndPlace-v4 seed=50034
+2026-05-12 11:38:11,437 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:38:13,932 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:38:13,932 | INFO |   judge: plaus=0.85 prog=0.9 spec=0.8
+2026-05-12 11:38:13,933 | INFO |   ep 3/10 env=FetchPickAndPlace-v4 seed=50051
+2026-05-12 11:38:14,103 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:38:14,104 | INFO | Retrying request to /v1/messages in 10.000000 seconds
+2026-05-12 11:38:28,104 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:38:28,260 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:38:28,260 | INFO | Retrying request to /v1/messages in 8.000000 seconds
+2026-05-12 11:38:39,519 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:38:39,520 | INFO |   judge: plaus=0.7 prog=0.6 spec=0.75
+2026-05-12 11:38:39,520 | INFO |   ep 4/10 env=FetchPickAndPlace-v4 seed=50068
+2026-05-12 11:38:39,686 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:38:39,687 | INFO | Retrying request to /v1/messages in 8.000000 seconds
+2026-05-12 11:38:51,239 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:38:51,399 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:38:51,400 | INFO | Retrying request to /v1/messages in 9.000000 seconds
+2026-05-12 11:39:03,445 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:39:03,446 | INFO |   judge: plaus=0.75 prog=0.9 spec=0.85
+2026-05-12 11:39:03,446 | INFO |   ep 5/10 env=FetchPickAndPlace-v4 seed=50085
+2026-05-12 11:39:03,644 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:39:03,644 | INFO | Retrying request to /v1/messages in 8.000000 seconds
+2026-05-12 11:39:16,089 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:39:16,243 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:39:16,244 | INFO | Retrying request to /v1/messages in 8.000000 seconds
+2026-05-12 11:39:27,205 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:39:27,206 | INFO |   judge: plaus=0.45 prog=0.85 spec=0.7
+2026-05-12 11:39:27,207 | INFO |   ep 6/10 env=FetchPickAndPlace-v4 seed=50102
+2026-05-12 11:39:27,372 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:39:27,372 | INFO | Retrying request to /v1/messages in 9.000000 seconds
+2026-05-12 11:39:39,922 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:39:40,078 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:39:40,078 | INFO | Retrying request to /v1/messages in 8.000000 seconds
+2026-05-12 11:39:50,619 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:39:50,620 | INFO |   judge: plaus=0.4 prog=0.2 spec=0.7
+2026-05-12 11:39:50,620 | INFO |   ep 7/10 env=FetchPush-v4 seed=60000
+2026-05-12 11:39:50,916 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:39:50,916 | INFO | Retrying request to /v1/messages in 9.000000 seconds
+2026-05-12 11:40:03,520 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:40:03,679 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:40:03,679 | INFO | Retrying request to /v1/messages in 8.000000 seconds
+2026-05-12 11:40:14,402 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:40:14,403 | INFO |   judge: plaus=0.85 prog=0.9 spec=0.8
+2026-05-12 11:40:14,403 | INFO |   ep 8/10 env=FetchPush-v4 seed=60017
+2026-05-12 11:40:14,574 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:40:14,575 | INFO | Retrying request to /v1/messages in 9.000000 seconds
+2026-05-12 11:40:26,700 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:40:26,866 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:40:26,866 | INFO | Retrying request to /v1/messages in 9.000000 seconds
+2026-05-12 11:40:38,633 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:40:38,634 | INFO |   judge: plaus=0.85 prog=0.9 spec=0.8
+2026-05-12 11:40:38,634 | INFO |   ep 9/10 env=FetchPush-v4 seed=60034
+2026-05-12 11:40:38,864 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:40:38,864 | INFO | Retrying request to /v1/messages in 9.000000 seconds
+2026-05-12 11:40:51,393 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:40:51,560 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:40:51,561 | INFO | Retrying request to /v1/messages in 8.000000 seconds
+2026-05-12 11:41:01,774 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:41:01,775 | INFO |   judge: plaus=0.5 prog=0.3 spec=0.8
+2026-05-12 11:41:01,776 | INFO |   ep 10/10 env=FetchPush-v4 seed=60051
+2026-05-12 11:41:01,969 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:41:01,970 | INFO | Retrying request to /v1/messages in 10.000000 seconds
+2026-05-12 11:41:15,310 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:41:15,640 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:41:15,640 | INFO | Retrying request to /v1/messages in 8.000000 seconds
+2026-05-12 11:41:26,188 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:41:26,189 | INFO |   judge: plaus=0.9 prog=0.95 spec=0.85
+2026-05-12 11:41:26,190 | INFO |   AGG[anthropic:claude-opus-4-7] = {'n_calls': 10, 'parse_ok': 10, 'plausibility_mean': 0.71, 'plausibility_n': 10, 'specificity_mean': 0.7849999999999999, 'specificity_n': 10, 'goal_progress_mean': 0.74, 'goal_progress_n': 10, 'teleport_rate': 0.4, 'teleport_count': 4, 'teleport_denom': 10}
+2026-05-12 11:41:26,190 | INFO | ======================================================================
+2026-05-12 11:41:26,190 | INFO | MODEL: anthropic:claude-sonnet-4-5-20250929
+2026-05-12 11:41:26,198 | INFO |   ep 1/10 env=FetchPickAndPlace-v4 seed=50000
+2026-05-12 11:41:26,460 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:41:26,460 | INFO | Retrying request to /v1/messages in 3.000000 seconds
+2026-05-12 11:41:29,613 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:41:29,613 | INFO | Retrying request to /v1/messages in 12.000000 seconds
+2026-05-12 11:41:41,780 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:41:41,781 | WARNING | [CF variant=all] attempt 1 failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': "This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."}, 'request_id': 'req_011CayAZCMo4nCiejjbnGSU1'}
+2026-05-12 11:41:43,266 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:41:43,266 | INFO | Retrying request to /v1/messages in 15.000000 seconds
+2026-05-12 11:41:58,499 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:41:58,499 | INFO | Retrying request to /v1/messages in 14.000000 seconds
+2026-05-12 11:42:12,664 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:42:12,664 | WARNING | [CF variant=all] attempt 2 failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': "This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-sonnet-4-5-20250929). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."}, 'request_id': 'req_011CayAbUQkLmSKiZgLAx5iM'}
+2026-05-12 11:42:13,301 | INFO |   ep 2/10 env=FetchPickAndPlace-v4 seed=50034
+2026-05-12 11:42:13,531 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:42:13,532 | INFO | Retrying request to /v1/messages in 11.000000 seconds

@@ -1,0 +1,2476 @@
+{
+  "meta": {
+    "providers": [
+      "anthropic",
+      "anthropic"
+    ],
+    "models": [
+      "claude-opus-4-7",
+      "claude-sonnet-4-5"
+    ],
+    "plan": [
+      {
+        "provider": "anthropic",
+        "model": "claude-opus-4-7"
+      },
+      {
+        "provider": "anthropic",
+        "model": "claude-sonnet-4-5"
+      }
+    ],
+    "variants": [
+      "narrative",
+      "action",
+      "achieved_goal",
+      "all"
+    ],
+    "judge_model": "claude-opus-4-7",
+    "K": 5,
+    "n_episodes": 10,
+    "envs": [
+      "FetchPickAndPlace-v4",
+      "FetchPush-v4"
+    ],
+    "timestamp": "2026-05-11 20:56:15 PDT",
+    "note": "Failed eval episodes collected from a partially-trained SAC+HER policy (50k steps PickAndPlace, 30k Push). Same prompt variants and judge as C1 ablation."
+  },
+  "episodes": [
+    {
+      "ep_idx": 0,
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 50000,
+      "checkpoint": "checkpoints/c1v2_real_data_her/final",
+      "providers": {
+        "anthropic:claude-opus-4-7": {
+          "env_name": "FetchPickAndPlace-v4",
+          "seed": 50000,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+          "desired_goal": [
+            1.358751893043518,
+            0.8798841238021851,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.2575385570526123,
+            0.6070199012756348,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.2575385570526123,
+            0.6070199012756348,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.29103097319602966,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.291); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have lowered its gripper down to the black block and closed the gripper to grasp it, instead of retracting the arm upward and away from the block.",
+              "confidence": 0.8,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "{\"explanation\":\"The robot should have lowered its gripper down to the black block and closed the gripper to grasp it, instead of retracting the arm upward and away from the block.\",\"confidence\":0.8}",
+              "parse_error": null,
+              "wall_time_seconds": 2.3817694187164307,
+              "judge": {
+                "plausibility": 0.9,
+                "goal_progress": 0.6,
+                "specificity": 0.5,
+                "verdict": "The suggestion to lower and grasp the block is physically reasonable and addresses the failure mode, but it lacks concrete coordinates or actions and only indirectly enables reaching the target."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The arm retracted away from the block instead of descending to grasp it; it should move forward-right and down toward the block while closing the gripper.",
+              "confidence": 0.6,
+              "corrective_position": null,
+              "corrective_action": [
+                0.3,
+                -0.2,
+                -0.4,
+                -1.0
+              ],
+              "raw_response": "{\"corrective_action\": [0.3, -0.2, -0.4, -1.0], \"explanation\": \"The arm retracted away from the block instead of descending to grasp it; it should move forward-right and down toward the block while closing the gripper.\", \"confidence\": 0.6}",
+              "parse_error": null,
+              "wall_time_seconds": 2.7286646366119385,
+              "judge": {
+                "plausibility": 0.6,
+                "goal_progress": 0.3,
+                "specificity": 0.7,
+                "verdict": "The action closes the gripper and moves right/down which is reasonable for grasping, but the negative y component moves away from the target's +y direction, limiting actual goal progress."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the midpoint of the episode, the gripper should have already grasped the block and moved it to the target location so the remaining timesteps can stabilize within 5 cm of the goal.",
+              "confidence": 0.6,
+              "corrective_position": [
+                1.358751893043518,
+                0.8798841238021851,
+                0.42489221692085266
+              ],
+              "corrective_action": null,
+              "raw_response": "{\n  \"corrective_position\": [1.358751893043518, 0.8798841238021851, 0.42489221692085266],\n  \"explanation\": \"At the midpoint of the episode, the gripper should have already grasped the block and moved it to the target location so the remaining timesteps can stabilize within 5 cm of the goal.\",\n  \"confidence\": 0.6\n}",
+              "parse_error": null,
+              "wall_time_seconds": 2.850630044937134,
+              "judge": {
+                "plausibility": 0.5,
+                "goal_progress": 1.0,
+                "specificity": 0.6,
+                "verdict": "The proposed position exactly matches the desired goal and is within workspace bounds, but teleporting the block to the target mid-episode is not physically achievable in a single step, making the correction goal-aligned yet only partially plausible."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The gripper retreated upward without grasping the block; it should have descended onto the block and closed the gripper to begin lifting it toward the target.",
+              "confidence": 0.6,
+              "corrective_position": [
+                1.3,
+                0.75,
+                0.43
+              ],
+              "corrective_action": [
+                0.3,
+                0.6,
+                -0.5,
+                -1.0
+              ],
+              "raw_response": "{\n  \"corrective_position\": [1.30, 0.75, 0.43],\n  \"corrective_action\": [0.3, 0.6, -0.5, -1],\n  \"explanation\": \"The gripper retreated upward without grasping the block; it should have descended onto the block and closed the gripper to begin lifting it toward the target.\",\n  \"confidence\": 0.6\n}",
+              "parse_error": null,
+              "wall_time_seconds": 8.399139404296875,
+              "judge": {
+                "plausibility": 0.85,
+                "goal_progress": 0.8,
+                "specificity": 0.9,
+                "verdict": "The correction is physically reasonable, within bounds, moves the object toward the target, and clearly identifies the missing grasp action."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-opus-4-7"
+        },
+        "anthropic:claude-sonnet-4-5": {
+          "env_name": "FetchPickAndPlace-v4",
+          "seed": 50000,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+          "desired_goal": [
+            1.358751893043518,
+            0.8798841238021851,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.2575385570526123,
+            0.6070199012756348,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.2575385570526123,
+            0.6070199012756348,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.29103097319602966,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.291); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have closed its gripper to grasp the black block before lifting upward.",
+              "confidence": 0.95,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"explanation\": \"The robot should have closed its gripper to grasp the black block before lifting upward.\",\n  \"confidence\": 0.95\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.2952609062194824,
+              "judge": {
+                "plausibility": 0.9,
+                "goal_progress": 0.7,
+                "specificity": 0.5,
+                "verdict": "The suggestion to close the gripper before lifting is physically reasonable and addresses a likely failure mode, but lacks concrete action values or target coordinates."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The gripper is positioned above the black block but moving away instead of descending to grasp it; the robot should move downward and close the gripper.",
+              "confidence": 0.85,
+              "corrective_position": null,
+              "corrective_action": [
+                0.0,
+                0.0,
+                -0.6,
+                -1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_action\": [0.0, 0.0, -0.6, -1.0],\n  \"explanation\": \"The gripper is positioned above the black block but moving away instead of descending to grasp it; the robot should move downward and close the gripper.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.009169340133667,
+              "judge": {
+                "plausibility": 0.75,
+                "goal_progress": 0.2,
+                "specificity": 0.7,
+                "verdict": "Descending and closing the gripper is a reasonable grasp attempt within action limits, but it does not move the object toward the floating target in x/y, so goal progress is minimal."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the midpoint of the episode, the object should be lifted above the table and positioned horizontally near the target to allow time for precise final placement.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.358,
+                0.88,
+                0.5
+              ],
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.358, 0.880, 0.50],\n  \"explanation\": \"At the midpoint of the episode, the object should be lifted above the table and positioned horizontally near the target to allow time for precise final placement.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.2609453201293945,
+              "judge": {
+                "plausibility": 0.9,
+                "goal_progress": 0.95,
+                "specificity": 0.8,
+                "verdict": "The proposed lifted midpoint position is within workspace bounds, aligns horizontally with the target, and would substantially reduce the goal distance compared to the failure point."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The robot should have lifted the grasped block upward with a closed gripper instead of moving horizontally, as the block needed to be raised before placement at the target position.",
+              "confidence": 0.92,
+              "corrective_position": [
+                1.358751893043518,
+                0.8798841238021851,
+                0.5
+              ],
+              "corrective_action": [
+                0.0,
+                0.0,
+                0.6,
+                -1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.358751893043518, 0.8798841238021851, 0.5],\n  \"corrective_action\": [0.0, 0.0, 0.6, -1.0],\n  \"explanation\": \"The robot should have lifted the grasped block upward with a closed gripper instead of moving horizontally, as the block needed to be raised before placement at the target position.\",\n  \"confidence\": 0.92\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.1106536388397217,
+              "judge": {
+                "plausibility": 0.85,
+                "goal_progress": 0.5,
+                "specificity": 0.8,
+                "verdict": "Lifting with a closed gripper is physically reasonable and within limits, but the purely vertical action ignores the substantial horizontal (y) gap to the target, so it only partially advances toward the goal."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-5"
+        }
+      }
+    },
+    {
+      "ep_idx": 1,
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 50034,
+      "checkpoint": "checkpoints/c1v2_real_data_her/final",
+      "providers": {
+        "anthropic:claude-opus-4-7": {
+          "env_name": "FetchPickAndPlace-v4",
+          "seed": 50034,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+          "desired_goal": [
+            1.4087731838226318,
+            0.7451496124267578,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.4643144607543945,
+            0.749208927154541,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.4643144607543945,
+            0.749208927154541,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.05568942055106163,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.056); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have moved the gripper laterally to align directly above the block and lowered onto it before closing, instead of descending beside the block and missing the grasp.",
+              "confidence": 0.7,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "{\"explanation\":\"The robot should have moved the gripper laterally to align directly above the block and lowered onto it before closing, instead of descending beside the block and missing the grasp.\",\"confidence\":0.7}",
+              "parse_error": null,
+              "wall_time_seconds": 10.634040117263794,
+              "judge": {
+                "plausibility": 0.85,
+                "goal_progress": 0.6,
+                "specificity": 0.4,
+                "verdict": "The suggestion is physically reasonable and addresses a likely failure mode, but it lacks concrete corrective values and only indirectly implies goal progress."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "At Frame 2 the gripper is hovering left of the block; move right/forward and down toward the block while closing the gripper to grasp it.",
+              "confidence": 0.6,
+              "corrective_position": null,
+              "corrective_action": [
+                0.4,
+                -0.3,
+                -0.2,
+                -1.0
+              ],
+              "raw_response": "{\"corrective_action\": [0.4, -0.3, -0.2, -1.0], \"explanation\": \"At Frame 2 the gripper is hovering left of the block; move right/forward and down toward the block while closing the gripper to grasp it.\", \"confidence\": 0.6}",
+              "parse_error": null,
+              "wall_time_seconds": 10.775402784347534,
+              "judge": {
+                "plausibility": 0.5,
+                "goal_progress": 0.2,
+                "specificity": 0.7,
+                "verdict": "The action is within bounds and clearly described, but moving +x and -y goes away from the desired_goal which is at lower x and slightly higher y than the achieved position."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the midpoint, the gripper should have grasped the block and lifted it toward the target's xy location at a slightly elevated z, putting it on a direct path to the goal.",
+              "confidence": 0.6,
+              "corrective_position": [
+                1.4087731838226318,
+                0.7451496124267578,
+                0.5
+              ],
+              "corrective_action": null,
+              "raw_response": "{\n  \"corrective_position\": [1.4087731838226318, 0.7451496124267578, 0.5],\n  \"explanation\": \"At the midpoint, the gripper should have grasped the block and lifted it toward the target's xy location at a slightly elevated z, putting it on a direct path to the goal.\",\n  \"confidence\": 0.6\n}",
+              "parse_error": null,
+              "wall_time_seconds": 11.105666160583496,
+              "judge": {
+                "plausibility": 0.9,
+                "goal_progress": 0.85,
+                "specificity": 0.8,
+                "verdict": "The proposed correction aligns the block with the target's xy at a feasible elevated z, plausibly placing it on a direct path to the goal."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "At the midpoint the gripper was hovering left of the block instead of descending onto it; it should have moved right and down while closing to grasp the block before lifting toward the target.",
+              "confidence": 0.6,
+              "corrective_position": [
+                1.3,
+                0.75,
+                0.43
+              ],
+              "corrective_action": [
+                0.4,
+                -0.1,
+                -0.3,
+                -1.0
+              ],
+              "raw_response": "{\n  \"corrective_position\": [1.30, 0.75, 0.43],\n  \"corrective_action\": [0.4, -0.1, -0.3, -1.0],\n  \"explanation\": \"At the midpoint the gripper was hovering left of the block instead of descending onto it; it should have moved right and down while closing to grasp the block before lifting toward the target.\",\n  \"confidence\": 0.6\n}",
+              "parse_error": null,
+              "wall_time_seconds": 17.034296989440918,
+              "judge": {
+                "plausibility": 0.75,
+                "goal_progress": 0.4,
+                "specificity": 0.8,
+                "verdict": "The action is within limits and the explanation is concrete, but the corrective x-position overshoots the target in x, so it only partially improves goal alignment."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-opus-4-7"
+        },
+        "anthropic:claude-sonnet-4-5": {
+          "env_name": "FetchPickAndPlace-v4",
+          "seed": 50034,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+          "desired_goal": [
+            1.4087731838226318,
+            0.7451496124267578,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.4643144607543945,
+            0.749208927154541,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.4643144607543945,
+            0.749208927154541,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.05568942055106163,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.056); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have closed the gripper to grasp the block before retracting upward, as it lifted without securing the object.",
+              "confidence": 0.95,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"explanation\": \"The robot should have closed the gripper to grasp the block before retracting upward, as it lifted without securing the object.\",\n  \"confidence\": 0.95\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.5131402015686035,
+              "judge": {
+                "plausibility": 0.9,
+                "goal_progress": 0.7,
+                "specificity": 0.5,
+                "verdict": "The suggestion correctly identifies a likely failure mode (lifting without grasping) but lacks concrete action values or timing details."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The robot retracted away from the block prematurely; it should have continued moving forward toward the block while keeping the gripper closed to secure it.",
+              "confidence": 0.85,
+              "corrective_position": null,
+              "corrective_action": [
+                0.8,
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_action\": [0.8, 0.0, 0.0, -1.0],\n  \"explanation\": \"The robot retracted away from the block prematurely; it should have continued moving forward toward the block while keeping the gripper closed to secure it.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.3177614212036133,
+              "judge": {
+                "plausibility": 0.4,
+                "goal_progress": 0.2,
+                "specificity": 0.6,
+                "verdict": "The action moves +x further from the target (which is at lower x than the object), so while the explanation is concrete, the proposed correction would worsen goal progress."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the halfway point, the object should be lifted above the table and positioned directly above the target location to allow a controlled descent in the remaining time.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.409,
+                0.745,
+                0.5
+              ],
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.409, 0.745, 0.50],\n  \"explanation\": \"At the halfway point, the object should be lifted above the table and positioned directly above the target location to allow a controlled descent in the remaining time.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.4482028484344482,
+              "judge": {
+                "plausibility": 0.9,
+                "goal_progress": 0.85,
+                "specificity": 0.8,
+                "verdict": "Lifting the block to z=0.5 directly above the target is within workspace limits and aligns xy with the desired goal, enabling a controlled descent."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The robot should have maintained a closed gripper while moving the grasped object upward and toward the goal position instead of retracting without the object.",
+              "confidence": 0.92,
+              "corrective_position": [
+                1.34,
+                0.75,
+                0.5
+              ],
+              "corrective_action": [
+                0.85,
+                0.15,
+                0.45,
+                -1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.34, 0.75, 0.50],\n  \"corrective_action\": [0.85, 0.15, 0.45, -1.0],\n  \"explanation\": \"The robot should have maintained a closed gripper while moving the grasped object upward and toward the goal position instead of retracting without the object.\",\n  \"confidence\": 0.92\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.0537424087524414,
+              "judge": {
+                "plausibility": 0.85,
+                "goal_progress": 0.6,
+                "specificity": 0.9,
+                "verdict": "The correction is physically reasonable and clearly actionable, though the proposed x=1.34 slightly overshoots the target x=1.41 and the lifted z=0.5 trades vertical distance for horizontal progress."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-5"
+        }
+      }
+    },
+    {
+      "ep_idx": 2,
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 50051,
+      "checkpoint": "checkpoints/c1v2_real_data_her/final",
+      "providers": {
+        "anthropic:claude-opus-4-7": {
+          "env_name": "FetchPickAndPlace-v4",
+          "seed": 50051,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+          "desired_goal": [
+            1.257919192314148,
+            0.82340008020401,
+            0.6285263299942017
+          ],
+          "achieved_goal_at_failure": [
+            1.3198094367980957,
+            0.5636326670646667,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.3198094367980957,
+            0.5636326670646667,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.33582189679145813,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=1 (dist=0.287); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "Instead of moving up and away from the block, the robot should have lowered the gripper onto the block and closed the gripper to grasp it before lifting toward the target.",
+              "confidence": 0.85,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "{\"explanation\":\"Instead of moving up and away from the block, the robot should have lowered the gripper onto the block and closed the gripper to grasp it before lifting toward the target.\",\"confidence\":0.85}",
+              "parse_error": null,
+              "wall_time_seconds": 8.463478088378906,
+              "judge": {
+                "plausibility": 0.85,
+                "goal_progress": 0.8,
+                "specificity": 0.5,
+                "verdict": "The narrative correctly identifies the failure mode (failing to grasp before lifting) and is physically reasonable, but lacks concrete action values or target coordinates."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The gripper drifted right and up away from the block; it should move left/back and down toward the block while closing the gripper to grasp it.",
+              "confidence": 0.6,
+              "corrective_position": null,
+              "corrective_action": [
+                -0.3,
+                -0.5,
+                -0.6,
+                -1.0
+              ],
+              "raw_response": "{\"corrective_action\": [-0.3, -0.5, -0.6, -1.0], \"explanation\": \"The gripper drifted right and up away from the block; it should move left/back and down toward the block while closing the gripper to grasp it.\", \"confidence\": 0.6}",
+              "parse_error": null,
+              "wall_time_seconds": 18.3533992767334,
+              "judge": {
+                "plausibility": 0.3,
+                "goal_progress": 0.2,
+                "specificity": 0.7,
+                "verdict": "The action moves the gripper in the wrong direction since the target is left/back but UP (z=0.63) from the object, so commanding -0.6 in z drives away from the goal."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At ~50% through the episode, the gripper should have already grasped the block and lifted it to the desired_goal location so the remaining timesteps could stabilize within the 5 cm success threshold.",
+              "confidence": 0.6,
+              "corrective_position": [
+                1.257919192314148,
+                0.82340008020401,
+                0.6285263299942017
+              ],
+              "corrective_action": null,
+              "raw_response": "{\n  \"corrective_position\": [1.257919192314148, 0.82340008020401, 0.6285263299942017],\n  \"explanation\": \"At ~50% through the episode, the gripper should have already grasped the block and lifted it to the desired_goal location so the remaining timesteps could stabilize within the 5 cm success threshold.\",\n  \"confidence\": 0.6\n}",
+              "parse_error": null,
+              "wall_time_seconds": 10.202168703079224,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 529 - {'type': 'error', 'error': {'type': 'overloaded_error', 'message': 'Overloaded'}, 'request_id': 'req_011Cax1Rb7VDyuUPpTk3o9ZT'}"
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "At the midpoint the gripper drifted up and away from the block instead of descending onto it; it should move down and back toward the block with an open gripper to grasp it before lifting to the target.",
+              "confidence": 0.6,
+              "corrective_position": [
+                1.2,
+                0.75,
+                0.45
+              ],
+              "corrective_action": [
+                -0.3,
+                -0.4,
+                -0.8,
+                1.0
+              ],
+              "raw_response": "{\n  \"corrective_position\": [1.20, 0.75, 0.45],\n  \"corrective_action\": [-0.3, -0.4, -0.8, 1.0],\n  \"explanation\": \"At the midpoint the gripper drifted up and away from the block instead of descending onto it; it should move down and back toward the block with an open gripper to grasp it before lifting to the target.\",\n  \"confidence\": 0.6\n}",
+              "parse_error": null,
+              "wall_time_seconds": 9.42934799194336,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 529 - {'type': 'error', 'error': {'type': 'overloaded_error', 'message': 'Overloaded'}, 'request_id': 'req_011Cax1THbLv78nyM3PnsiHu'}"
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-opus-4-7"
+        },
+        "anthropic:claude-sonnet-4-5": {
+          "env_name": "FetchPickAndPlace-v4",
+          "seed": 50051,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+          "desired_goal": [
+            1.257919192314148,
+            0.82340008020401,
+            0.6285263299942017
+          ],
+          "achieved_goal_at_failure": [
+            1.3198094367980957,
+            0.5636326670646667,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.3198094367980957,
+            0.5636326670646667,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.33582189679145813,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=1 (dist=0.287); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have descended further to make contact with and grasp the block on the table before attempting to lift.",
+              "confidence": 0.92,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"explanation\": \"The robot should have descended further to make contact with and grasp the block on the table before attempting to lift.\",\n  \"confidence\": 0.92\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.7669451236724854,
+              "judge": {
+                "plausibility": 0.9,
+                "goal_progress": 0.6,
+                "specificity": 0.4,
+                "verdict": "The suggestion correctly identifies a plausible failure mode (failing to grasp before lifting) but lacks concrete action values or target coordinates to be fully actionable."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The gripper is moving away from the block instead of descending to grasp it; the robot should move downward and close the gripper.",
+              "confidence": 0.85,
+              "corrective_position": null,
+              "corrective_action": [
+                0.0,
+                0.0,
+                -0.6,
+                -1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_action\": [0.0, 0.0, -0.6, -1.0],\n  \"explanation\": \"The gripper is moving away from the block instead of descending to grasp it; the robot should move downward and close the gripper.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.038958787918091,
+              "judge": {
+                "plausibility": 0.4,
+                "goal_progress": 0.2,
+                "specificity": 0.7,
+                "verdict": "The action is within limits and clearly described, but descending and closing the gripper moves away from the elevated target above the block, so it does not bring the achieved goal closer to the desired goal."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the midpoint of the episode, the object should be lifted off the table and positioned horizontally at the target coordinates but at an intermediate height between the table surface and the final goal height to allow smooth placement.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.257,
+                0.823,
+                0.5
+              ],
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.257, 0.823, 0.50],\n  \"explanation\": \"At the midpoint of the episode, the object should be lifted off the table and positioned horizontally at the target coordinates but at an intermediate height between the table surface and the final goal height to allow smooth placement.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.4019012451171875,
+              "judge": {
+                "plausibility": 0.9,
+                "goal_progress": 0.85,
+                "specificity": 0.8,
+                "verdict": "The proposed intermediate waypoint is within workspace bounds, moves the object substantially closer to the target in x/y/z, and the explanation clearly motivates a lift-and-translate strategy."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The gripper should have closed firmly on the block while positioned directly above it, but instead moved away without grasping, causing the block to remain on the table.",
+              "confidence": 0.92,
+              "corrective_position": [
+                1.257919192314148,
+                0.82340008020401,
+                0.6285263299942017
+              ],
+              "corrective_action": [
+                0.0,
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.257919192314148, 0.82340008020401, 0.6285263299942017],\n  \"corrective_action\": [0.0, 0.0, 0.0, -1.0],\n  \"explanation\": \"The gripper should have closed firmly on the block while positioned directly above it, but instead moved away without grasping, causing the block to remain on the table.\",\n  \"confidence\": 0.92\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.880124807357788,
+              "judge": {
+                "plausibility": 0.4,
+                "goal_progress": 0.2,
+                "specificity": 0.6,
+                "verdict": "The explanation identifies a plausible failure mode (failure to grasp) but the corrective action of closing the gripper in place without any positional movement won't bring the block to the floating target, and the corrective_position simply restates the goal rather than a reachable intermediate pose."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-5"
+        }
+      }
+    },
+    {
+      "ep_idx": 3,
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 50068,
+      "checkpoint": "checkpoints/c1v2_real_data_her/final",
+      "providers": {
+        "anthropic:claude-opus-4-7": {
+          "env_name": "FetchPickAndPlace-v4",
+          "seed": 50068,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+          "desired_goal": [
+            1.4252541065216064,
+            0.7335234880447388,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.1734404563903809,
+            0.6250391602516174,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.1734404563903809,
+            0.6250391602516174,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.2741878032684326,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.203); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "At Frame 2, the gripper was positioned over the block but should have lowered further and closed the gripper fingers to grasp the block before attempting to lift, rather than descending without securing it.",
+              "confidence": 0.7,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "{\"explanation\":\"At Frame 2, the gripper was positioned over the block but should have lowered further and closed the gripper fingers to grasp the block before attempting to lift, rather than descending without securing it.\",\"confidence\":0.7}",
+              "parse_error": null,
+              "wall_time_seconds": 9.71824026107788,
+              "judge": {
+                "plausibility": 0.85,
+                "goal_progress": 0.6,
+                "specificity": 0.5,
+                "verdict": "The suggestion to lower and close the gripper before lifting is physically reasonable and addresses a plausible failure mode, but it lacks concrete position/action values and only indirectly implies progress toward the target."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "At Frame 2 the gripper is above/near the block but hasn't descended and closed on it; the robot should move down and slightly toward the block (forward +x, right -y) while closing the gripper to grasp it.",
+              "confidence": 0.6,
+              "corrective_position": null,
+              "corrective_action": [
+                0.2,
+                -0.3,
+                -0.2,
+                -1.0
+              ],
+              "raw_response": "{\"corrective_action\": [0.2, -0.3, -0.2, -1.0], \"explanation\": \"At Frame 2 the gripper is above/near the block but hasn't descended and closed on it; the robot should move down and slightly toward the block (forward +x, right -y) while closing the gripper to grasp it.\", \"confidence\": 0.6}",
+              "parse_error": null,
+              "wall_time_seconds": 18.123687505722046,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax1ZNfMfj2foadmRPDQX'}"
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "VLM call/parse failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax1cqfAG9GkedhHg7nmW'}",
+              "confidence": 0.0,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "",
+              "parse_error": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax1cqfAG9GkedhHg7nmW'}",
+              "wall_time_seconds": 46.50228691101074,
+              "judge": null
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "At the critical moment the gripper was hovering above the table without descending onto the block; it should have moved down and closed to grasp the block before lifting toward the target.",
+              "confidence": 0.6,
+              "corrective_position": [
+                1.38,
+                0.7,
+                0.43
+              ],
+              "corrective_action": [
+                0.2,
+                -0.3,
+                -0.5,
+                -1.0
+              ],
+              "raw_response": "{\n  \"corrective_position\": [1.38, 0.70, 0.43],\n  \"corrective_action\": [0.2, -0.3, -0.5, -1.0],\n  \"explanation\": \"At the critical moment the gripper was hovering above the table without descending onto the block; it should have moved down and closed to grasp the block before lifting toward the target.\",\n  \"confidence\": 0.6\n}",
+              "parse_error": null,
+              "wall_time_seconds": 12.391687870025635,
+              "judge": {
+                "plausibility": 0.85,
+                "goal_progress": 0.9,
+                "specificity": 0.8,
+                "verdict": "The proposed correction is physically reasonable, moves the object closer to the target, and provides a concrete grasp-and-lift action, though the explanation could specify magnitudes more precisely."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-opus-4-7"
+        },
+        "anthropic:claude-sonnet-4-5": {
+          "env_name": "FetchPickAndPlace-v4",
+          "seed": 50068,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+          "desired_goal": [
+            1.4252541065216064,
+            0.7335234880447388,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.1734404563903809,
+            0.6250391602516174,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.1734404563903809,
+            0.6250391602516174,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.2741878032684326,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.203); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "Return to the black cube's position and close the gripper to grasp it before attempting to move to the target location",
+              "confidence": 0.95,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "Looking at the trajectory:\n\n- **Frame 0**: Robot is positioned over the black cube with gripper open\n- **Frame 1**: Robot has moved away from the black cube without grasping it\n- **Frame 2** (critical failure point): Robot continues moving with empty gripper, black cube remains on table\n- **Frames 3-4**: Robot completes motion without the object\n\nThe failure occurred because the robot never closed its gripper to grasp the black cube. At Frame 2, it's already too late - the robot has moved away from the pickup location. However, the question asks what should have been done differently \"at Frame 2\" to succeed.\n\nThe root cause was failing to close the gripper when positioned over the cube (before Frame 1). By Frame 2, the corrective action would be to return to the cube and attempt the grasp again.\n\n```json\n{\n  \"explanation\": \"Return to the black cube's position and close the gripper to grasp it before attempting to move to the target location\",\n  \"confidence\": 0.95\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 7.613875389099121,
+              "judge": {
+                "plausibility": 0.8,
+                "goal_progress": 0.6,
+                "specificity": 0.4,
+                "verdict": "The narrative correctly identifies a likely failure mode (failed grasp) but lacks concrete positions or actions to execute the correction."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The robot needs to move toward the red sphere target (positive x, negative y) while ensuring the gripper remains closed to retain the block.",
+              "confidence": 0.82,
+              "corrective_position": null,
+              "corrective_action": [
+                0.6,
+                -0.3,
+                0.0,
+                -1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_action\": [0.6, -0.3, 0.0, -1.0],\n  \"explanation\": \"The robot needs to move toward the red sphere target (positive x, negative y) while ensuring the gripper remains closed to retain the block.\",\n  \"confidence\": 0.82\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.218039035797119,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax1i9T84iXX4YsCxS4Fg'}"
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the halfway point, the object should be lifted well above the table and moving toward the target xy-position to allow time for precise placement at the low goal height.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.36,
+                0.73,
+                0.55
+              ],
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.36, 0.73, 0.55],\n  \"explanation\": \"At the halfway point, the object should be lifted well above the table and moving toward the target xy-position to allow time for precise placement at the low goal height.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.4648897647857666,
+              "judge": {
+                "plausibility": 0.85,
+                "goal_progress": 0.9,
+                "specificity": 0.7,
+                "verdict": "The proposed mid-trajectory waypoint is within workspace bounds and meaningfully advances the object toward the target xy while lifting it clear of the table, though the z=0.55 is somewhat high given the low goal height."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The robot should have grasped the block and begun lifting it toward the target position instead of retracting without the object.",
+              "confidence": 0.92,
+              "corrective_position": [
+                1.34,
+                0.73,
+                0.5
+              ],
+              "corrective_action": [
+                0.65,
+                0.15,
+                0.45,
+                -1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.34, 0.73, 0.50],\n  \"corrective_action\": [0.65, 0.15, 0.45, -1.0],\n  \"explanation\": \"The robot should have grasped the block and begun lifting it toward the target position instead of retracting without the object.\",\n  \"confidence\": 0.92\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.009626626968384,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax1kp6sCEcAdht2gq6Pg'}"
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-5"
+        }
+      }
+    },
+    {
+      "ep_idx": 4,
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 50085,
+      "checkpoint": "checkpoints/c1v2_real_data_her/final",
+      "providers": {
+        "anthropic:claude-opus-4-7": {
+          "env_name": "FetchPickAndPlace-v4",
+          "seed": 50085,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+          "desired_goal": [
+            1.3389878273010254,
+            0.8850302696228027,
+            0.5459770560264587
+          ],
+          "achieved_goal_at_failure": [
+            1.2428902387619019,
+            0.8713675141334534,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.2428902387619019,
+            0.8713675141334534,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.15518681704998016,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=1 (dist=0.155); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "Instead of retracting the arm upward and away from the block, the robot should have lowered the gripper onto the block and closed the fingers to grasp it before lifting toward the target.",
+              "confidence": 0.8,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "{\"explanation\":\"Instead of retracting the arm upward and away from the block, the robot should have lowered the gripper onto the block and closed the fingers to grasp it before lifting toward the target.\",\"confidence\":0.8}",
+              "parse_error": null,
+              "wall_time_seconds": 24.923420667648315,
+              "judge": {
+                "plausibility": 0.85,
+                "goal_progress": 0.8,
+                "specificity": 0.6,
+                "verdict": "The suggestion to grasp before lifting is physically reasonable and would help reach the floating target, but it lacks concrete action values or coordinates."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The arm moved up and away from the block instead of descending to grasp it; it should move toward and down onto the block while closing the gripper.",
+              "confidence": 0.6,
+              "corrective_position": null,
+              "corrective_action": [
+                0.6,
+                0.2,
+                -0.8,
+                -1.0
+              ],
+              "raw_response": "{\"corrective_action\": [0.6, 0.2, -0.8, -1.0], \"explanation\": \"The arm moved up and away from the block instead of descending to grasp it; it should move toward and down onto the block while closing the gripper.\", \"confidence\": 0.6}",
+              "parse_error": null,
+              "wall_time_seconds": 10.941812992095947,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax1r6qKzFV6YxUkUVoBM'}"
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "VLM call/parse failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax1udbr1FhxoC6Bd2vU8'}",
+              "confidence": 0.0,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "",
+              "parse_error": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax1udbr1FhxoC6Bd2vU8'}",
+              "wall_time_seconds": 47.746830224990845,
+              "judge": null
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "At the midpoint the arm has retreated upward and away instead of descending onto the block to grasp it; it should move toward the block and close the gripper to pick it up before transporting to the target.",
+              "confidence": 0.7,
+              "corrective_position": [
+                1.3389878273010254,
+                0.8850302696228027,
+                0.5459770560264587
+              ],
+              "corrective_action": [
+                0.6,
+                0.3,
+                -0.4,
+                -1.0
+              ],
+              "raw_response": "{\n  \"corrective_position\": [1.3389878273010254, 0.8850302696228027, 0.5459770560264587],\n  \"corrective_action\": [0.6, 0.3, -0.4, -1],\n  \"explanation\": \"At the midpoint the arm has retreated upward and away instead of descending onto the block to grasp it; it should move toward the block and close the gripper to pick it up before transporting to the target.\",\n  \"confidence\": 0.7\n}",
+              "parse_error": null,
+              "wall_time_seconds": 37.99535894393921,
+              "judge": {
+                "plausibility": 0.45,
+                "goal_progress": 0.5,
+                "specificity": 0.7,
+                "verdict": "The explanation is actionable but the proposed action commands a downward z motion (-0.4) and gripper close, which contradicts the need to lift the already-grasped block upward toward the floating target."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-opus-4-7"
+        },
+        "anthropic:claude-sonnet-4-5": {
+          "env_name": "FetchPickAndPlace-v4",
+          "seed": 50085,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+          "desired_goal": [
+            1.3389878273010254,
+            0.8850302696228027,
+            0.5459770560264587
+          ],
+          "achieved_goal_at_failure": [
+            1.2428902387619019,
+            0.8713675141334534,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.2428902387619019,
+            0.8713675141334534,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.15518681704998016,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=1 (dist=0.155); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have closed its gripper on the block before retracting upward, as it lifted without grasping the object.",
+              "confidence": 0.95,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"explanation\": \"The robot should have closed its gripper on the block before retracting upward, as it lifted without grasping the object.\",\n  \"confidence\": 0.95\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.4721779823303223,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax21qm14b95UYsVYCTcX'}"
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "At Frame 2, the robot arm has retracted upward without grasping the block; it should move downward toward the block and close the gripper to secure it.",
+              "confidence": 0.85,
+              "corrective_position": null,
+              "corrective_action": [
+                0.0,
+                0.0,
+                -0.6,
+                -1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_action\": [0.0, 0.0, -0.6, -1.0],\n  \"explanation\": \"At Frame 2, the robot arm has retracted upward without grasping the block; it should move downward toward the block and close the gripper to secure it.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.8437838554382324,
+              "judge": {
+                "plausibility": 0.6,
+                "goal_progress": 0.2,
+                "specificity": 0.7,
+                "verdict": "The action correctly closes the gripper and moves down to grasp the block, but since the desired goal is above the current position, descending further moves the achieved goal away from the target rather than closer."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the halfway point, the object should be lifted well above the table and moving toward the target position to allow sufficient time for precise placement within the 5cm tolerance.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.34,
+                0.88,
+                0.65
+              ],
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.34, 0.88, 0.65],\n  \"explanation\": \"At the halfway point, the object should be lifted well above the table and moving toward the target position to allow sufficient time for precise placement within the 5cm tolerance.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.3285293579101562,
+              "judge": {
+                "plausibility": 0.7,
+                "goal_progress": 0.75,
+                "specificity": 0.6,
+                "verdict": "The proposed position is within workspace bounds and moves x,y closer to the target, but overshoots the target z (0.65 vs 0.546), which is reasonable for a mid-trajectory lift but slightly excessive."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The gripper should have descended to grasp the block while closing instead of retracting upward without securing it.",
+              "confidence": 0.92,
+              "corrective_position": [
+                1.34,
+                0.75,
+                0.43
+              ],
+              "corrective_action": [
+                0.0,
+                0.0,
+                -0.8,
+                -1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.34, 0.75, 0.43],\n  \"corrective_action\": [0.0, 0.0, -0.8, -1.0],\n  \"explanation\": \"The gripper should have descended to grasp the block while closing instead of retracting upward without securing it.\",\n  \"confidence\": 0.92\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.1175098419189453,
+              "judge": {
+                "plausibility": 0.75,
+                "goal_progress": 0.3,
+                "specificity": 0.8,
+                "verdict": "The grasp-and-close action is physically reasonable and well-explained, but the corrective position moves away from the desired goal in y and barely changes z, so it doesn't directly advance toward the target."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-5"
+        }
+      }
+    },
+    {
+      "ep_idx": 5,
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 50102,
+      "checkpoint": "checkpoints/c1v2_real_data_her/final",
+      "providers": {
+        "anthropic:claude-opus-4-7": {
+          "env_name": "FetchPickAndPlace-v4",
+          "seed": 50102,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+          "desired_goal": [
+            1.4445830583572388,
+            0.8422929644584656,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.4710569381713867,
+            0.6785102486610413,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.4710569381713867,
+            0.6785102486610413,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.165908545255661,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.166); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have lowered the gripper down onto the black block and closed its fingers to grasp it, instead of hovering above the table without descending to make contact.",
+              "confidence": 0.8,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "{\"explanation\":\"The robot should have lowered the gripper down onto the black block and closed its fingers to grasp it, instead of hovering above the table without descending to make contact.\",\"confidence\":0.8}",
+              "parse_error": null,
+              "wall_time_seconds": 35.90962314605713,
+              "judge": {
+                "plausibility": 0.9,
+                "goal_progress": 0.6,
+                "specificity": 0.5,
+                "verdict": "The suggestion to descend and grasp the block is physically reasonable and addresses the likely failure cause, but it lacks concrete action values and doesn't directly specify motion toward the target."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The gripper is hovering above and slightly left of the block; it should move down and slightly right (-y) onto the block and close the gripper to grasp it.",
+              "confidence": 0.6,
+              "corrective_position": null,
+              "corrective_action": [
+                0.0,
+                -0.2,
+                -0.4,
+                -1.0
+              ],
+              "raw_response": "{\n  \"corrective_action\": [0.0, -0.2, -0.4, -1.0],\n  \"explanation\": \"The gripper is hovering above and slightly left of the block; it should move down and slightly right (-y) onto the block and close the gripper to grasp it.\",\n  \"confidence\": 0.6\n}",
+              "parse_error": null,
+              "wall_time_seconds": 8.425111532211304,
+              "judge": {
+                "plausibility": 0.3,
+                "goal_progress": 0.2,
+                "specificity": 0.4,
+                "verdict": "The action moves in the wrong y-direction (target is at higher y, ~0.84, but action commands -y) and pushes down into the table while the object is already above the target's z, so it would not bring the achieved goal closer to the desired goal."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the midpoint, the block should already be at the desired goal position on the table so the remaining trajectory can stabilize within tolerance.",
+              "confidence": 0.7,
+              "corrective_position": [
+                1.4445830583572388,
+                0.8422929644584656,
+                0.4248922169208527
+              ],
+              "corrective_action": null,
+              "raw_response": "{\n  \"corrective_position\": [1.4445830583572388, 0.8422929644584656, 0.4248922169208527],\n  \"explanation\": \"At the midpoint, the block should already be at the desired goal position on the table so the remaining trajectory can stabilize within tolerance.\",\n  \"confidence\": 0.7\n}",
+              "parse_error": null,
+              "wall_time_seconds": 12.29416561126709,
+              "judge": {
+                "plausibility": 0.4,
+                "goal_progress": 1.0,
+                "specificity": 0.5,
+                "verdict": "The proposed position matches the desired goal exactly so goal progress is maximal, but instantaneously teleporting the block to the target at the midpoint is not physically achievable in a single step and the explanation lacks actionable control details."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "At the midpoint the gripper is hovering above the block instead of descending to grasp it; it should move straight down and close the gripper on the block before lifting toward the target.",
+              "confidence": 0.7,
+              "corrective_position": [
+                1.3,
+                0.75,
+                0.43
+              ],
+              "corrective_action": [
+                0.0,
+                0.0,
+                -0.8,
+                -1.0
+              ],
+              "raw_response": "{\n  \"corrective_position\": [1.30, 0.75, 0.43],\n  \"corrective_action\": [0.0, 0.0, -0.8, -1.0],\n  \"explanation\": \"At the midpoint the gripper is hovering above the block instead of descending to grasp it; it should move straight down and close the gripper on the block before lifting toward the target.\",\n  \"confidence\": 0.7\n}",
+              "parse_error": null,
+              "wall_time_seconds": 16.710434913635254,
+              "judge": {
+                "plausibility": 0.6,
+                "goal_progress": 0.3,
+                "specificity": 0.8,
+                "verdict": "The explanation is concrete and the downward-close action is physically valid, but the corrective_position moves away from the desired goal in x and the target is a floating goal above the table, so this correction only partially aids task completion."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-opus-4-7"
+        },
+        "anthropic:claude-sonnet-4-5": {
+          "env_name": "FetchPickAndPlace-v4",
+          "seed": 50102,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+          "desired_goal": [
+            1.4445830583572388,
+            0.8422929644584656,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.4710569381713867,
+            0.6785102486610413,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.4710569381713867,
+            0.6785102486610413,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.165908545255661,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.166); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have closed its gripper to grasp the black block before attempting to lift it.",
+              "confidence": 0.95,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"explanation\": \"The robot should have closed its gripper to grasp the black block before attempting to lift it.\",\n  \"confidence\": 0.95\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 1.7544867992401123,
+              "judge": {
+                "plausibility": 0.9,
+                "goal_progress": 0.7,
+                "specificity": 0.4,
+                "verdict": "The suggestion to close the gripper before lifting is physically reasonable and would likely enable progress toward the goal, but it lacks concrete action values or timing details."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The gripper is positioned above the block but needs to descend to grasp it before attempting to lift, and the gripper must close to secure the block.",
+              "confidence": 0.85,
+              "corrective_position": null,
+              "corrective_action": [
+                0.0,
+                0.0,
+                -0.6,
+                -1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_action\": [0.0, 0.0, -0.6, -1.0],\n  \"explanation\": \"The gripper is positioned above the block but needs to descend to grasp it before attempting to lift, and the gripper must close to secure the block.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.3138105869293213,
+              "judge": {
+                "plausibility": 0.4,
+                "goal_progress": 0.2,
+                "specificity": 0.7,
+                "verdict": "The action is physically valid but misdiagnoses the failure\u2014the object is already lifted near target height and mainly needs +y motion, not descent and gripper closure."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the halfway point, the object should be lifted above the table and positioned horizontally near the target to allow time for precise final placement at the goal height.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.445,
+                0.842,
+                0.5
+              ],
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.445, 0.842, 0.50],\n  \"explanation\": \"At the halfway point, the object should be lifted above the table and positioned horizontally near the target to allow time for precise final placement at the goal height.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.2362477779388428,
+              "judge": {
+                "plausibility": 0.9,
+                "goal_progress": 0.95,
+                "specificity": 0.8,
+                "verdict": "The proposed lifted position aligns horizontally with the target and stays within workspace limits, providing a clear and physically reasonable intermediate waypoint toward the goal."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The gripper should have closed firmly on the block while positioned directly above it to secure a grasp before attempting any lift or transport motion.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.34,
+                0.75,
+                0.5
+              ],
+              "corrective_action": [
+                0.0,
+                0.0,
+                0.0,
+                -1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.34, 0.75, 0.50],\n  \"corrective_action\": [0.0, 0.0, 0.0, -1.0],\n  \"explanation\": \"The gripper should have closed firmly on the block while positioned directly above it to secure a grasp before attempting any lift or transport motion.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.323539972305298,
+              "judge": {
+                "plausibility": 0.5,
+                "goal_progress": 0.2,
+                "specificity": 0.7,
+                "verdict": "The grasp-closing suggestion is actionable and within limits, but the corrective position is far from both the object and target, so it would not bring the achieved goal closer to the desired goal."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-5"
+        }
+      }
+    },
+    {
+      "ep_idx": 6,
+      "env_name": "FetchPush-v4",
+      "seed": 60000,
+      "checkpoint": "checkpoints/c1v2_real_data_her_push/final",
+      "providers": {
+        "anthropic:claude-opus-4-7": {
+          "env_name": "FetchPush-v4",
+          "seed": 60000,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must push a block on a table to a target position.",
+          "desired_goal": [
+            1.3157259225845337,
+            0.7196225523948669,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.5188287496566772,
+            0.8417948484420776,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.5188287496566772,
+            0.8417948484420776,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.23701651394367218,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.222); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have lowered its end-effector to table height and approached the black block from its right side so it could push the block leftward toward the red target, instead of hovering above and to the right of the block.",
+              "confidence": 0.7,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "{\"explanation\":\"The robot should have lowered its end-effector to table height and approached the black block from its right side so it could push the block leftward toward the red target, instead of hovering above and to the right of the block.\",\"confidence\":0.7}",
+              "parse_error": null,
+              "wall_time_seconds": 46.75386190414429,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax2N9kneuNdUispZSAc3'}"
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The end-effector is to the right of and above the black block; it should move left and down toward the block to push it toward the red target on the left.",
+              "confidence": 0.6,
+              "corrective_position": null,
+              "corrective_action": [
+                -0.3,
+                -0.5,
+                -0.2,
+                1.0
+              ],
+              "raw_response": "{\"corrective_action\": [-0.3, -0.5, -0.2, 1.0], \"explanation\": \"The end-effector is to the right of and above the black block; it should move left and down toward the block to push it toward the red target on the left.\", \"confidence\": 0.6}",
+              "parse_error": null,
+              "wall_time_seconds": 13.075269937515259,
+              "judge": {
+                "plausibility": 0.85,
+                "goal_progress": 0.9,
+                "specificity": 0.8,
+                "verdict": "The action moves left and down toward the target, which is physically reasonable and would push the block closer to the desired goal."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the midpoint of the episode, the block should already be at (or essentially at) the target location so the remaining timesteps can settle it within the 5 cm success threshold.",
+              "confidence": 0.7,
+              "corrective_position": [
+                1.3157259225845337,
+                0.7196225523948669,
+                0.42489221692085266
+              ],
+              "corrective_action": null,
+              "raw_response": "{\n  \"corrective_position\": [1.3157259225845337, 0.7196225523948669, 0.42489221692085266],\n  \"explanation\": \"At the midpoint of the episode, the block should already be at (or essentially at) the target location so the remaining timesteps can settle it within the 5 cm success threshold.\",\n  \"confidence\": 0.7\n}",
+              "parse_error": null,
+              "wall_time_seconds": 28.652767658233643,
+              "judge": {
+                "plausibility": 0.3,
+                "goal_progress": 1.0,
+                "specificity": 0.4,
+                "verdict": "The corrective position exactly matches the desired goal (maximizing goal progress), but teleporting the block to the target at the midpoint is not physically achievable in a single step given action limits, and the explanation lacks concrete actuation guidance."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "At the critical frame the gripper is hovering above and behind the block; it should descend and move toward the block's far side to push it in the -y direction toward the red target.",
+              "confidence": 0.6,
+              "corrective_position": [
+                1.32,
+                0.72,
+                0.45
+              ],
+              "corrective_action": [
+                -0.3,
+                -0.5,
+                -0.4,
+                -1.0
+              ],
+              "raw_response": "{\n  \"corrective_position\": [1.32, 0.72, 0.45],\n  \"corrective_action\": [-0.3, -0.5, -0.4, -1.0],\n  \"explanation\": \"At the critical frame the gripper is hovering above and behind the block; it should descend and move toward the block's far side to push it in the -y direction toward the red target.\",\n  \"confidence\": 0.6\n}",
+              "parse_error": null,
+              "wall_time_seconds": 11.505851030349731,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax2W9fJKJJ4iEuYnPQMX'}"
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-opus-4-7"
+        },
+        "anthropic:claude-sonnet-4-5": {
+          "env_name": "FetchPush-v4",
+          "seed": 60000,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must push a block on a table to a target position.",
+          "desired_goal": [
+            1.3157259225845337,
+            0.7196225523948669,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.5188287496566772,
+            0.8417948484420776,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.5188287496566772,
+            0.8417948484420776,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.23701651394367218,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.222); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have descended vertically to make contact with the black block and push it toward the red target, instead of maintaining its elevated position above the table.",
+              "confidence": 0.85,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"explanation\": \"The robot should have descended vertically to make contact with the black block and push it toward the red target, instead of maintaining its elevated position above the table.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.8620975017547607,
+              "judge": {
+                "plausibility": 0.7,
+                "goal_progress": 0.6,
+                "specificity": 0.4,
+                "verdict": "The suggestion to descend and push is physically reasonable but lacks concrete direction or magnitude needed to ensure the block moves toward the target."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The robot arm is positioned too high above the table and needs to descend to make contact with the block for pushing.",
+              "confidence": 0.85,
+              "corrective_position": null,
+              "corrective_action": [
+                0.0,
+                0.0,
+                -0.8,
+                1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_action\": [0.0, 0.0, -0.8, 1.0],\n  \"explanation\": \"The robot arm is positioned too high above the table and needs to descend to make contact with the block for pushing.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.990034580230713,
+              "judge": {
+                "plausibility": 0.3,
+                "goal_progress": 0.1,
+                "specificity": 0.5,
+                "verdict": "Descending is irrelevant since the block is already on the table and the real error is in the xy-plane; the action provides no horizontal push toward the target."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the halfway point, the object should be nearly at the target position to allow fine adjustments in the remaining time, placing it within striking distance of the 5cm success threshold.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.29,
+                0.72,
+                0.425
+              ],
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.29, 0.72, 0.425],\n  \"explanation\": \"At the halfway point, the object should be nearly at the target position to allow fine adjustments in the remaining time, placing it within striking distance of the 5cm success threshold.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.7485463619232178,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax2aeAfF3yW7Fy2FFDCK'}"
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The robot should have moved downward and forward to make contact with the block instead of remaining elevated above the table surface.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.28,
+                0.72,
+                0.425
+              ],
+              "corrective_action": [
+                0.4,
+                0.0,
+                -0.6,
+                1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.28, 0.72, 0.425],\n  \"corrective_action\": [0.4, 0.0, -0.6, 1.0],\n  \"explanation\": \"The robot should have moved downward and forward to make contact with the block instead of remaining elevated above the table surface.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.107592821121216,
+              "judge": {
+                "plausibility": 0.85,
+                "goal_progress": 0.95,
+                "specificity": 0.7,
+                "verdict": "The corrective position is near the desired goal and within workspace bounds, and the action direction is reasonable, though the explanation is somewhat generic about contact rather than specifying the precise push direction."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-5"
+        }
+      }
+    },
+    {
+      "ep_idx": 7,
+      "env_name": "FetchPush-v4",
+      "seed": 60017,
+      "checkpoint": "checkpoints/c1v2_real_data_her_push/final",
+      "providers": {
+        "anthropic:claude-opus-4-7": {
+          "env_name": "FetchPush-v4",
+          "seed": 60017,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must push a block on a table to a target position.",
+          "desired_goal": [
+            1.4611833095550537,
+            0.6210954189300537,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.2673813104629517,
+            0.705102801322937,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.2673813104629517,
+            0.705102801322937,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.21122607588768005,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.211); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "Instead of moving the end-effector away to the right past the table, the robot should have lowered down behind the block and pushed it forward toward the red target.",
+              "confidence": 0.8,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "{\"explanation\":\"Instead of moving the end-effector away to the right past the table, the robot should have lowered down behind the block and pushed it forward toward the red target.\",\"confidence\":0.8}",
+              "parse_error": null,
+              "wall_time_seconds": 25.249446868896484,
+              "judge": {
+                "plausibility": 0.8,
+                "goal_progress": 0.75,
+                "specificity": 0.5,
+                "verdict": "The narrative correctly identifies the needed pushing strategy toward the target but lacks concrete positions or actions to execute it."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The end-effector drifted up and away to the right past the block; it should move back toward the block (-x, -y) and down (-z) to contact and push it toward the red target.",
+              "confidence": 0.6,
+              "corrective_position": null,
+              "corrective_action": [
+                -0.3,
+                -0.2,
+                -0.5,
+                -1.0
+              ],
+              "raw_response": "{\n  \"corrective_action\": [-0.3, -0.2, -0.5, -1.0],\n  \"explanation\": \"The end-effector drifted up and away to the right past the block; it should move back toward the block (-x, -y) and down (-z) to contact and push it toward the red target.\",\n  \"confidence\": 0.6\n}",
+              "parse_error": null,
+              "wall_time_seconds": 33.58161759376526,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax2icBpaFgdKDDsMLWi1'}"
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the midpoint, the block should already be at (or very near) the target position so the remaining timesteps can stabilize it within the 5 cm success threshold.",
+              "confidence": 0.7,
+              "corrective_position": [
+                1.4611833095550537,
+                0.6210954189300537,
+                0.42489221692085266
+              ],
+              "corrective_action": null,
+              "raw_response": "{\n  \"corrective_position\": [1.4611833095550537, 0.6210954189300537, 0.42489221692085266],\n  \"explanation\": \"At the midpoint, the block should already be at (or very near) the target position so the remaining timesteps can stabilize it within the 5 cm success threshold.\",\n  \"confidence\": 0.7\n}",
+              "parse_error": null,
+              "wall_time_seconds": 23.150847673416138,
+              "judge": {
+                "plausibility": 0.3,
+                "goal_progress": 1.0,
+                "specificity": 0.4,
+                "verdict": "Teleporting the block to the target is within workspace bounds and trivially achieves goal progress, but it's not physically realizable by a pushing action at the midpoint and the explanation lacks concrete corrective motion."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The gripper drifted far to the right and above the block; it should move back left, toward the block, and down to contact it for pushing toward the target.",
+              "confidence": 0.7,
+              "corrective_position": [
+                1.4,
+                0.62,
+                0.42
+              ],
+              "corrective_action": [
+                -0.8,
+                -0.3,
+                -0.6,
+                -1.0
+              ],
+              "raw_response": "{\n  \"corrective_position\": [1.40, 0.62, 0.42],\n  \"corrective_action\": [-0.8, -0.3, -0.6, -1.0],\n  \"explanation\": \"The gripper drifted far to the right and above the block; it should move back left, toward the block, and down to contact it for pushing toward the target.\",\n  \"confidence\": 0.7\n}",
+              "parse_error": null,
+              "wall_time_seconds": 11.901901245117188,
+              "judge": {
+                "plausibility": 0.85,
+                "goal_progress": 0.9,
+                "specificity": 0.8,
+                "verdict": "The corrective position lies within workspace bounds and moves the block markedly closer to the target, with a reasonable action vector and a clear, actionable explanation."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-opus-4-7"
+        },
+        "anthropic:claude-sonnet-4-5": {
+          "env_name": "FetchPush-v4",
+          "seed": 60017,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must push a block on a table to a target position.",
+          "desired_goal": [
+            1.4611833095550537,
+            0.6210954189300537,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.2673813104629517,
+            0.705102801322937,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.2673813104629517,
+            0.705102801322937,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.21122607588768005,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.211); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have maintained contact with the block and pushed it along the table surface instead of lifting the arm upward and away from the block.",
+              "confidence": 0.92,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"explanation\": \"The robot should have maintained contact with the block and pushed it along the table surface instead of lifting the arm upward and away from the block.\",\n  \"confidence\": 0.92\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.6323108673095703,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax2qcz93GC8GoyAy9uZA'}"
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The robot arm lifted too high away from the table surface; it should have moved downward to maintain contact with the block for effective pushing.",
+              "confidence": 0.85,
+              "corrective_position": null,
+              "corrective_action": [
+                0.0,
+                0.0,
+                -0.8,
+                1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_action\": [0.0, 0.0, -0.8, 1.0],\n  \"explanation\": \"The robot arm lifted too high away from the table surface; it should have moved downward to maintain contact with the block for effective pushing.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.0932788848876953,
+              "judge": {
+                "plausibility": 0.5,
+                "goal_progress": 0.2,
+                "specificity": 0.6,
+                "verdict": "Moving downward may restore table contact, but with no x/y push component this action alone won't progress the block toward the target."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the halfway point, the object should be positioned approximately midway between its starting location and the target, ensuring sufficient time and distance remain to complete the push task successfully.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.42,
+                0.65,
+                0.425
+              ],
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.42, 0.65, 0.425],\n  \"explanation\": \"At the halfway point, the object should be positioned approximately midway between its starting location and the target, ensuring sufficient time and distance remain to complete the push task successfully.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.532599687576294,
+              "judge": {
+                "plausibility": 0.9,
+                "goal_progress": 0.85,
+                "specificity": 0.5,
+                "verdict": "The proposed position is within workspace bounds and lies much closer to the target than the failure point, though the explanation is somewhat generic and lacks specific action guidance."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The robot arm should have descended toward the block on the table instead of retracting upward and away, maintaining proximity to execute the push task.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.42,
+                0.65,
+                0.425
+              ],
+              "corrective_action": [
+                0.15,
+                -0.25,
+                -0.35,
+                1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.42, 0.65, 0.425],\n  \"corrective_action\": [0.15, -0.25, -0.35, 1.0],\n  \"explanation\": \"The robot arm should have descended toward the block on the table instead of retracting upward and away, maintaining proximity to execute the push task.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.9701597690582275,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax2vuZBE2WQFyogkE1Eu'}"
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-5"
+        }
+      }
+    },
+    {
+      "ep_idx": 8,
+      "env_name": "FetchPush-v4",
+      "seed": 60034,
+      "checkpoint": "checkpoints/c1v2_real_data_her_push/final",
+      "providers": {
+        "anthropic:claude-opus-4-7": {
+          "env_name": "FetchPush-v4",
+          "seed": 60034,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must push a block on a table to a target position.",
+          "desired_goal": [
+            1.3303241729736328,
+            0.8798641562461853,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.2149897813796997,
+            0.7626038193702698,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.2149897813796997,
+            0.7626038193702698,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.1644749492406845,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.164); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "VLM call/parse failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax2zRy7MQCQbxbWGxWhR'}",
+              "confidence": 0.0,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "",
+              "parse_error": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax2zRy7MQCQbxbWGxWhR'}",
+              "wall_time_seconds": 47.210368633270264,
+              "judge": null
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The arm lifted up and away from the block instead of pushing it toward the red target; it should descend and move toward the block/goal to push it sideways.",
+              "confidence": 0.6,
+              "corrective_position": null,
+              "corrective_action": [
+                0.2,
+                -0.3,
+                -0.8,
+                -1.0
+              ],
+              "raw_response": "{\n  \"corrective_action\": [0.2, -0.3, -0.8, -1.0],\n  \"explanation\": \"The arm lifted up and away from the block instead of pushing it toward the red target; it should descend and move toward the block/goal to push it sideways.\",\n  \"confidence\": 0.6\n}",
+              "parse_error": null,
+              "wall_time_seconds": 13.719596147537231,
+              "judge": {
+                "plausibility": 0.75,
+                "goal_progress": 0.7,
+                "specificity": 0.8,
+                "verdict": "The action correctly descends and moves in +x/-y toward the block, but the negative y component is opposite to the needed +y direction toward the target, partially undermining goal progress."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the midpoint, the block should already be near the target (or in contact with the gripper pushing it), so placing it at the desired_goal xy with table-surface z would set up success.",
+              "confidence": 0.6,
+              "corrective_position": [
+                1.33,
+                0.88,
+                0.425
+              ],
+              "corrective_action": null,
+              "raw_response": "{\n  \"corrective_position\": [1.33, 0.88, 0.425],\n  \"explanation\": \"At the midpoint, the block should already be near the target (or in contact with the gripper pushing it), so placing it at the desired_goal xy with table-surface z would set up success.\",\n  \"confidence\": 0.6\n}",
+              "parse_error": null,
+              "wall_time_seconds": 42.987218618392944,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax37WBoVUdo1qrsqiiRK'}"
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The arm lifted away from the table instead of descending to push the block toward the red target, so it should move down and forward in +y to contact and push the block.",
+              "confidence": 0.7,
+              "corrective_position": [
+                1.3,
+                0.75,
+                0.42
+              ],
+              "corrective_action": [
+                0.1,
+                0.8,
+                -0.9,
+                -1.0
+              ],
+              "raw_response": "{\n  \"corrective_position\": [1.30, 0.75, 0.42],\n  \"corrective_action\": [0.1, 0.8, -0.9, -1.0],\n  \"explanation\": \"The arm lifted away from the table instead of descending to push the block toward the red target, so it should move down and forward in +y to contact and push the block.\",\n  \"confidence\": 0.7\n}",
+              "parse_error": null,
+              "wall_time_seconds": 37.455411434173584,
+              "judge": {
+                "plausibility": 0.5,
+                "goal_progress": 0.4,
+                "specificity": 0.8,
+                "verdict": "The action direction (down and forward) is reasonable, but the corrective_position moves in -y away from the target, partially contradicting the stated intent."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-opus-4-7"
+        },
+        "anthropic:claude-sonnet-4-5": {
+          "env_name": "FetchPush-v4",
+          "seed": 60034,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must push a block on a table to a target position.",
+          "desired_goal": [
+            1.3303241729736328,
+            0.8798641562461853,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.2149897813796997,
+            0.7626038193702698,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.2149897813796997,
+            0.7626038193702698,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.1644749492406845,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.164); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have descended toward the table surface to make contact with the black block instead of retracting upward and away from the workspace.",
+              "confidence": 0.92,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"explanation\": \"The robot should have descended toward the table surface to make contact with the black block instead of retracting upward and away from the workspace.\",\n  \"confidence\": 0.92\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.751399040222168,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax3CqBT8N9ZjSRhGy1b2'}"
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The robot arm is moving upward away from the table when it should be descending to make contact with the block to push it toward the target.",
+              "confidence": 0.85,
+              "corrective_position": null,
+              "corrective_action": [
+                0.0,
+                0.0,
+                -0.8,
+                0.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_action\": [0.0, 0.0, -0.8, 0.0],\n  \"explanation\": \"The robot arm is moving upward away from the table when it should be descending to make contact with the block to push it toward the target.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 5.865973949432373,
+              "judge": {
+                "plausibility": null,
+                "goal_progress": null,
+                "specificity": null,
+                "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax3EfPtNWyTMcbw1yNLF'}"
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the halfway point, the object should already be at or very near the target position since the arm appears to have retracted upward without successfully pushing the block to the goal.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.33,
+                0.88,
+                0.425
+              ],
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.33, 0.88, 0.425],\n  \"explanation\": \"At the halfway point, the object should already be at or very near the target position since the arm appears to have retracted upward without successfully pushing the block to the goal.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 2.4485273361206055,
+              "judge": {
+                "plausibility": 0.3,
+                "goal_progress": 1.0,
+                "specificity": 0.5,
+                "verdict": "The corrective position matches the desired goal exactly so it maximally reduces goal distance, but expecting the block to already be at the target by the halfway timestep is physically unrealistic for a push task."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The robot should have moved downward to approach the block at table height instead of retracting upward away from the workspace.",
+              "confidence": 0.92,
+              "corrective_position": [
+                1.33,
+                0.88,
+                0.425
+              ],
+              "corrective_action": [
+                0.0,
+                0.0,
+                -1.0,
+                1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.33, 0.88, 0.425],\n  \"corrective_action\": [0.0, 0.0, -1.0, 1.0],\n  \"explanation\": \"The robot should have moved downward to approach the block at table height instead of retracting upward away from the workspace.\",\n  \"confidence\": 0.92\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.0570881366729736,
+              "judge": {
+                "plausibility": 0.4,
+                "goal_progress": 0.2,
+                "specificity": 0.6,
+                "verdict": "The downward action is within limits but doesn't address the needed XY push toward the target, so it offers minimal goal progress despite a reasonably concrete rationale."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-5"
+        }
+      }
+    },
+    {
+      "ep_idx": 9,
+      "env_name": "FetchPush-v4",
+      "seed": 60051,
+      "checkpoint": "checkpoints/c1v2_real_data_her_push/final",
+      "providers": {
+        "anthropic:claude-opus-4-7": {
+          "env_name": "FetchPush-v4",
+          "seed": 60051,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must push a block on a table to a target position.",
+          "desired_goal": [
+            1.3167601823806763,
+            0.7779345512390137,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.2256109714508057,
+            0.8504523634910583,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.2256109714508057,
+            0.8504523634910583,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.11647751927375793,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.116); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have moved its end-effector to the far side of the block and pushed it back toward the target, rather than continuing to push it further away from the goal position.",
+              "confidence": 0.7,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "{\"explanation\":\"The robot should have moved its end-effector to the far side of the block and pushed it back toward the target, rather than continuing to push it further away from the goal position.\",\"confidence\":0.7}",
+              "parse_error": null,
+              "wall_time_seconds": 8.702371835708618,
+              "judge": {
+                "plausibility": 0.9,
+                "goal_progress": 0.8,
+                "specificity": 0.45,
+                "verdict": "The narrative correctly identifies the needed push direction and is physically reasonable, but lacks concrete coordinates or action values to be fully actionable."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "At Frame 2 the end-effector is past/right of the block; it should move back toward the block (-x, -y) and down to make contact and push it toward the target.",
+              "confidence": 0.5,
+              "corrective_position": null,
+              "corrective_action": [
+                -0.3,
+                -0.2,
+                -0.1,
+                1.0
+              ],
+              "raw_response": "{\n  \"corrective_action\": [-0.3, -0.2, -0.1, 1.0],\n  \"explanation\": \"At Frame 2 the end-effector is past/right of the block; it should move back toward the block (-x, -y) and down to make contact and push it toward the target.\",\n  \"confidence\": 0.5\n}",
+              "parse_error": null,
+              "wall_time_seconds": 11.075118064880371,
+              "judge": {
+                "plausibility": 0.3,
+                "goal_progress": 0.2,
+                "specificity": 0.6,
+                "verdict": "The action is within bounds but the direction is wrong\u2014the block needs to move +x and -y to reach the target, so the end-effector should push from the -x/+y side, not move in -x/-y."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the halfway point, the block should already be at (or very near) the target position so the remaining timesteps can stabilize it within the 5 cm success threshold.",
+              "confidence": 0.7,
+              "corrective_position": [
+                1.3167601823806763,
+                0.7779345512390137,
+                0.42489221692085266
+              ],
+              "corrective_action": null,
+              "raw_response": "{\n  \"corrective_position\": [1.3167601823806763, 0.7779345512390137, 0.42489221692085266],\n  \"explanation\": \"At the halfway point, the block should already be at (or very near) the target position so the remaining timesteps can stabilize it within the 5 cm success threshold.\",\n  \"confidence\": 0.7\n}",
+              "parse_error": null,
+              "wall_time_seconds": 11.581266403198242,
+              "judge": {
+                "plausibility": 0.4,
+                "goal_progress": 1.0,
+                "specificity": 0.3,
+                "verdict": "The proposed position exactly matches the desired goal so it trivially maximizes goal progress, but expecting the block to already be at the target by the halfway timestep is an unrealistic teleportation rather than a physically achievable correction, and the explanation lacks concrete action-level guidance."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The gripper drifted past the block without making contact on its near side; it should move down and forward in +y to push the block toward the target.",
+              "confidence": 0.6,
+              "corrective_position": [
+                1.32,
+                0.72,
+                0.425
+              ],
+              "corrective_action": [
+                0.1,
+                0.8,
+                -0.3,
+                -1.0
+              ],
+              "raw_response": "{\n  \"corrective_position\": [1.32, 0.72, 0.425],\n  \"corrective_action\": [0.1, 0.8, -0.3, -1.0],\n  \"explanation\": \"The gripper drifted past the block without making contact on its near side; it should move down and forward in +y to push the block toward the target.\",\n  \"confidence\": 0.6\n}",
+              "parse_error": null,
+              "wall_time_seconds": 7.286053657531738,
+              "judge": {
+                "plausibility": 0.5,
+                "goal_progress": 0.3,
+                "specificity": 0.7,
+                "verdict": "The action is within limits and explanation is concrete, but pushing in -y (corrective_position y=0.72 and action y=0.8 are inconsistent) contradicts the needed direction since the block must move from y=0.85 toward y=0.78, making the proposed correction physically questionable."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-opus-4-7"
+        },
+        "anthropic:claude-sonnet-4-5": {
+          "env_name": "FetchPush-v4",
+          "seed": 60051,
+          "episode_length": 50,
+          "total_frames": 51,
+          "task_description": "A robot arm must push a block on a table to a target position.",
+          "desired_goal": [
+            1.3167601823806763,
+            0.7779345512390137,
+            0.42489221692085266
+          ],
+          "achieved_goal_at_failure": [
+            1.2256109714508057,
+            0.8504523634910583,
+            0.42489224672317505
+          ],
+          "achieved_goal_final": [
+            1.2256109714508057,
+            0.8504523634910583,
+            0.42489224672317505
+          ],
+          "final_dist_m": 0.11647751927375793,
+          "failure_timestep": 25,
+          "failure_frame_pct": 51.02040816326531,
+          "heuristic_reasoning": "Closest approach at t=0 (dist=0.116); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+          "keyframe_indices": [
+            0,
+            12,
+            25,
+            38,
+            50
+          ],
+          "variants": {
+            "narrative": {
+              "variant": "narrative",
+              "explanation": "The robot should have approached the block from a lower angle to push horizontally rather than pressing down from above, ensuring effective lateral force transfer to move the block.",
+              "confidence": 0.82,
+              "corrective_position": null,
+              "corrective_action": null,
+              "raw_response": "Looking at the trajectory, I can see that at Frame 2 (the critical moment), the robot arm is positioned above the block with the end effector making contact. However, the arm's configuration shows it's approaching from a steep angle that doesn't provide effective horizontal pushing force.\n\nIn the subsequent frames (3 and 4), the arm extends more horizontally but the block appears to have barely moved from its initial position, indicating the initial contact and push direction were ineffective.\n\nThe robot should have positioned its end effector to push the block horizontally from the side rather than approaching from above at a steep angle.\n\n```json\n{\n  \"explanation\": \"The robot should have approached the block from a lower angle to push horizontally rather than pressing down from above, ensuring effective lateral force transfer to move the block.\",\n  \"confidence\": 0.82\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 6.591594696044922,
+              "judge": {
+                "plausibility": 0.8,
+                "goal_progress": 0.6,
+                "specificity": 0.4,
+                "verdict": "The suggestion is physically reasonable and addresses a likely failure mode, but it lacks concrete action values or positions to guide correction."
+              }
+            },
+            "action": {
+              "variant": "action",
+              "explanation": "The robot arm moved too far to the right and upward, missing the block; it should have moved left and downward to make contact with the block and push it toward the target.",
+              "confidence": 0.82,
+              "corrective_position": null,
+              "corrective_action": [
+                0.0,
+                -0.6,
+                -0.3,
+                1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_action\": [0.0, -0.6, -0.3, 1.0],\n  \"explanation\": \"The robot arm moved too far to the right and upward, missing the block; it should have moved left and downward to make contact with the block and push it toward the target.\",\n  \"confidence\": 0.82\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.7863807678222656,
+              "judge": {
+                "plausibility": 0.4,
+                "goal_progress": 0.2,
+                "specificity": 0.6,
+                "verdict": "The action moves in the wrong direction since the target is to the +x and -y of the object, but the proposed action commands -y and -z without +x, so it won't push the block toward the goal."
+              }
+            },
+            "achieved_goal": {
+              "variant": "achieved_goal",
+              "explanation": "At the halfway point, the object should be positioned very close to the target to allow fine adjustments in the remaining time, ensuring final placement within the 5cm success threshold.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.29,
+                0.75,
+                0.425
+              ],
+              "corrective_action": null,
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.29, 0.75, 0.425],\n  \"explanation\": \"At the halfway point, the object should be positioned very close to the target to allow fine adjustments in the remaining time, ensuring final placement within the 5cm success threshold.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.1620712280273438,
+              "judge": {
+                "plausibility": 0.95,
+                "goal_progress": 0.92,
+                "specificity": 0.7,
+                "verdict": "The proposed corrective position is within workspace bounds and much closer to the desired goal than the failure point, though the explanation could be more specific about the exact action needed."
+              }
+            },
+            "all": {
+              "variant": "all",
+              "explanation": "The robot should have moved downward and toward the block to make contact and push it toward the target instead of retracting upward and away.",
+              "confidence": 0.85,
+              "corrective_position": [
+                1.28,
+                0.72,
+                0.425
+              ],
+              "corrective_action": [
+                0.15,
+                -0.25,
+                -0.15,
+                1.0
+              ],
+              "raw_response": "```json\n{\n  \"corrective_position\": [1.28, 0.72, 0.425],\n  \"corrective_action\": [0.15, -0.25, -0.15, 1.0],\n  \"explanation\": \"The robot should have moved downward and toward the block to make contact and push it toward the target instead of retracting upward and away.\",\n  \"confidence\": 0.85\n}\n```",
+              "parse_error": null,
+              "wall_time_seconds": 3.309126138687134,
+              "judge": {
+                "plausibility": 0.85,
+                "goal_progress": 0.8,
+                "specificity": 0.75,
+                "verdict": "The corrective position lies within workspace bounds and roughly between the block and target, and the action vector reasonably directs the gripper down and toward the block to push it closer to the goal."
+              }
+            }
+          },
+          "provider": "anthropic",
+          "model": "claude-sonnet-4-5"
+        }
+      }
+    }
+  ]
+}

@@ -19,6 +19,9 @@ checkpoints/
 *.pth
 *.ckpt
 
+# Large episode pickles (frames are too big to track)
+*.pkl
+
 # Logs & runs
 logs/
 wandb/

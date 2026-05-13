@@ -1,0 +1,269 @@
+\begin{thebibliography}{36}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Andrychowicz et~al.(2017)Andrychowicz, Wolski, Ray, Schneider, Fong,
+  Welinder, McGrew, Tobin, Abbeel, and Zaremba]{andrychowicz2017her}
+Marcin Andrychowicz, Filip Wolski, Alex Ray, Jonas Schneider, Rachel Fong,
+  Peter Welinder, Bob McGrew, Josh Tobin, Pieter Abbeel, and Wojciech Zaremba.
+\newblock Hindsight experience replay.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2017.
+
+\bibitem[Arjona-Medina et~al.(2019)Arjona-Medina, Gillhofer, Widrich,
+  Unterthiner, Brandstetter, and Hochreiter]{arjonamedina2019rudder}
+Jose~A. Arjona-Medina, Michael Gillhofer, Michael Widrich, Thomas Unterthiner,
+  Johannes Brandstetter, and Sepp Hochreiter.
+\newblock {RUDDER}: Return decomposition for delayed rewards.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2019.
+
+\bibitem[Chen et~al.(2024)Chen, Mees, Kumar, and Levine]{chen2024promptable}
+William Chen, Oier Mees, Aviral Kumar, and Sergey Levine.
+\newblock Vision-language models provide promptable representations for
+  reinforcement learning.
+\newblock \emph{arXiv preprint arXiv:2402.02651}, 2024.
+
+\bibitem[Chuck et~al.(2025)Chuck, Feng, Qi, Shi, Agarwal, Zhang, and
+  Niekum]{chuck2025hint}
+Caleb Chuck, Fan Feng, Carl Qi, Chang Shi, Siddhant Agarwal, Amy Zhang, and
+  Scott Niekum.
+\newblock Null counterfactual factor interactions for goal-conditioned
+  reinforcement learning.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2025.
+
+\bibitem[Ding(2026)]{ding2026agentHER}
+Liang Ding.
+\newblock {AgentHER}: Hindsight experience replay for {LLM} agent trajectory
+  relabeling.
+\newblock \emph{arXiv preprint arXiv:2603.21357}, 2026.
+
+\bibitem[Duan et~al.(2025)Duan, Pumacay, Kumar, Wang, Tian, Yuan, Krishna, Fox,
+  Mandlekar, and Guo]{duan2025aha}
+Jiafei Duan, Wilbert Pumacay, Nishanth Kumar, Yi~Ru Wang, Shulin Tian, Wentao
+  Yuan, Ranjay Krishna, Dieter Fox, Ajay Mandlekar, and Yijie Guo.
+\newblock {AHA}: A vision-language-model for detecting and reasoning over
+  failures in robotic manipulation.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2025.
+
+\bibitem[Espeholt et~al.(2018)Espeholt, Soyer, Munos, Simonyan, Mnih, Ward,
+  Doron, Firoiu, Harley, Dunning, Legg, and Kavukcuoglu]{espeholt2018impala}
+Lasse Espeholt, Hubert Soyer, R{\'e}mi Munos, Karen Simonyan, Volodymyr Mnih,
+  Tom Ward, Yotam Doron, Vlad Firoiu, Tim Harley, Iain Dunning, Shane Legg, and
+  Koray Kavukcuoglu.
+\newblock {IMPALA}: Scalable distributed deep-{RL} with importance weighted
+  actor-learner architectures.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2018.
+
+\bibitem[Feng et~al.(2025)Feng, Tan, Lyu, Zheng, Xu, Yan, Huang, and
+  An]{feng2025coso}
+Lang Feng, Weihao Tan, Zhiyi Lyu, Longtao Zheng, Haiyang Xu, Ming Yan, Fei
+  Huang, and Bo~An.
+\newblock Towards efficient online tuning of {VLM} agents via counterfactual
+  soft reinforcement learning.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2025.
+
+\bibitem[Glossop et~al.(2025)Glossop, Chen, Bhorkar, Shah, and
+  Levine]{glossop2025cast}
+Catherine Glossop, William Chen, Arjun Bhorkar, Dhruv Shah, and Sergey Levine.
+\newblock {CAST}: Counterfactual labels improve instruction following in
+  vision-language-action models.
+\newblock \emph{arXiv preprint arXiv:2508.13446}, 2025.
+
+\bibitem[Haarnoja et~al.(2018)Haarnoja, Zhou, Abbeel, and
+  Levine]{haarnoja2018sac}
+Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and Sergey Levine.
+\newblock Soft actor-critic: Off-policy maximum entropy deep reinforcement
+  learning with a stochastic actor.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2018.
+
+\bibitem[Harutyunyan et~al.(2019)Harutyunyan, Dabney, Mesnard, Azar, Piot,
+  Heess, van Hasselt, Wayne, Singh, Precup, and Munos]{harutyunyan2019hca}
+Anna Harutyunyan, Will Dabney, Thomas Mesnard, Mohammad Azar, Bilal Piot,
+  Nicolas Heess, Hado van Hasselt, Greg Wayne, Satinder Singh, Doina Precup,
+  and R{\'e}mi Munos.
+\newblock Hindsight credit assignment.
+\newblock \emph{Advances in Neural Information Processing Systems (NeurIPS)},
+  2019.
+
+\bibitem[Hu et~al.(2026)Hu, Van~Durme, Andreas, and Jhamtani]{hu2026echo}
+Michael~Y. Hu, Benjamin Van~Durme, Jacob Andreas, and Harsh Jhamtani.
+\newblock Sample-efficient online learning in {LM} agents via hindsight
+  trajectory rewriting.
+\newblock \emph{arXiv preprint arXiv:2510.10304}, 2026.
+
+\bibitem[Khandoga et~al.(2026)Khandoga, Yuan, and
+  Sankarapu]{khandoga2026causalcredit}
+Mykola Khandoga, Rui Yuan, and Vinay~Kumar Sankarapu.
+\newblock Beyond uniform credit: Causal credit assignment for policy
+  optimization.
+\newblock \emph{arXiv preprint arXiv:2602.09331}, 2026.
+
+\bibitem[Krutsylo(2025)]{krutsylo2025nonuniform}
+Andrii Krutsylo.
+\newblock Non-uniform memory sampling in experience replay.
+\newblock \emph{arXiv preprint arXiv:2502.11305}, 2025.
+
+\bibitem[Lee et~al.(2025)Lee, Xie, Fang, Pertsch, and Finn]{lee2025kagi}
+Olivia~Y. Lee, Annie Xie, Kuan Fang, Karl Pertsch, and Chelsea Finn.
+\newblock Affordance-guided reinforcement learning via visual prompting.
+\newblock In \emph{IEEE/RSJ International Conference on Intelligent Robots and
+  Systems (IROS)}, 2025.
+
+\bibitem[Lei et~al.(2025)Lei, Yang, Ke, Yang, Zhang, Pajarinen, and
+  Wang]{lei2025gchr}
+Xing Lei, Wenyan Yang, Kaiqiang Ke, Shentao Yang, Xuetao Zhang, Joni Pajarinen,
+  and Donglin Wang.
+\newblock {GCHR}: Goal-conditioned hindsight regularization for
+  sample-efficient reinforcement learning.
+\newblock \emph{arXiv preprint arXiv:2508.06108}, 2025.
+
+\bibitem[Ma et~al.(2026)Ma, Zeng, Song, Cui, Zhao, Liu, and
+  Elhoseiny]{ma2026freshness}
+Weiyu Ma, Yongcheng Zeng, Yan Song, Xinyu Cui, Jian Zhao, Xuhui Liu, and
+  Mohamed Elhoseiny.
+\newblock Freshness-aware prioritized experience replay for {LLM}/{VLM}
+  reinforcement learning.
+\newblock \emph{arXiv preprint arXiv:2604.16918}, 2026.
+
+\bibitem[Mesnard et~al.(2021)Mesnard, Weber, Viola, Thakoor, Saade,
+  Harutyunyan, Dabney, Stepleton, Heess, Guez, et~al.]{mesnard2021cca}
+Thomas Mesnard, Th{\'e}ophane Weber, Fabio Viola, Shantanu Thakoor, Alaa Saade,
+  Anna Harutyunyan, Will Dabney, Tom Stepleton, Nicolas Heess, Arthur Guez,
+  et~al.
+\newblock Counterfactual credit assignment in model-free reinforcement
+  learning.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2021.
+
+\bibitem[Munos et~al.(2016)Munos, Stepleton, Harutyunyan, and
+  Bellemare]{munos2016retrace}
+R{\'e}mi Munos, Tom Stepleton, Anna Harutyunyan, and Marc~G. Bellemare.
+\newblock Safe and efficient off-policy reinforcement learning.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2016.
+
+\bibitem[{\"O}zg{\"u}r et~al.(2025){\"O}zg{\"u}r, Zurbr{\"u}gg, and
+  Kumar]{ozgur2025nextfuture}
+Fikrican {\"O}zg{\"u}r, Ren{\'e} Zurbr{\"u}gg, and Suryansh Kumar.
+\newblock Next-future: Sample-efficient policy learning for robotic-arm tasks.
+\newblock \emph{arXiv preprint arXiv:2504.11247}, 2025.
+
+\bibitem[Patel et~al.(2025)Patel, Yin, Huang, Garg, Nayyeri, Fei-Fei, Lazebnik,
+  and Li]{patel2025iker}
+Shivansh Patel, Xinchen Yin, Wenlong Huang, Shubham Garg, Hooshang Nayyeri,
+  Li~Fei-Fei, Svetlana Lazebnik, and Yunzhu Li.
+\newblock A real-to-sim-to-real approach to robotic manipulation with
+  {VLM}-generated iterative keypoint rewards.
+\newblock In \emph{IEEE International Conference on Robotics and Automation
+  (ICRA)}, 2025.
+
+\bibitem[Pignatelli et~al.(2023)Pignatelli, Ferret, Geist, Mesnard, van
+  Hasselt, Pietquin, and Toni]{pignatelli2023survey}
+Eduardo Pignatelli, Johan Ferret, Matthieu Geist, Thomas Mesnard, Hado van
+  Hasselt, Olivier Pietquin, and Laura Toni.
+\newblock A survey of temporal credit assignment in deep reinforcement
+  learning.
+\newblock \emph{arXiv preprint arXiv:2312.01072}, 2023.
+
+\bibitem[Pignatelli et~al.(2024)Pignatelli, Ferret, Rockt{\"a}schel,
+  Grefenstette, Paglieri, Coward, and Toni]{pignatelli2024calm}
+Eduardo Pignatelli, Johan Ferret, Tim Rockt{\"a}schel, Edward Grefenstette,
+  Davide Paglieri, Samuel Coward, and Laura Toni.
+\newblock Assessing the zero-shot capabilities of {LLM}s for action evaluation
+  in {RL}.
+\newblock \emph{arXiv preprint arXiv:2409.12798}, 2024.
+
+\bibitem[Pleiss et~al.(2025)Pleiss, Sutter, and Schiffer]{pleiss2025reaper}
+Leonard~S. Pleiss, Tobias Sutter, and Maximilian Schiffer.
+\newblock Reliability-adjusted prioritized experience replay.
+\newblock \emph{arXiv preprint arXiv:2506.18482}, 2025.
+
+\bibitem[Rocamonde et~al.(2024)Rocamonde, Montesinos, Nava, Perez, and
+  Lindner]{rocamonde2024vlmreward}
+Juan Rocamonde, Victoriano Montesinos, Elvis Nava, Ethan Perez, and David
+  Lindner.
+\newblock Vision-language models are zero-shot reward models for reinforcement
+  learning.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2024.
+
+\bibitem[Sayar et~al.(2023)Sayar, Bing, D'Eramo, Oguz, and
+  Knoll]{sayar2023cebp}
+Erdi Sayar, Zhenshan Bing, Carlo D'Eramo, Ozgur~S. Oguz, and Alois Knoll.
+\newblock Contact energy based hindsight experience prioritization.
+\newblock \emph{arXiv preprint arXiv:2312.02677}, 2023.
+
+\bibitem[Schaul et~al.(2016)Schaul, Quan, Antonoglou, and
+  Silver]{schaul2016per}
+Tom Schaul, John Quan, Ioannis Antonoglou, and David Silver.
+\newblock Prioritized experience replay.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2016.
+
+\bibitem[Sharony et~al.(2026)Sharony, Jurgenson, Krupnik, Di~Castro, and
+  Mannor]{sharony2026vlmrb}
+Elad Sharony, Tom Jurgenson, Orr Krupnik, Dotan Di~Castro, and Shie Mannor.
+\newblock {VLM}-guided experience replay.
+\newblock \emph{arXiv preprint arXiv:2602.01915}, 2026.
+
+\bibitem[Urp{\'i} et~al.(2024)Urp{\'i}, Bagatella, Vlastelica, and
+  Martius]{urpi2024caiac}
+N{\'u}ria~Armengol Urp{\'i}, Marco Bagatella, Marin Vlastelica, and Georg
+  Martius.
+\newblock Causal action influence aware counterfactual data augmentation.
+\newblock \emph{arXiv preprint arXiv:2405.18917}, 2024.
+
+\bibitem[Venuto et~al.(2024)Venuto, Islam, Klissarov, Precup, Yang, and
+  Anand]{venuto2024car}
+David Venuto, Sami~Nur Islam, Martin Klissarov, Doina Precup, Sherry Yang, and
+  Ankit Anand.
+\newblock Code as reward: Empowering reinforcement learning with {VLM}s.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2024.
+
+\bibitem[Wang et~al.(2025)Wang, Frans, Abbeel, Levine, and
+  Efros]{wang2025prioritizedgenerative}
+Renhao Wang, Kevin Frans, Pieter Abbeel, Sergey Levine, and Alexei~A. Efros.
+\newblock Prioritized generative replay.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2025.
+
+\bibitem[Wang et~al.(2024)Wang, Sun, Zhang, Xian, Biyik, Held, and
+  Erickson]{wang2024rlvlmf}
+Yufei Wang, Zhou Sun, Jiayuan Zhang, Zhenjia Xian, Erdem Biyik, David Held, and
+  Zackory Erickson.
+\newblock {RL-VLM-F}: Reinforcement learning from vision language foundation
+  model feedback.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2024.
+
+\bibitem[Wu et~al.(2025)Wu, Yin, Feng, and Long]{wu2025rlvrworld}
+Jialong Wu, Shaofeng Yin, Ningya Feng, and Mingsheng Long.
+\newblock {RLVR-World}: Training world models with reinforcement learning.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2025.
+
+\bibitem[Wu et~al.(2026)Wu, Yuan, Qi, Guizilini, Mao, and
+  Wang]{wu2026largerewardmodels}
+Yanru Wu, Weiduo Yuan, Ang Qi, Vitor Guizilini, Jiageng Mao, and Yue Wang.
+\newblock Large reward models: Generalizable online robot reward generation
+  with vision-language models.
+\newblock \emph{arXiv preprint arXiv:2603.16065}, 2026.
+
+\bibitem[Yamani et~al.(2025)]{yamani2025rpeper}
+Hoda Yamani et~al.
+\newblock Reward prediction error prioritisation in experience replay: The
+  {RPE-PER} method.
+\newblock \emph{arXiv preprint arXiv:2501.18093}, 2025.
+
+\bibitem[Zha et~al.(2025)]{zha2025tango}
+Kaiwen Zha et~al.
+\newblock {RL Tango}: Reinforcing generator and verifier together for language
+  reasoning.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2025.
+
+\end{thebibliography}

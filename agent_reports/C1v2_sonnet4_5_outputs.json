@@ -1,0 +1,720 @@
+{
+  "meta": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-5-20250929",
+    "judge_model": "claude-opus-4-7",
+    "variants": [
+      "narrative",
+      "action",
+      "achieved_goal",
+      "all"
+    ],
+    "K": 5,
+    "n_episodes": 6,
+    "envs": [
+      "FetchPickAndPlace-v4",
+      "FetchPush-v4"
+    ],
+    "do_judge": true,
+    "timestamp": "2026-05-11 21:10:09 PDT",
+    "note": "Head-to-head replication of agent C1's counterfactual pipeline on the same 6 synthetic failed episodes (seeds matched to C1_counterfactual_outputs.json). Generator model = GPT-4o (vs C1's Claude Opus 4.7); judge model held constant at Claude Opus 4.7 for comparability. All four prompt variants run on every episode (C1's run was partial: 3 variants \u00d7 4 eps + 1 variant \u00d7 2 eps)."
+  },
+  "episodes": [
+    {
+      "env_name": "FetchPush-v4",
+      "seed": 1251,
+      "episode_length": 50,
+      "total_frames": 51,
+      "task_description": "A robot arm must push a block on a table to a target position.",
+      "desired_goal": [
+        1.3436225652694702,
+        0.7023731470108032,
+        0.42489221692085266
+      ],
+      "achieved_goal_at_failure": [
+        1.5010639429092407,
+        0.15842653810977936,
+        0.023198554292321205
+      ],
+      "achieved_goal_final": [
+        1.5008556842803955,
+        0.15839120745658875,
+        0.02489224448800087
+      ],
+      "failure_timestep": 25,
+      "failure_frame_pct": 51.02040816326531,
+      "heuristic_reasoning": "Closest approach at t=0 (dist=0.074); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "variants": {
+        "narrative": {
+          "variant": "narrative",
+          "explanation": "The robot should have moved its arm downward to make contact with the black block on the table before attempting to push it toward the red target position.",
+          "confidence": 0.92,
+          "corrective_position": null,
+          "corrective_action": null,
+          "raw_response": "```json\n{\n  \"explanation\": \"The robot should have moved its arm downward to make contact with the black block on the table before attempting to push it toward the red target position.\",\n  \"confidence\": 0.92\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.449704647064209,
+          "judge": {
+            "plausibility": 0.7,
+            "goal_progress": 0.4,
+            "specificity": 0.3,
+            "verdict": "The suggestion to contact the block before pushing is physically reasonable but too vague and doesn't specify the direction needed to reach the target."
+          }
+        },
+        "action": {
+          "variant": "action",
+          "explanation": "At Frame 2, the robot arm retracted upward and away from the block instead of continuing to push it toward the target (red sphere); the corrective action should move the end-effector forward (+x) and slightly left (+y) to maintain contact and guide the block to the goal.",
+          "confidence": 0.82,
+          "corrective_position": null,
+          "corrective_action": [
+            0.6,
+            0.3,
+            0.0,
+            1.0
+          ],
+          "raw_response": "```json\n{\n  \"corrective_action\": [0.6, 0.3, 0.0, 1.0],\n  \"explanation\": \"At Frame 2, the robot arm retracted upward and away from the block instead of continuing to push it toward the target (red sphere); the corrective action should move the end-effector forward (+x) and slightly left (+y) to maintain contact and guide the block to the goal.\",\n  \"confidence\": 0.82\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 6.527490615844727,
+          "judge": {
+            "plausibility": 0.75,
+            "goal_progress": 0.7,
+            "specificity": 0.8,
+            "verdict": "The action correctly pushes +x and +y to move the block toward the target, though +x component may overshoot since the block is already past the target in x, making the +y emphasis more critical."
+          }
+        },
+        "achieved_goal": {
+          "variant": "achieved_goal",
+          "explanation": "At the halfway point, the object should be positioned very close to the target since the robot arm is retracting upward in frames 2-4 without further pushing capability.",
+          "confidence": 0.85,
+          "corrective_position": [
+            1.32,
+            0.72,
+            0.425
+          ],
+          "corrective_action": null,
+          "raw_response": "```json\n{\n  \"corrective_position\": [1.32, 0.72, 0.425],\n  \"explanation\": \"At the halfway point, the object should be positioned very close to the target since the robot arm is retracting upward in frames 2-4 without further pushing capability.\",\n  \"confidence\": 0.85\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.3417282104492188,
+          "judge": {
+            "plausibility": 0.3,
+            "goal_progress": 0.98,
+            "specificity": 0.6,
+            "verdict": "The proposed position is essentially at the target and within workspace bounds, but it's physically implausible for the object to teleport ~0.65m at the halfway point given the robot is retracting, though it would trivially achieve the goal."
+          }
+        },
+        "all": {
+          "variant": "all",
+          "explanation": "The robot retracted the arm vertically instead of maintaining contact to push the block toward the target, so it should have moved forward and rightward while staying low to engage the block.",
+          "confidence": 0.82,
+          "corrective_position": [
+            1.32,
+            0.68,
+            0.425
+          ],
+          "corrective_action": [
+            0.85,
+            0.45,
+            -0.95,
+            1.0
+          ],
+          "raw_response": "```json\n{\n  \"corrective_position\": [1.32, 0.68, 0.425],\n  \"corrective_action\": [0.85, 0.45, -0.95, 1.0],\n  \"explanation\": \"The robot retracted the arm vertically instead of maintaining contact to push the block toward the target, so it should have moved forward and rightward while staying low to engage the block.\",\n  \"confidence\": 0.82\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.2540512084960938,
+          "judge": {
+            "plausibility": 0.75,
+            "goal_progress": 0.9,
+            "specificity": 0.85,
+            "verdict": "The corrective position is close to the desired goal and the explanation is actionable, though the z\u22480.425 is just above the table and the action's downward z and closed gripper are reasonable but borderline for sustained pushing contact."
+          }
+        }
+      }
+    },
+    {
+      "env_name": "FetchPush-v4",
+      "seed": 1268,
+      "episode_length": 50,
+      "total_frames": 51,
+      "task_description": "A robot arm must push a block on a table to a target position.",
+      "desired_goal": [
+        1.4277918338775635,
+        0.6737099289894104,
+        0.42489221692085266
+      ],
+      "achieved_goal_at_failure": [
+        1.783050775527954,
+        0.8087388873100281,
+        0.02489224448800087
+      ],
+      "achieved_goal_final": [
+        1.783050775527954,
+        0.8087388873100281,
+        0.02489224448800087
+      ],
+      "failure_timestep": 25,
+      "failure_frame_pct": 51.02040816326531,
+      "heuristic_reasoning": "Closest approach at t=0 (dist=0.137); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "variants": {
+        "narrative": {
+          "variant": "narrative",
+          "explanation": "The robot should have adjusted its approach angle to push the block toward the red target dot instead of pushing it away from the target.",
+          "confidence": 0.85,
+          "corrective_position": null,
+          "corrective_action": null,
+          "raw_response": "```json\n{\n  \"explanation\": \"The robot should have adjusted its approach angle to push the block toward the red target dot instead of pushing it away from the target.\",\n  \"confidence\": 0.85\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 2.941399335861206,
+          "judge": {
+            "plausibility": 0.7,
+            "goal_progress": 0.5,
+            "specificity": 0.2,
+            "verdict": "The suggestion is physically reasonable but too vague and lacks concrete corrective actions or positions to reliably guide the block toward the target."
+          }
+        },
+        "action": {
+          "variant": "action",
+          "explanation": "The robot needs to move toward the black block (left and slightly back) to properly engage and push it toward the red target instead of missing it entirely.",
+          "confidence": 0.75,
+          "corrective_position": null,
+          "corrective_action": [
+            -0.3,
+            0.6,
+            0.0,
+            1.0
+          ],
+          "raw_response": "```json\n{\n  \"corrective_action\": [-0.3, 0.6, 0.0, 1.0],\n  \"explanation\": \"The robot needs to move toward the black block (left and slightly back) to properly engage and push it toward the red target instead of missing it entirely.\",\n  \"confidence\": 0.75\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.346708059310913,
+          "judge": {
+            "plausibility": 0.8,
+            "goal_progress": 0.75,
+            "specificity": 0.7,
+            "verdict": "The action moves the gripper left and back toward the block to enable a proper push toward the target, which is directionally correct and within action limits."
+          }
+        },
+        "achieved_goal": {
+          "variant": "achieved_goal",
+          "explanation": "At the halfway point, the object should be positioned approximately midway between its starting location and the target, ensuring sufficient time and distance remain to complete the push successfully.",
+          "confidence": 0.85,
+          "corrective_position": [
+            1.38,
+            0.72,
+            0.425
+          ],
+          "corrective_action": null,
+          "raw_response": "```json\n{\n  \"corrective_position\": [1.38, 0.72, 0.425],\n  \"explanation\": \"At the halfway point, the object should be positioned approximately midway between its starting location and the target, ensuring sufficient time and distance remain to complete the push successfully.\",\n  \"confidence\": 0.85\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.322288751602173,
+          "judge": {
+            "plausibility": 0.4,
+            "goal_progress": 0.95,
+            "specificity": 0.3,
+            "verdict": "The proposed position is very close to the desired goal and would greatly reduce error, but its z=0.425 is near the table surface while the desired z=0.425 conflicts with a pushing task where the block sits at z\u22480.025, making the suggestion physically questionable and the explanation generic."
+          }
+        },
+        "all": {
+          "variant": "all",
+          "explanation": "The robot should have positioned itself to push the block toward the target at [1.43, 0.67, 0.42] instead of allowing the block to remain stationary or move away from the goal.",
+          "confidence": 0.82,
+          "corrective_position": [
+            1.38,
+            0.67,
+            0.425
+          ],
+          "corrective_action": [
+            0.6,
+            -0.1,
+            0.0,
+            1.0
+          ],
+          "raw_response": "```json\n{\n  \"corrective_position\": [1.38, 0.67, 0.425],\n  \"corrective_action\": [0.6, -0.1, 0.0, 1.0],\n  \"explanation\": \"The robot should have positioned itself to push the block toward the target at [1.43, 0.67, 0.42] instead of allowing the block to remain stationary or move away from the goal.\",\n  \"confidence\": 0.82\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 5.0089685916900635,
+          "judge": {
+            "plausibility": 0.7,
+            "goal_progress": 0.85,
+            "specificity": 0.8,
+            "verdict": "The corrective position is near the desired goal and the action direction is reasonable, though the z=0.425 is at table level and the block's desired z=0.42 suggests a push task where the proposal is plausible and goal-directed."
+          }
+        }
+      }
+    },
+    {
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 2234,
+      "episode_length": 50,
+      "total_frames": 51,
+      "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+      "desired_goal": [
+        1.353895664215088,
+        0.8328583240509033,
+        0.42489221692085266
+      ],
+      "achieved_goal_at_failure": [
+        1.0737420320510864,
+        0.6856391429901123,
+        0.4369052052497864
+      ],
+      "achieved_goal_final": [
+        0.9530452489852905,
+        0.5344158411026001,
+        0.024891983717679977
+      ],
+      "failure_timestep": 25,
+      "failure_frame_pct": 51.02040816326531,
+      "heuristic_reasoning": "Closest approach at t=0 (dist=0.175); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "variants": {
+        "narrative": {
+          "variant": "narrative",
+          "explanation": "Close the gripper fully around the block before initiating the upward lift motion to ensure a secure grasp",
+          "confidence": 0.85,
+          "corrective_position": null,
+          "corrective_action": null,
+          "raw_response": "Looking at the sequence:\n\n- **Frame 0**: Robot arm is positioned above the table with the black block visible on the table surface\n- **Frame 1**: Robot arm has moved down toward the table, approaching the block\n- **Frame 2** (critical failure point): Robot arm appears to be at or near the block's position, but the gripper configuration suggests it may not have properly grasped the block\n- **Frame 3-4**: Robot arm retracts upward without the block - the black block remains on the table, indicating the grasp failed\n\nAt Frame 2, the robot needed to ensure proper gripper closure around the block before attempting to lift. The gripper appears to have been positioned near the block but failed to secure it, likely because the gripper was not closed sufficiently or at the right moment to establish a firm grasp.\n\n```json\n{\n  \"explanation\": \"Close the gripper fully around the block before initiating the upward lift motion to ensure a secure grasp\",\n  \"confidence\": 0.85\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 7.227250814437866,
+          "judge": {
+            "plausibility": 0.9,
+            "goal_progress": 0.6,
+            "specificity": 0.5,
+            "verdict": "Ensuring a secure grasp before lifting is physically reasonable and likely helps task success, but the suggestion is somewhat generic and doesn't specify exact positions or actions to close the gap to the target."
+          }
+        },
+        "action": {
+          "variant": "action",
+          "explanation": "The robot retracted upward too early without securing the block; it should have moved downward to grasp the block first before lifting.",
+          "confidence": 0.85,
+          "corrective_position": null,
+          "corrective_action": [
+            0.0,
+            0.0,
+            -0.6,
+            -1.0
+          ],
+          "raw_response": "```json\n{\n  \"corrective_action\": [0.0, 0.0, -0.6, -1.0],\n  \"explanation\": \"The robot retracted upward too early without securing the block; it should have moved downward to grasp the block first before lifting.\",\n  \"confidence\": 0.85\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 2.8712000846862793,
+          "judge": {
+            "plausibility": 0.75,
+            "goal_progress": 0.3,
+            "specificity": 0.7,
+            "verdict": "Moving down to secure the block is physically reasonable and actionable, but descending alone won't bring the object closer to the floating target without subsequent lateral and upward motion."
+          }
+        },
+        "achieved_goal": {
+          "variant": "achieved_goal",
+          "explanation": "At the midpoint of the episode, the object should be lifted above the table and positioned horizontally near the target to allow time for precise final placement.",
+          "confidence": 0.85,
+          "corrective_position": [
+            1.353,
+            0.833,
+            0.5
+          ],
+          "corrective_action": null,
+          "raw_response": "```json\n{\n  \"corrective_position\": [1.353, 0.833, 0.50],\n  \"explanation\": \"At the midpoint of the episode, the object should be lifted above the table and positioned horizontally near the target to allow time for precise final placement.\",\n  \"confidence\": 0.85\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 5.979374885559082,
+          "judge": {
+            "plausibility": 0.9,
+            "goal_progress": 0.95,
+            "specificity": 0.8,
+            "verdict": "The proposed mid-trajectory position is within workspace bounds, lifts the object above the table, and aligns horizontally with the target, clearly improving goal progress."
+          }
+        },
+        "all": {
+          "variant": "all",
+          "explanation": "At frame 2 the gripper should have closed firmly on the block while positioned directly above it, but instead the arm retracted without grasping the object.",
+          "confidence": 0.92,
+          "corrective_position": [
+            1.353895664215088,
+            0.8328583240509033,
+            0.45
+          ],
+          "corrective_action": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "raw_response": "```json\n{\n  \"corrective_position\": [1.353895664215088, 0.8328583240509033, 0.45],\n  \"corrective_action\": [0.0, 0.0, 0.0, -1.0],\n  \"explanation\": \"At frame 2 the gripper should have closed firmly on the block while positioned directly above it, but instead the arm retracted without grasping the object.\",\n  \"confidence\": 0.92\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.505013942718506,
+          "judge": {
+            "plausibility": 0.85,
+            "goal_progress": 0.9,
+            "specificity": 0.8,
+            "verdict": "The proposed correction to close the gripper while positioned at the target is physically valid within workspace/action limits and would plausibly bring the block much closer to the desired goal."
+          }
+        }
+      }
+    },
+    {
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 2251,
+      "episode_length": 50,
+      "total_frames": 51,
+      "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+      "desired_goal": [
+        1.297342300415039,
+        0.7055392861366272,
+        0.42489221692085266
+      ],
+      "achieved_goal_at_failure": [
+        1.9205195903778076,
+        0.7547152042388916,
+        0.024892084300518036
+      ],
+      "achieved_goal_final": [
+        1.9205195903778076,
+        0.7547152042388916,
+        0.02489224448800087
+      ],
+      "failure_timestep": 25,
+      "failure_frame_pct": 51.02040816326531,
+      "heuristic_reasoning": "Closest approach at t=0 (dist=0.167); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "variants": {
+        "narrative": {
+          "variant": "narrative",
+          "explanation": "The robot should have closed the gripper to grasp the black block before lifting, as it attempted to lift without securing the object.",
+          "confidence": 0.92,
+          "corrective_position": null,
+          "corrective_action": null,
+          "raw_response": "```json\n{\n  \"explanation\": \"The robot should have closed the gripper to grasp the black block before lifting, as it attempted to lift without securing the object.\",\n  \"confidence\": 0.92\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 2.443655014038086,
+          "judge": {
+            "plausibility": 0.9,
+            "goal_progress": 0.7,
+            "specificity": 0.5,
+            "verdict": "The suggestion correctly identifies a likely failure mode (ungrasped object) but lacks concrete action values or timing details."
+          }
+        },
+        "action": {
+          "variant": "action",
+          "explanation": "The gripper released the block prematurely while it was still over the table instead of holding it until reaching the target position.",
+          "confidence": 0.92,
+          "corrective_position": null,
+          "corrective_action": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "raw_response": "```json\n{\n  \"corrective_action\": [0.0, 0.0, 0.0, -1.0],\n  \"explanation\": \"The gripper released the block prematurely while it was still over the table instead of holding it until reaching the target position.\",\n  \"confidence\": 0.92\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.014399290084839,
+          "judge": {
+            "plausibility": 0.6,
+            "goal_progress": 0.2,
+            "specificity": 0.7,
+            "verdict": "Closing the gripper is reasonable to maintain grasp, but a zero-motion action alone won't move the block toward the floating target which requires lifting and translating."
+          }
+        },
+        "achieved_goal": {
+          "variant": "achieved_goal",
+          "explanation": "At the halfway point, the object should be lifted above the table and moving toward the target xy-coordinates to allow sufficient time for precise placement near the goal.",
+          "confidence": 0.85,
+          "corrective_position": [
+            1.297,
+            0.706,
+            0.5
+          ],
+          "corrective_action": null,
+          "raw_response": "```json\n{\n  \"corrective_position\": [1.297, 0.706, 0.50],\n  \"explanation\": \"At the halfway point, the object should be lifted above the table and moving toward the target xy-coordinates to allow sufficient time for precise placement near the goal.\",\n  \"confidence\": 0.85\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.2294418811798096,
+          "judge": {
+            "plausibility": 0.75,
+            "goal_progress": 0.9,
+            "specificity": 0.6,
+            "verdict": "The proposed position aligns well with the target xy and a reasonable lift height, though z=0.5 slightly exceeds typical mid-trajectory needs and the explanation lacks specific action guidance."
+          }
+        },
+        "all": {
+          "variant": "all",
+          "explanation": "The gripper should have closed to grasp the block before attempting to lift it, as the robot moved without securing the object first.",
+          "confidence": 0.92,
+          "corrective_position": [
+            1.297,
+            0.706,
+            0.5
+          ],
+          "corrective_action": [
+            0.0,
+            0.0,
+            0.0,
+            -1.0
+          ],
+          "raw_response": "```json\n{\n  \"corrective_position\": [1.297, 0.706, 0.50],\n  \"corrective_action\": [0.0, 0.0, 0.0, -1.0],\n  \"explanation\": \"The gripper should have closed to grasp the block before attempting to lift it, as the robot moved without securing the object first.\",\n  \"confidence\": 0.92\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.049701690673828,
+          "judge": {
+            "plausibility": 0.6,
+            "goal_progress": 0.85,
+            "specificity": 0.7,
+            "verdict": "The correction sensibly closes the gripper and targets near the desired goal, though the z=0.5 is slightly above the target and the proposed zero-motion action won't actually translate the block toward the goal."
+          }
+        }
+      }
+    },
+    {
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 9095,
+      "episode_length": 50,
+      "total_frames": 51,
+      "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+      "desired_goal": [
+        1.4660083055496216,
+        0.8620176315307617,
+        0.42489221692085266
+      ],
+      "achieved_goal_at_failure": [
+        1.3315792083740234,
+        0.9565588235855103,
+        0.4445575177669525
+      ],
+      "achieved_goal_final": [
+        1.7780237197875977,
+        1.4552862644195557,
+        0.02489224448800087
+      ],
+      "failure_timestep": 10,
+      "failure_frame_pct": 20.408163265306122,
+      "heuristic_reasoning": "Closest approach at t=10 (dist=0.166); agent diverged from goal after this point.",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "variants": {
+        "narrative": {
+          "variant": "narrative",
+          "explanation": "The robot should have moved directly downward to the block's position and closed the gripper to grasp it, instead of moving the arm away from the block.",
+          "confidence": 0.92,
+          "corrective_position": null,
+          "corrective_action": null,
+          "raw_response": "```json\n{\n  \"explanation\": \"The robot should have moved directly downward to the block's position and closed the gripper to grasp it, instead of moving the arm away from the block.\",\n  \"confidence\": 0.92\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 2.7225334644317627,
+          "judge": {
+            "plausibility": 0.6,
+            "goal_progress": 0.3,
+            "specificity": 0.3,
+            "verdict": "The suggestion to descend and grasp is physically reasonable but vague and doesn't directly address moving the object toward the desired floating target."
+          }
+        },
+        "action": {
+          "variant": "action",
+          "explanation": "The gripper needs to descend toward the black block on the table and close to grasp it, rather than moving away prematurely.",
+          "confidence": 0.85,
+          "corrective_position": null,
+          "corrective_action": [
+            0.0,
+            0.0,
+            -0.6,
+            -1.0
+          ],
+          "raw_response": "```json\n{\n  \"corrective_action\": [0.0, 0.0, -0.6, -1.0],\n  \"explanation\": \"The gripper needs to descend toward the black block on the table and close to grasp it, rather than moving away prematurely.\",\n  \"confidence\": 0.85\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.07633376121521,
+          "judge": {
+            "plausibility": 0.85,
+            "goal_progress": 0.3,
+            "specificity": 0.8,
+            "verdict": "The descend-and-close action is physically valid and addresses the likely failure (no grasp), but it doesn't directly move the object toward the floating target, so goal progress is limited to enabling a successful subsequent lift."
+          }
+        },
+        "achieved_goal": {
+          "variant": "achieved_goal",
+          "explanation": "At 24% through the episode, the object should be lifted off the table and moving toward the target, positioned roughly halfway between the initial grasp location and the desired goal to allow smooth placement by episode end.",
+          "confidence": 0.82,
+          "corrective_position": [
+            1.34,
+            0.79,
+            0.5
+          ],
+          "corrective_action": null,
+          "raw_response": "```json\n{\n  \"corrective_position\": [1.34, 0.79, 0.50],\n  \"explanation\": \"At 24% through the episode, the object should be lifted off the table and moving toward the target, positioned roughly halfway between the initial grasp location and the desired goal to allow smooth placement by episode end.\",\n  \"confidence\": 0.82\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.4036779403686523,
+          "judge": {
+            "plausibility": 0.85,
+            "goal_progress": 0.55,
+            "specificity": 0.7,
+            "verdict": "The proposed lifted position is within workspace bounds and reasonable for a mid-trajectory lift, though it moves only modestly closer to the target in xy while overshooting in z."
+          }
+        },
+        "all": {
+          "variant": "all",
+          "explanation": "The gripper should have descended to grasp the block while closing instead of moving laterally away from it.",
+          "confidence": 0.92,
+          "corrective_position": [
+            1.34,
+            0.75,
+            0.43
+          ],
+          "corrective_action": [
+            0.0,
+            0.0,
+            -0.8,
+            -1.0
+          ],
+          "raw_response": "```json\n{\n  \"corrective_position\": [1.34, 0.75, 0.43],\n  \"corrective_action\": [0.0, 0.0, -0.8, -1.0],\n  \"explanation\": \"The gripper should have descended to grasp the block while closing instead of moving laterally away from it.\",\n  \"confidence\": 0.92\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.443709373474121,
+          "judge": {
+            "plausibility": 0.85,
+            "goal_progress": 0.4,
+            "specificity": 0.8,
+            "verdict": "The corrective action is physically valid and well-explained for grasping, but the corrective position moves away from the desired goal in y, only partially improving goal progress."
+          }
+        }
+      }
+    },
+    {
+      "env_name": "FetchPush-v4",
+      "seed": 9262,
+      "episode_length": 50,
+      "total_frames": 51,
+      "task_description": "A robot arm must push a block on a table to a target position.",
+      "desired_goal": [
+        1.3448119163513184,
+        0.7283638715744019,
+        0.42489221692085266
+      ],
+      "achieved_goal_at_failure": [
+        0.7881178259849548,
+        1.0962836742401123,
+        0.024675248190760612
+      ],
+      "achieved_goal_final": [
+        0.9637024402618408,
+        0.9245585203170776,
+        0.06565690040588379
+      ],
+      "failure_timestep": 25,
+      "failure_frame_pct": 51.02040816326531,
+      "heuristic_reasoning": "Closest approach at t=0 (dist=0.116); agent diverged from goal after this point. [clipped to mid-episode for VLM input]",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "variants": {
+        "narrative": {
+          "variant": "narrative",
+          "explanation": "The robot should have moved its end-effector downward to make contact with the block's surface before attempting to push, as it was positioned too high above the block to effectively apply force.",
+          "confidence": 0.92,
+          "corrective_position": null,
+          "corrective_action": null,
+          "raw_response": "```json\n{\n  \"explanation\": \"The robot should have moved its end-effector downward to make contact with the block's surface before attempting to push, as it was positioned too high above the block to effectively apply force.\",\n  \"confidence\": 0.92\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 2.9058380126953125,
+          "judge": {
+            "plausibility": 0.4,
+            "goal_progress": 0.2,
+            "specificity": 0.5,
+            "verdict": "The suggestion to lower the end-effector is physically reasonable but misdiagnoses the failure, as the block is already near table height and the main error is large XY displacement from the target."
+          }
+        },
+        "action": {
+          "variant": "action",
+          "explanation": "The robot arm needs to move forward and downward toward the block to make contact and push it toward the target position instead of retracting upward.",
+          "confidence": 0.85,
+          "corrective_position": null,
+          "corrective_action": [
+            0.6,
+            0.0,
+            -0.4,
+            1.0
+          ],
+          "raw_response": "```json\n{\n  \"corrective_action\": [0.6, 0.0, -0.4, 1.0],\n  \"explanation\": \"The robot arm needs to move forward and downward toward the block to make contact and push it toward the target position instead of retracting upward.\",\n  \"confidence\": 0.85\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.2141969203948975,
+          "judge": {
+            "plausibility": 0.4,
+            "goal_progress": 0.3,
+            "specificity": 0.6,
+            "verdict": "The action moves in +x toward the target but the large negative z would drive the gripper into the table, and it ignores the needed -y motion, making the correction only partially aligned with reaching the goal."
+          }
+        },
+        "achieved_goal": {
+          "variant": "achieved_goal",
+          "explanation": "At the halfway point, the object should be nearly at the target position since the robot needs to push it precisely to the goal and stabilize it there by episode end.",
+          "confidence": 0.85,
+          "corrective_position": [
+            1.32,
+            0.72,
+            0.425
+          ],
+          "corrective_action": null,
+          "raw_response": "```json\n{\n  \"corrective_position\": [1.32, 0.72, 0.425],\n  \"explanation\": \"At the halfway point, the object should be nearly at the target position since the robot needs to push it precisely to the goal and stabilize it there by episode end.\",\n  \"confidence\": 0.85\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 3.370600700378418,
+          "judge": {
+            "plausibility": 0.3,
+            "goal_progress": 0.95,
+            "specificity": 0.4,
+            "verdict": "The proposed position is essentially at the goal and would reduce error, but expecting the object to be nearly at the target by the halfway point is physically unrealistic for a pushing task and the explanation lacks concrete actionable guidance."
+          }
+        },
+        "all": {
+          "variant": "all",
+          "explanation": "The robot should have moved the end-effector down and toward the block to make contact and push it toward the target position instead of retracting upward.",
+          "confidence": 0.85,
+          "corrective_position": [
+            1.32,
+            0.72,
+            0.425
+          ],
+          "corrective_action": [
+            0.6,
+            0.4,
+            -0.8,
+            1.0
+          ],
+          "raw_response": "```json\n{\n  \"corrective_position\": [1.32, 0.72, 0.425],\n  \"corrective_action\": [0.6, 0.4, -0.8, 1.0],\n  \"explanation\": \"The robot should have moved the end-effector down and toward the block to make contact and push it toward the target position instead of retracting upward.\",\n  \"confidence\": 0.85\n}\n```",
+          "parse_error": null,
+          "wall_time_seconds": 4.004505157470703,
+          "judge": {
+            "plausibility": 0.75,
+            "goal_progress": 0.85,
+            "specificity": 0.7,
+            "verdict": "The corrective position is near the target and the action direction is reasonable, though the negative z command conflicts with the explanation of moving down to push rather than retract, and the block itself still needs to be contacted first."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+[20:54:00] daemon start
+[20:54:00] initial known files: 29
+[20:54:45] change detected: 2 entries; new/modified: ['_regen_log.txt']
+[20:54:45] build ok (0.3s) -> 9pm_presentation.pdf (477 KB)
+[20:55:30] change detected: 7 entries; new/modified: ['9pm_presentation.bak.pdf', '9pm_presentation.pdf', 'N2_cross_task_validation_outputs.json', '_regen_log.txt']
+[20:55:30] build ok (0.3s) -> 9pm_presentation.pdf (477 KB)
+[20:56:15] change detected: 8 entries; new/modified: ['9pm_presentation.bak.pdf', '9pm_presentation.pdf', 'N2_cross_task_validation_outputs.json', '_regen_log.txt']
+[20:56:15] build ok (0.3s) -> 9pm_presentation.pdf (477 KB)
+[20:57:00] change detected: 11 entries; new/modified: ['9pm_presentation.bak.pdf', '9pm_presentation.pdf', '_regen_log.txt', 'figs/figN2_cross_task_transfer.pdf', 'figs/figN2_cross_task_transfer.png', 'make_figN2.py']
+[20:57:01] build ok (0.3s) -> 9pm_presentation.pdf (547 KB)
+[20:57:46] change detected: 7 entries; new/modified: ['9pm_presentation.bak.pdf', '9pm_presentation.pdf', 'C1v2_real_data_outputs.json', '_regen_log.txt']
+[20:57:46] build ok (0.3s) -> 9pm_presentation.pdf (547 KB)
+[20:58:31] change detected: 7 entries; new/modified: ['9pm_presentation.bak.pdf', '9pm_presentation.pdf', 'N2_cross_task_transfer.md', '_regen_log.txt']
+[20:58:31] build ok (0.3s) -> 9pm_presentation.pdf (547 KB)
+[20:59:16] change detected: 6 entries; new/modified: ['9pm_presentation.bak.pdf', '9pm_presentation.pdf', '_regen_log.txt']
+[20:59:17] build ok (0.3s) -> 9pm_presentation.pdf (547 KB)
+[20:59:30] FINAL regen before deadline
+[20:59:30] build ok (0.3s) -> 9pm_presentation.pdf (547 KB)
+[20:59:30] daemon stop. final size: 547 KB

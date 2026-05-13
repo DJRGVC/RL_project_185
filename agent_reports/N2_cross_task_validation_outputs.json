@@ -1,0 +1,565 @@
+{
+  "meta": {
+    "agent": "N2",
+    "claim": "Cross-task VLM-signal transferability",
+    "provider": "anthropic",
+    "model": "claude-opus-4-7",
+    "prompt_template": "You are analyzing a robotic manipulation trajectory.\nTask: {task_description}\n\nYou are shown {K} keyframes from an episode that FAILED (the robot did not achieve the goal).\nThe frames are shown in chronological order. Frame indices map to approximate timestep fractions:\n{frame_index_map}\n\nIdentify the keyframe index (0-indexed) where the robot's action MOST CLEARLY caused or revealed the failure \u2014 the critical decision point or contact failure moment.\n\nIf the failure point is ambiguous or cannot be determined from these frames, set failure_frame_index to null.\n\nRespond with ONLY a JSON object: {{\"failure_frame_index\": <int or null>, \"reasoning\": \"<one sentence>\"}}",
+    "K": 5,
+    "envs": [
+      "FetchPush-v4",
+      "FetchPickAndPlace-v4",
+      "FetchSlide-v4"
+    ],
+    "n_episodes_per_env": 4,
+    "timestamp": "2026-05-11 20:47:01 PDT"
+  },
+  "episodes": [
+    {
+      "env_name": "FetchPush-v4",
+      "seed": 1251,
+      "episode_length": 50,
+      "total_steps": 51,
+      "task_description": "A robot arm must push a block on a table to a target position.",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "oracle": {
+        "failure_timestep": 0,
+        "keyframe_index": 0,
+        "reasoning": "Closest approach at t=0 (dist=0.074); agent diverged from goal after this point."
+      },
+      "vlm": {
+        "failure_timestep": 25,
+        "keyframe_index": 2,
+        "reasoning": "Between frames 1 and 2, the robot pushed the block off the edge of the table instead of toward the red target, revealing the critical misdirection of the push.",
+        "confidence": 1.0,
+        "parsed": true,
+        "wall_seconds": 3.133822441101074
+      },
+      "agreement": {
+        "exact_keyframe": false,
+        "tolerant_keyframe": false,
+        "timestep_diff": 25.0,
+        "timestep_diff_pct": 50.0
+      }
+    },
+    {
+      "env_name": "FetchPush-v4",
+      "seed": 1268,
+      "episode_length": 50,
+      "total_steps": 51,
+      "task_description": "A robot arm must push a block on a table to a target position.",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "oracle": {
+        "failure_timestep": 0,
+        "keyframe_index": 0,
+        "reasoning": "Closest approach at t=0 (dist=0.137); agent diverged from goal after this point."
+      },
+      "vlm": {
+        "failure_timestep": 12,
+        "keyframe_index": 1,
+        "reasoning": "Between frame 0 and frame 1, the robot's end-effector moved past/over the block and knocked it off the table instead of pushing it toward the red target, which is the decisive failure moment.",
+        "confidence": 1.0,
+        "parsed": true,
+        "wall_seconds": 3.8056235313415527
+      },
+      "agreement": {
+        "exact_keyframe": false,
+        "tolerant_keyframe": true,
+        "timestep_diff": 12.0,
+        "timestep_diff_pct": 24.0
+      }
+    },
+    {
+      "env_name": "FetchPush-v4",
+      "seed": 1285,
+      "episode_length": 50,
+      "total_steps": 51,
+      "task_description": "A robot arm must push a block on a table to a target position.",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "oracle": {
+        "failure_timestep": 0,
+        "keyframe_index": 0,
+        "reasoning": "Closest approach at t=0 (dist=0.151); agent diverged from goal after this point."
+      },
+      "vlm": {
+        "failure_timestep": 12,
+        "keyframe_index": 1,
+        "reasoning": "The robot pushed the block off the table edge instead of toward the red target, knocking it off the surface around frame 1.",
+        "confidence": 1.0,
+        "parsed": true,
+        "wall_seconds": 2.4354515075683594
+      },
+      "agreement": {
+        "exact_keyframe": false,
+        "tolerant_keyframe": true,
+        "timestep_diff": 12.0,
+        "timestep_diff_pct": 24.0
+      }
+    },
+    {
+      "env_name": "FetchPush-v4",
+      "seed": 1302,
+      "episode_length": 50,
+      "total_steps": 51,
+      "task_description": "A robot arm must push a block on a table to a target position.",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "oracle": {
+        "failure_timestep": 0,
+        "keyframe_index": 0,
+        "reasoning": "Closest approach at t=0 (dist=0.180); agent diverged from goal after this point."
+      },
+      "vlm": {
+        "failure_timestep": 25,
+        "keyframe_index": 2,
+        "reasoning": "At frame 2 the gripper moved past/over the block off the edge of the table instead of pushing it toward the red target, losing contact and making recovery impossible.",
+        "confidence": 1.0,
+        "parsed": true,
+        "wall_seconds": 3.9717113971710205
+      },
+      "agreement": {
+        "exact_keyframe": false,
+        "tolerant_keyframe": false,
+        "timestep_diff": 25.0,
+        "timestep_diff_pct": 50.0
+      }
+    },
+    {
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 2234,
+      "episode_length": 50,
+      "total_steps": 51,
+      "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "oracle": {
+        "failure_timestep": 0,
+        "keyframe_index": 0,
+        "reasoning": "Closest approach at t=0 (dist=0.175); agent diverged from goal after this point."
+      },
+      "vlm": {
+        "failure_timestep": 12,
+        "keyframe_index": 1,
+        "reasoning": "At frame 1 the gripper is at the block's location but fails to grasp it - the block disappears (knocked away) and the arm retracts empty in subsequent frames.",
+        "confidence": 1.0,
+        "parsed": true,
+        "wall_seconds": 5.316278457641602
+      },
+      "agreement": {
+        "exact_keyframe": false,
+        "tolerant_keyframe": true,
+        "timestep_diff": 12.0,
+        "timestep_diff_pct": 24.0
+      }
+    },
+    {
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 2251,
+      "episode_length": 50,
+      "total_steps": 51,
+      "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "oracle": {
+        "failure_timestep": 0,
+        "keyframe_index": 0,
+        "reasoning": "Closest approach at t=0 (dist=0.167); agent diverged from goal after this point."
+      },
+      "vlm": {
+        "failure_timestep": 25,
+        "keyframe_index": 2,
+        "reasoning": "At frame 2, the robot's gripper reaches the block's location but fails to grasp it, knocking it off the table instead.",
+        "confidence": 1.0,
+        "parsed": true,
+        "wall_seconds": 2.2463185787200928
+      },
+      "agreement": {
+        "exact_keyframe": false,
+        "tolerant_keyframe": false,
+        "timestep_diff": 25.0,
+        "timestep_diff_pct": 50.0
+      }
+    },
+    {
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 2268,
+      "episode_length": 50,
+      "total_steps": 51,
+      "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "oracle": {
+        "failure_timestep": 0,
+        "keyframe_index": 0,
+        "reasoning": "Closest approach at t=0 (dist=0.285); agent diverged from goal after this point."
+      },
+      "vlm": {
+        "failure_timestep": 12,
+        "keyframe_index": 1,
+        "reasoning": "Between frame 0 and frame 1, the robot's gripper failed to grasp the block and instead knocked it off the table, which is the critical contact failure moment.",
+        "confidence": 1.0,
+        "parsed": true,
+        "wall_seconds": 5.61927342414856
+      },
+      "agreement": {
+        "exact_keyframe": false,
+        "tolerant_keyframe": true,
+        "timestep_diff": 12.0,
+        "timestep_diff_pct": 24.0
+      }
+    },
+    {
+      "env_name": "FetchPickAndPlace-v4",
+      "seed": 2285,
+      "episode_length": 50,
+      "total_steps": 51,
+      "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "oracle": {
+        "failure_timestep": 8,
+        "keyframe_index": 1,
+        "reasoning": "Closest approach at t=8 (dist=0.082); agent diverged from goal after this point."
+      },
+      "vlm": {
+        "failure_timestep": 12,
+        "keyframe_index": 1,
+        "reasoning": "At frame 1 the gripper is at the block but fails to grasp it, knocking the block off the table instead, after which the arm retreats empty for the remainder of the episode.",
+        "confidence": 1.0,
+        "parsed": true,
+        "wall_seconds": 13.011677026748657
+      },
+      "agreement": {
+        "exact_keyframe": true,
+        "tolerant_keyframe": true,
+        "timestep_diff": 4.0,
+        "timestep_diff_pct": 8.0
+      }
+    },
+    {
+      "env_name": "FetchSlide-v4",
+      "seed": 3234,
+      "episode_length": 50,
+      "total_steps": 51,
+      "task_description": "A robot arm must hit a puck so that it slides to a distant target on a frictionless table.",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "oracle": {
+        "failure_timestep": 0,
+        "keyframe_index": 0,
+        "reasoning": "Closest approach at t=0 (dist=0.353); agent diverged from goal after this point."
+      },
+      "vlm": {
+        "failure_timestep": 12,
+        "keyframe_index": 1,
+        "reasoning": "Between frame 0 and frame 1, the robot's end-effector moved past/around the puck without striking it toward the target, missing the contact opportunity needed to slide the puck to the goal.",
+        "confidence": 1.0,
+        "parsed": true,
+        "wall_seconds": 10.73887038230896
+      },
+      "agreement": {
+        "exact_keyframe": false,
+        "tolerant_keyframe": true,
+        "timestep_diff": 12.0,
+        "timestep_diff_pct": 24.0
+      }
+    },
+    {
+      "env_name": "FetchSlide-v4",
+      "seed": 3251,
+      "episode_length": 50,
+      "total_steps": 51,
+      "task_description": "A robot arm must hit a puck so that it slides to a distant target on a frictionless table.",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "oracle": {
+        "failure_timestep": 0,
+        "keyframe_index": 0,
+        "reasoning": "Closest approach at t=0 (dist=0.285); agent diverged from goal after this point."
+      },
+      "vlm": {
+        "failure_timestep": 12,
+        "keyframe_index": 1,
+        "reasoning": "Between frames 0 and 1 the robot moved past/over the puck without striking it toward the target, leaving the puck behind and making the goal unreachable for the rest of the episode.",
+        "confidence": 1.0,
+        "parsed": true,
+        "wall_seconds": 12.782824754714966
+      },
+      "agreement": {
+        "exact_keyframe": false,
+        "tolerant_keyframe": true,
+        "timestep_diff": 12.0,
+        "timestep_diff_pct": 24.0
+      }
+    },
+    {
+      "env_name": "FetchSlide-v4",
+      "seed": 3268,
+      "episode_length": 50,
+      "total_steps": 51,
+      "task_description": "A robot arm must hit a puck so that it slides to a distant target on a frictionless table.",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "oracle": {
+        "failure_timestep": 0,
+        "keyframe_index": 0,
+        "reasoning": "Closest approach at t=0 (dist=0.193); agent diverged from goal after this point."
+      },
+      "vlm": {
+        "failure_timestep": 12,
+        "keyframe_index": 1,
+        "reasoning": "Between frame 0 and frame 1 the arm retracted away from the puck without making a proper striking contact, leaving the puck behind and never propelling it toward the target.",
+        "confidence": 1.0,
+        "parsed": true,
+        "wall_seconds": 12.314918279647827
+      },
+      "agreement": {
+        "exact_keyframe": false,
+        "tolerant_keyframe": true,
+        "timestep_diff": 12.0,
+        "timestep_diff_pct": 24.0
+      }
+    },
+    {
+      "env_name": "FetchSlide-v4",
+      "seed": 3285,
+      "episode_length": 50,
+      "total_steps": 51,
+      "task_description": "A robot arm must hit a puck so that it slides to a distant target on a frictionless table.",
+      "keyframe_indices": [
+        0,
+        12,
+        25,
+        38,
+        50
+      ],
+      "oracle": {
+        "failure_timestep": 3,
+        "keyframe_index": 0,
+        "reasoning": "Ballistic throw at t=3 (peak disp=0.0409, post-peak mean=0.0348); agent lost causal control here."
+      },
+      "vlm": {
+        "failure_timestep": 12,
+        "keyframe_index": 1,
+        "reasoning": "At frame 1 the robot strikes the puck but pushes it away from the red target (to the right) rather than toward it, sending the puck sliding in the wrong direction.",
+        "confidence": 1.0,
+        "parsed": true,
+        "wall_seconds": 22.741283416748047
+      },
+      "agreement": {
+        "exact_keyframe": false,
+        "tolerant_keyframe": true,
+        "timestep_diff": 9.0,
+        "timestep_diff_pct": 18.0
+      }
+    }
+  ],
+  "summary": {
+    "FetchPush-v4": {
+      "n": 4,
+      "parse_rate": 1.0,
+      "exact_kf_agreement": 0.0,
+      "tolerant_kf_agreement": 0.5,
+      "mean_timestep_diff": 18.5
+    },
+    "FetchPickAndPlace-v4": {
+      "n": 4,
+      "parse_rate": 1.0,
+      "exact_kf_agreement": 0.25,
+      "tolerant_kf_agreement": 0.75,
+      "mean_timestep_diff": 13.25
+    },
+    "FetchSlide-v4": {
+      "n": 4,
+      "parse_rate": 1.0,
+      "exact_kf_agreement": 0.0,
+      "tolerant_kf_agreement": 1.0,
+      "mean_timestep_diff": 11.25
+    }
+  },
+  "judgements": [
+    {
+      "task_relevant": 1,
+      "physically_plausible": 1,
+      "confidence": 0.9,
+      "explanation": "Pushing the block off the table edge is a well-known FetchPush failure mode and physically realizable in this environment.",
+      "index": 0,
+      "env": "FetchPush-v4",
+      "reasoning": "Between frames 1 and 2, the robot pushed the block off the edge of the table instead of toward the red target, revealing the critical misdirection of the push."
+    },
+    {
+      "task_relevant": 1,
+      "physically_plausible": 1,
+      "confidence": 0.9,
+      "explanation": "The annotation describes a combination of end-effector overshooting and knocking the block off the table, both of which are recognized task-specific failure modes for FetchPush and physically realizable.",
+      "index": 1,
+      "env": "FetchPush-v4",
+      "reasoning": "Between frame 0 and frame 1, the robot's end-effector moved past/over the block and knocked it off the table instead of pushing it toward the red target, which is the decisive failure moment."
+    },
+    {
+      "task_relevant": 1,
+      "physically_plausible": 1,
+      "confidence": 0.95,
+      "explanation": "Pushing the block off the table edge is a well-known FetchPush failure mode and is physically realizable in the environment.",
+      "index": 2,
+      "env": "FetchPush-v4",
+      "reasoning": "The robot pushed the block off the table edge instead of toward the red target, knocking it off the surface around frame 1."
+    },
+    {
+      "task_relevant": 1,
+      "physically_plausible": 1,
+      "confidence": 0.9,
+      "explanation": "The annotation describes the gripper overshooting the block and losing contact, which is a recognized FetchPush failure mode (missed block / went past it) and physically realizable.",
+      "index": 3,
+      "env": "FetchPush-v4",
+      "reasoning": "At frame 2 the gripper moved past/over the block off the edge of the table instead of pushing it toward the red target, losing contact and making recovery impossible."
+    },
+    {
+      "task_relevant": 1,
+      "physically_plausible": 1,
+      "confidence": 0.95,
+      "explanation": "The annotation describes a combination of failure modes (i) and (ii) from the task-typical list, both of which are physically realizable in FetchPickAndPlace.",
+      "index": 5,
+      "env": "FetchPickAndPlace-v4",
+      "reasoning": "At frame 2, the robot's gripper reaches the block's location but fails to grasp it, knocking it off the table instead."
+    },
+    {
+      "task_relevant": 1,
+      "physically_plausible": 1,
+      "confidence": 0.95,
+      "explanation": "The annotation describes a failed grasp that knocks the block off the table, which is a well-known task-specific and physically plausible failure mode for FetchPickAndPlace.",
+      "index": 7,
+      "env": "FetchPickAndPlace-v4",
+      "reasoning": "At frame 1 the gripper is at the block but fails to grasp it, knocking the block off the table instead, after which the arm retreats empty for the remainder of the episode."
+    },
+    {
+      "task_relevant": 1,
+      "physically_plausible": 1,
+      "confidence": 0.9,
+      "explanation": "The annotation describes the arm missing/failing to strike the puck, which matches failure mode (iii) and is physically realizable in FetchSlide.",
+      "index": 10,
+      "env": "FetchSlide-v4",
+      "reasoning": "Between frame 0 and frame 1 the arm retracted away from the puck without making a proper striking contact, leaving the puck behind and never propelling it toward the target."
+    },
+    {
+      "task_relevant": 1,
+      "physically_plausible": 1,
+      "confidence": 0.95,
+      "explanation": "Striking the puck in the wrong direction is a documented FetchSlide failure mode (ii) and is physically realizable when the gripper contacts the puck off-center or at a misaligned angle.",
+      "index": 11,
+      "env": "FetchSlide-v4",
+      "reasoning": "At frame 1 the robot strikes the puck but pushes it away from the red target (to the right) rather than toward it, sending the puck sliding in the wrong direction."
+    },
+    {
+      "task_relevant": 1,
+      "physically_plausible": 1,
+      "confidence": 0.9,
+      "explanation": "The annotation describes a grasp failure where the block is knocked away, which matches common FetchPickAndPlace failure modes (i) and (ii) and is physically realizable.",
+      "index": 4,
+      "env": "FetchPickAndPlace-v4",
+      "reasoning": "At frame 1 the gripper is at the block's location but fails to grasp it - the block disappears (knocked away) and the arm retracts empty in subsequent frames."
+    },
+    {
+      "task_relevant": 1,
+      "physically_plausible": 1,
+      "confidence": 0.9,
+      "explanation": "The annotation describes the end-effector missing the puck entirely, which matches failure mode (iii) and is physically realizable in FetchSlide.",
+      "index": 8,
+      "env": "FetchSlide-v4",
+      "reasoning": "Between frame 0 and frame 1, the robot's end-effector moved past/around the puck without striking it toward the target, missing the contact opportunity needed to slide the puck to the goal."
+    },
+    {
+      "task_relevant": 1,
+      "physically_plausible": 1,
+      "confidence": 0.9,
+      "explanation": "The annotation describes the end-effector missing the puck entirely, which is a recognized task-specific and physically realizable failure mode in FetchSlide.",
+      "index": 9,
+      "env": "FetchSlide-v4",
+      "reasoning": "Between frames 0 and 1 the robot moved past/over the puck without striking it toward the target, leaving the puck behind and making the goal unreachable for the rest of the episode."
+    },
+    {
+      "task_relevant": 1,
+      "physically_plausible": 1,
+      "confidence": 0.9,
+      "explanation": "The annotation describes a known task-specific failure mode (gripper knocking the block off the table) that is physically realizable in FetchPickAndPlace.",
+      "index": 6,
+      "env": "FetchPickAndPlace-v4",
+      "reasoning": "Between frame 0 and frame 1, the robot's gripper failed to grasp the block and instead knocked it off the table, which is the critical contact failure moment."
+    }
+  ],
+  "semantic_summary": {
+    "FetchPickAndPlace-v4": {
+      "n": 4,
+      "task_relevant_rate": 1.0,
+      "phys_plausible_rate": 1.0
+    },
+    "FetchPush-v4": {
+      "n": 4,
+      "task_relevant_rate": 1.0,
+      "phys_plausible_rate": 1.0
+    },
+    "FetchSlide-v4": {
+      "n": 4,
+      "task_relevant_rate": 1.0,
+      "phys_plausible_rate": 1.0
+    }
+  }
+}

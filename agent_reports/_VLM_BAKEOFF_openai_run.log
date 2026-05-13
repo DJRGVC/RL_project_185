@@ -1,0 +1,119 @@
+AdroitHandRelocateDense-v1, AdroitHandHammerDense-v1, AdroitHandDoorDense-v1 environment's reward functions were updated in v1.2.1 without an environment version update. Therefore, use gymnasium-robotics==1.2.0 for v1 reproducibility or use v2 in gymnasium-robotics>=1.4.3. See https://github.com/Farama-Foundation/Gymnasium-Robotics/pull/220 for more details
+2026-05-12 11:42:37,314 | INFO | Loaded 10 episodes
+2026-05-12 11:42:37,314 | INFO | ======================================================================
+2026-05-12 11:42:37,314 | INFO | MODEL: openai:gpt-4o
+2026-05-12 11:42:37,511 | INFO |   ep 1/10 env=FetchPickAndPlace-v4 seed=50000
+2026-05-12 11:42:39,509 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:42:42,006 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:42:42,015 | INFO |   judge: plaus=0.5 prog=0.2 spec=0.7
+2026-05-12 11:42:42,015 | INFO |   ep 2/10 env=FetchPickAndPlace-v4 seed=50034
+2026-05-12 11:42:43,874 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:42:46,570 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:42:46,571 | INFO |   judge: plaus=0.7 prog=0.4 spec=0.6
+2026-05-12 11:42:46,571 | INFO |   ep 3/10 env=FetchPickAndPlace-v4 seed=50051
+2026-05-12 11:42:47,889 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:42:50,820 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:42:50,821 | INFO |   judge: plaus=0.6 prog=0.5 spec=0.5
+2026-05-12 11:42:50,821 | INFO |   ep 4/10 env=FetchPickAndPlace-v4 seed=50068
+2026-05-12 11:42:52,384 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:42:55,071 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:42:55,071 | INFO |   judge: plaus=0.85 prog=0.75 spec=0.6
+2026-05-12 11:42:55,071 | INFO |   ep 5/10 env=FetchPickAndPlace-v4 seed=50085
+2026-05-12 11:42:57,923 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:43:00,288 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:43:00,288 | INFO |   judge: plaus=0.4 prog=0.2 spec=0.3
+2026-05-12 11:43:00,288 | INFO |   ep 6/10 env=FetchPickAndPlace-v4 seed=50102
+2026-05-12 11:43:02,215 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:43:04,786 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:43:04,786 | INFO |   judge: plaus=0.4 prog=0.1 spec=0.5
+2026-05-12 11:43:04,786 | INFO |   ep 7/10 env=FetchPush-v4 seed=60000
+2026-05-12 11:43:07,000 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:43:09,572 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:43:09,573 | INFO |   judge: plaus=0.6 prog=0.9 spec=0.5
+2026-05-12 11:43:09,573 | INFO |   ep 8/10 env=FetchPush-v4 seed=60017
+2026-05-12 11:43:11,121 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:43:11,284 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:43:11,285 | INFO | Retrying request to /v1/messages in 5.000000 seconds
+2026-05-12 11:43:19,467 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:43:19,469 | INFO |   judge: plaus=0.7 prog=0.4 spec=0.3
+2026-05-12 11:43:19,469 | INFO |   ep 9/10 env=FetchPush-v4 seed=60034
+2026-05-12 11:43:21,454 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:43:21,617 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:43:21,617 | INFO | Retrying request to /v1/messages in 7.000000 seconds
+2026-05-12 11:43:31,560 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:43:31,561 | INFO |   judge: plaus=0.9 prog=0.95 spec=0.7
+2026-05-12 11:43:31,561 | INFO |   ep 10/10 env=FetchPush-v4 seed=60051
+2026-05-12 11:43:33,192 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:43:33,374 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:43:33,374 | INFO | Retrying request to /v1/messages in 7.000000 seconds
+2026-05-12 11:43:42,801 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:43:42,801 | INFO |   judge: plaus=0.7 prog=0.4 spec=0.3
+2026-05-12 11:43:42,802 | INFO |   AGG[openai:gpt-4o] = {'n_calls': 10, 'parse_ok': 10, 'plausibility_mean': 0.635, 'plausibility_n': 10, 'specificity_mean': 0.5, 'specificity_n': 10, 'goal_progress_mean': 0.4800000000000001, 'goal_progress_n': 10, 'teleport_rate': 0.6, 'teleport_count': 6, 'teleport_denom': 10}
+2026-05-12 11:43:42,802 | INFO | ======================================================================
+2026-05-12 11:43:42,802 | INFO | MODEL: openai:gpt-5.2
+2026-05-12 11:43:42,811 | INFO |   ep 1/10 env=FetchPickAndPlace-v4 seed=50000
+2026-05-12 11:43:47,237 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:43:47,523 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:43:47,523 | INFO | Retrying request to /v1/messages in 5.000000 seconds
+2026-05-12 11:43:55,220 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:43:55,221 | INFO |   judge: plaus=0.85 prog=0.9 spec=0.8
+2026-05-12 11:43:55,221 | INFO |   ep 2/10 env=FetchPickAndPlace-v4 seed=50034
+2026-05-12 11:43:58,314 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:43:58,472 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:43:58,472 | INFO | Retrying request to /v1/messages in 6.000000 seconds
+2026-05-12 11:44:07,048 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:44:07,049 | INFO |   judge: plaus=0.85 prog=0.9 spec=0.8
+2026-05-12 11:44:07,049 | INFO |   ep 3/10 env=FetchPickAndPlace-v4 seed=50051
+2026-05-12 11:44:09,307 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:44:09,463 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:44:09,463 | INFO | Retrying request to /v1/messages in 7.000000 seconds
+2026-05-12 11:44:18,810 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:44:18,810 | INFO |   judge: plaus=0.85 prog=0.9 spec=0.8
+2026-05-12 11:44:18,811 | INFO |   ep 4/10 env=FetchPickAndPlace-v4 seed=50068
+2026-05-12 11:44:21,103 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:44:21,273 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:44:21,273 | INFO | Retrying request to /v1/messages in 7.000000 seconds
+2026-05-12 11:44:30,587 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:44:30,588 | INFO |   judge: plaus=0.7 prog=0.85 spec=0.6
+2026-05-12 11:44:30,588 | INFO |   ep 5/10 env=FetchPickAndPlace-v4 seed=50085
+2026-05-12 11:44:33,038 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:44:33,241 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:44:33,242 | INFO | Retrying request to /v1/messages in 7.000000 seconds
+2026-05-12 11:44:43,104 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:44:43,105 | INFO |   judge: plaus=0.5 prog=0.85 spec=0.7
+2026-05-12 11:44:43,105 | INFO |   ep 6/10 env=FetchPickAndPlace-v4 seed=50102
+2026-05-12 11:44:45,840 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:44:45,995 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:44:45,996 | INFO | Retrying request to /v1/messages in 6.000000 seconds
+2026-05-12 11:44:54,467 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:44:54,468 | INFO |   judge: plaus=0.4 prog=0.2 spec=0.7
+2026-05-12 11:44:54,468 | INFO |   ep 7/10 env=FetchPush-v4 seed=60000
+2026-05-12 11:44:57,282 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:44:57,698 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:44:57,699 | INFO | Retrying request to /v1/messages in 7.000000 seconds
+2026-05-12 11:45:07,270 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:45:07,270 | INFO |   judge: plaus=0.8 prog=0.85 spec=0.8
+2026-05-12 11:45:07,271 | INFO |   ep 8/10 env=FetchPush-v4 seed=60017
+2026-05-12 11:45:09,792 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:45:10,024 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:45:10,024 | INFO | Retrying request to /v1/messages in 6.000000 seconds
+2026-05-12 11:45:18,732 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:45:18,732 | INFO |   judge: plaus=0.4 prog=0.85 spec=0.6
+2026-05-12 11:45:18,733 | INFO |   ep 9/10 env=FetchPush-v4 seed=60034
+2026-05-12 11:45:21,364 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:45:21,642 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:45:21,642 | INFO | Retrying request to /v1/messages in 7.000000 seconds
+2026-05-12 11:45:34,930 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:45:34,931 | INFO |   judge: plaus=0.75 prog=0.9 spec=0.8
+2026-05-12 11:45:34,931 | INFO |   ep 10/10 env=FetchPush-v4 seed=60051
+2026-05-12 11:45:37,755 | INFO | HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-05-12 11:45:37,920 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 429 Too Many Requests"
+2026-05-12 11:45:37,920 | INFO | Retrying request to /v1/messages in 2.000000 seconds
+2026-05-12 11:45:42,521 | INFO | HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2026-05-12 11:45:42,522 | INFO |   judge: plaus=0.75 prog=0.9 spec=0.8
+2026-05-12 11:45:42,522 | INFO |   AGG[openai:gpt-5.2] = {'n_calls': 10, 'parse_ok': 10, 'plausibility_mean': 0.6849999999999999, 'plausibility_n': 10, 'specificity_mean': 0.74, 'specificity_n': 10, 'goal_progress_mean': 0.8099999999999999, 'goal_progress_n': 10, 'teleport_rate': 0.7, 'teleport_count': 7, 'teleport_denom': 10}
+2026-05-12 11:45:42,522 | INFO | 
+Wrote agent_reports/_VLM_BAKEOFF_openai.json
+2026-05-12 11:45:42,522 | INFO | Aggregates:
+2026-05-12 11:45:42,522 | INFO |   openai:gpt-4o: {'n_calls': 10, 'parse_ok': 10, 'plausibility_mean': 0.635, 'plausibility_n': 10, 'specificity_mean': 0.5, 'specificity_n': 10, 'goal_progress_mean': 0.4800000000000001, 'goal_progress_n': 10, 'teleport_rate': 0.6, 'teleport_count': 6, 'teleport_denom': 10}
+2026-05-12 11:45:42,522 | INFO |   openai:gpt-5.2: {'n_calls': 10, 'parse_ok': 10, 'plausibility_mean': 0.6849999999999999, 'plausibility_n': 10, 'specificity_mean': 0.74, 'specificity_n': 10, 'goal_progress_mean': 0.8099999999999999, 'goal_progress_n': 10, 'teleport_rate': 0.7, 'teleport_count': 7, 'teleport_denom': 10}

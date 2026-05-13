@@ -1,0 +1,1630 @@
+{
+  "meta": {
+    "models": [
+      "anthropic:claude-opus-4-7",
+      "anthropic:claude-sonnet-4-5-20250929",
+      "openai:gpt-4o",
+      "openai:gpt-5.2"
+    ],
+    "judge_model": "claude-opus-4-7",
+    "K": 5,
+    "n_episodes": 10,
+    "variant": "all",
+    "envs": [
+      "FetchPickAndPlace-v4",
+      "FetchPush-v4"
+    ],
+    "note": "Bake-off merged from: (1) fresh opus-4-7 run 2026-05-12, (2) fresh OpenAI gpt-4o/gpt-5.2 run 2026-05-12, (3) cached C1v2 sonnet-4-5 run from 2026-05-11 (rate-limited org-cap prevented fresh sonnet run today; harness/episodes/judge are bit-identical to the C1v2 source). User requested gpt-5.5 but it is not in the OpenAI catalog; we substitute gpt-5.2 (newest available, released 2025-12-11).",
+    "timestamp_merge": "2026-05-12"
+  },
+  "by_model": {
+    "anthropic:claude-opus-4-7": [
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50000,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.358751893043518,
+          0.8798841238021851,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2575385570526123,
+          0.6070199012756348,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 3.6547255516052246,
+        "explanation": "At the midpoint the gripper retracted upward and away instead of descending onto the black block to grasp it, so it should have moved down-and-forward toward the block with the gripper closing.",
+        "confidence": 0.7,
+        "corrective_position": [
+          1.3,
+          0.75,
+          0.43
+        ],
+        "corrective_action": [
+          0.3,
+          0.5,
+          -0.8,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.30, 0.75, 0.43],\n  \"corrective_action\": [0.3, 0.5, -0.8, -1.0],\n  \"explanation\": \"At the midpoint the gripper retracted upward and away instead of descending onto the black block to grasp it, so it should have moved down-and-forward toward the block with the gripper closing.\",\n  \"confidence\": 0.7\n}",
+        "judge": {
+          "plausibility": 0.85,
+          "goal_progress": 0.9,
+          "specificity": 0.8,
+          "verdict": "The proposed down-and-forward motion with a closing gripper is within workspace/action limits and would move the achieved goal substantially closer to the desired target."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50034,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.4087731838226318,
+          0.7451496124267578,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.4643144607543945,
+          0.749208927154541,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 3.1823763847351074,
+        "explanation": "At the midpoint the gripper is hovering above the table but offset from the block; it should have moved down and toward the block while closing the gripper to grasp it before lifting toward the target.",
+        "confidence": 0.7,
+        "corrective_position": [
+          1.35,
+          0.75,
+          0.43
+        ],
+        "corrective_action": [
+          0.2,
+          0.0,
+          -0.4,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.35, 0.75, 0.43],\n  \"corrective_action\": [0.2, 0.0, -0.4, -1.0],\n  \"explanation\": \"At the midpoint the gripper is hovering above the table but offset from the block; it should have moved down and toward the block while closing the gripper to grasp it before lifting toward the target.\",\n  \"confidence\": 0.7\n}",
+        "judge": {
+          "plausibility": 0.85,
+          "goal_progress": 0.9,
+          "specificity": 0.8,
+          "verdict": "The correction moves the gripper toward the desired goal within workspace and action limits, and the explanation clearly identifies the needed grasp-and-lift behavior."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50051,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.257919192314148,
+          0.82340008020401,
+          0.6285263299942017
+        ],
+        "achieved_goal_at_failure": [
+          1.3198094367980957,
+          0.5636326670646667,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 14.171270370483398,
+        "explanation": "At the critical moment the gripper drifted up and away from the block; it should have moved down and toward the block with the gripper open to grasp it before lifting to the target.",
+        "confidence": 0.7,
+        "corrective_position": [
+          1.2,
+          0.75,
+          0.45
+        ],
+        "corrective_action": [
+          -0.3,
+          -0.4,
+          -0.8,
+          1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.20, 0.75, 0.45],\n  \"corrective_action\": [-0.3, -0.4, -0.8, 1.0],\n  \"explanation\": \"At the critical moment the gripper drifted up and away from the block; it should have moved down and toward the block with the gripper open to grasp it before lifting to the target.\",\n  \"confidence\": 0.7\n}",
+        "judge": {
+          "plausibility": 0.7,
+          "goal_progress": 0.6,
+          "specificity": 0.75,
+          "verdict": "The correction is within workspace and action limits and reasonably targets the block, but the gripper action is set to close (-0.8) while the explanation says it should be open, creating an inconsistency that limits plausibility and goal progress."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50068,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.4252541065216064,
+          0.7335234880447388,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.1734404563903809,
+          0.6250391602516174,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 11.719856262207031,
+        "explanation": "At the critical frame the gripper is hovering above the table without grasping the block; it should have descended onto the block and closed the gripper to secure it before lifting toward the target.",
+        "confidence": 0.7,
+        "corrective_position": [
+          1.4,
+          0.7,
+          0.43
+        ],
+        "corrective_action": [
+          0.2,
+          -0.3,
+          -0.5,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.40, 0.70, 0.43],\n  \"corrective_action\": [0.2, -0.3, -0.5, -1.0],\n  \"explanation\": \"At the critical frame the gripper is hovering above the table without grasping the block; it should have descended onto the block and closed the gripper to secure it before lifting toward the target.\",\n  \"confidence\": 0.7\n}",
+        "judge": {
+          "plausibility": 0.75,
+          "goal_progress": 0.9,
+          "specificity": 0.85,
+          "verdict": "The correction is physically reasonable, within workspace and action bounds, and would meaningfully advance the block toward the target by first securing it via descent and grasp."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50085,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.3389878273010254,
+          0.8850302696228027,
+          0.5459770560264587
+        ],
+        "achieved_goal_at_failure": [
+          1.2428902387619019,
+          0.8713675141334534,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 12.643352031707764,
+        "explanation": "At the midpoint the arm has retreated upward and away instead of descending onto the block to grasp it, so it should move down and toward the block with the gripper closing.",
+        "confidence": 0.78,
+        "corrective_position": [
+          1.34,
+          0.88,
+          0.55
+        ],
+        "corrective_action": [
+          0.3,
+          0.2,
+          -0.4,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.34, 0.88, 0.55],\n  \"corrective_action\": [0.3, 0.2, -0.4, -1.0],\n  \"explanation\": \"At the midpoint the arm has retreated upward and away instead of descending onto the block to grasp it, so it should move down and toward the block with the gripper closing.\",\n  \"confidence\": 0.78\n}",
+        "judge": {
+          "plausibility": 0.45,
+          "goal_progress": 0.85,
+          "specificity": 0.7,
+          "verdict": "The corrective position aligns well with the desired goal and the explanation is actionable, but the action vector's positive z-component contradicts the stated need to descend, reducing physical plausibility."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50102,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.4445830583572388,
+          0.8422929644584656,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.4710569381713867,
+          0.6785102486610413,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 12.715538024902344,
+        "explanation": "At the midpoint the gripper is hovering above the block instead of descending and closing on it, so it should move straight down and close the fingers to grasp the block before lifting toward the target.",
+        "confidence": 0.7,
+        "corrective_position": [
+          1.3,
+          0.75,
+          0.43
+        ],
+        "corrective_action": [
+          0.0,
+          0.0,
+          -1.0,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.30, 0.75, 0.43],\n  \"corrective_action\": [0.0, 0.0, -1.0, -1.0],\n  \"explanation\": \"At the midpoint the gripper is hovering above the block instead of descending and closing on it, so it should move straight down and close the fingers to grasp the block before lifting toward the target.\",\n  \"confidence\": 0.7\n}",
+        "judge": {
+          "plausibility": 0.4,
+          "goal_progress": 0.2,
+          "specificity": 0.7,
+          "verdict": "The action of descending and closing is reasonable in principle, but the corrective_position moves away from both the block and the target in x, so it would not bring the achieved goal closer to the desired goal."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60000,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.3157259225845337,
+          0.7196225523948669,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.5188287496566772,
+          0.8417948484420776,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 12.900607585906982,
+        "explanation": "At the critical moment the gripper is hovering above and to the right of the block; it should move left, back toward the red target, and down to contact the block in order to push it onto the goal.",
+        "confidence": 0.6,
+        "corrective_position": [
+          1.3157,
+          0.7196,
+          0.4249
+        ],
+        "corrective_action": [
+          -0.3,
+          -0.5,
+          -0.4,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.3157, 0.7196, 0.4249],\n  \"corrective_action\": [-0.3, -0.5, -0.4, -1.0],\n  \"explanation\": \"At the critical moment the gripper is hovering above and to the right of the block; it should move left, back toward the red target, and down to contact the block in order to push it onto the goal.\",\n  \"confidence\": 0.6\n}",
+        "judge": {
+          "plausibility": 0.85,
+          "goal_progress": 0.9,
+          "specificity": 0.8,
+          "verdict": "The proposed action correctly directs the gripper left, back, and down toward the block and target, aligning well with the needed correction within workspace and action limits."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60017,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.4611833095550537,
+          0.6210954189300537,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2673813104629517,
+          0.705102801322937,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 12.29786729812622,
+        "explanation": "The gripper drifted right and stayed too high, missing the block; it should descend and move back left-toward the block to push it toward the red target.",
+        "confidence": 0.7,
+        "corrective_position": [
+          1.4,
+          0.62,
+          0.42
+        ],
+        "corrective_action": [
+          -0.6,
+          -0.4,
+          -0.8,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.40, 0.62, 0.42],\n  \"corrective_action\": [-0.6, -0.4, -0.8, -1],\n  \"explanation\": \"The gripper drifted right and stayed too high, missing the block; it should descend and move back left-toward the block to push it toward the red target.\",\n  \"confidence\": 0.7\n}",
+        "judge": {
+          "plausibility": 0.85,
+          "goal_progress": 0.9,
+          "specificity": 0.8,
+          "verdict": "The corrective position is within workspace bounds and clearly moves the block closer to the target, with an actionable explanation, though the action vector's downward and leftward magnitudes are reasonable but not finely tuned."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60034,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.3303241729736328,
+          0.8798641562461853,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2149897813796997,
+          0.7626038193702698,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 12.760751008987427,
+        "explanation": "The arm lifted away from the table instead of descending onto the block to push it toward the red target, so it should move down and forward in +y to contact and push the block.",
+        "confidence": 0.7,
+        "corrective_position": [
+          1.3,
+          0.75,
+          0.425
+        ],
+        "corrective_action": [
+          0.0,
+          0.8,
+          -0.9,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.30, 0.75, 0.425],\n  \"corrective_action\": [0.0, 0.8, -0.9, -1.0],\n  \"explanation\": \"The arm lifted away from the table instead of descending onto the block to push it toward the red target, so it should move down and forward in +y to contact and push the block.\",\n  \"confidence\": 0.7\n}",
+        "judge": {
+          "plausibility": 0.5,
+          "goal_progress": 0.3,
+          "specificity": 0.8,
+          "verdict": "The action direction (down and +y) is sensible, but the corrective_position moves in -y away from the target, contradicting the stated goal of pushing the block toward higher y."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60051,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.3167601823806763,
+          0.7779345512390137,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2256109714508057,
+          0.8504523634910583,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 13.535379886627197,
+        "explanation": "The gripper drifted past the block toward +y instead of pushing it in the -y direction toward the target, so it should move back and down to contact the block and push it toward the goal.",
+        "confidence": 0.6,
+        "corrective_position": [
+          1.32,
+          0.77,
+          0.42
+        ],
+        "corrective_action": [
+          0.3,
+          -0.2,
+          -0.1,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.32, 0.77, 0.42],\n  \"corrective_action\": [0.3, -0.2, -0.1, -1.0],\n  \"explanation\": \"The gripper drifted past the block toward +y instead of pushing it in the -y direction toward the target, so it should move back and down to contact the block and push it toward the goal.\",\n  \"confidence\": 0.6\n}",
+        "judge": {
+          "plausibility": 0.9,
+          "goal_progress": 0.95,
+          "specificity": 0.85,
+          "verdict": "The correction targets a position essentially at the desired goal with a reasonable action vector and a clear directional explanation, making it physically plausible and goal-advancing."
+        }
+      }
+    ],
+    "anthropic:claude-sonnet-4-5-20250929": [
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50000,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.358751893043518,
+          0.8798841238021851,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2575385570526123,
+          0.6070199012756348,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 3.1106536388397217,
+        "explanation": "The robot should have lifted the grasped block upward with a closed gripper instead of moving horizontally, as the block needed to be raised before placement at the target position.",
+        "confidence": 0.92,
+        "corrective_position": [
+          1.358751893043518,
+          0.8798841238021851,
+          0.5
+        ],
+        "corrective_action": [
+          0.0,
+          0.0,
+          0.6,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.358751893043518, 0.8798841238021851, 0.5],\n  \"corrective_action\": [0.0, 0.0, 0.6, -1.0],\n  \"explanation\": \"The robot should have lifted the grasped block upward with a closed gripper instead of moving horizontally, as the block needed to be raised before placement at the target position.\",\n  \"confidence\": 0.92\n}\n```",
+        "judge": {
+          "plausibility": 0.85,
+          "goal_progress": 0.5,
+          "specificity": 0.8,
+          "verdict": "Lifting with a closed gripper is physically reasonable and within limits, but the purely vertical action ignores the substantial horizontal (y) gap to the target, so it only partially advances toward the goal."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50034,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.4087731838226318,
+          0.7451496124267578,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.4643144607543945,
+          0.749208927154541,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 3.0537424087524414,
+        "explanation": "The robot should have maintained a closed gripper while moving the grasped object upward and toward the goal position instead of retracting without the object.",
+        "confidence": 0.92,
+        "corrective_position": [
+          1.34,
+          0.75,
+          0.5
+        ],
+        "corrective_action": [
+          0.85,
+          0.15,
+          0.45,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.34, 0.75, 0.50],\n  \"corrective_action\": [0.85, 0.15, 0.45, -1.0],\n  \"explanation\": \"The robot should have maintained a closed gripper while moving the grasped object upward and toward the goal position instead of retracting without the object.\",\n  \"confidence\": 0.92\n}\n```",
+        "judge": {
+          "plausibility": 0.85,
+          "goal_progress": 0.6,
+          "specificity": 0.9,
+          "verdict": "The correction is physically reasonable and clearly actionable, though the proposed x=1.34 slightly overshoots the target x=1.41 and the lifted z=0.5 trades vertical distance for horizontal progress."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50051,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.257919192314148,
+          0.82340008020401,
+          0.6285263299942017
+        ],
+        "achieved_goal_at_failure": [
+          1.3198094367980957,
+          0.5636326670646667,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 3.880124807357788,
+        "explanation": "The gripper should have closed firmly on the block while positioned directly above it, but instead moved away without grasping, causing the block to remain on the table.",
+        "confidence": 0.92,
+        "corrective_position": [
+          1.257919192314148,
+          0.82340008020401,
+          0.6285263299942017
+        ],
+        "corrective_action": [
+          0.0,
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.257919192314148, 0.82340008020401, 0.6285263299942017],\n  \"corrective_action\": [0.0, 0.0, 0.0, -1.0],\n  \"explanation\": \"The gripper should have closed firmly on the block while positioned directly above it, but instead moved away without grasping, causing the block to remain on the table.\",\n  \"confidence\": 0.92\n}\n```",
+        "judge": {
+          "plausibility": 0.4,
+          "goal_progress": 0.2,
+          "specificity": 0.6,
+          "verdict": "The explanation identifies a plausible failure mode (failure to grasp) but the corrective action of closing the gripper in place without any positional movement won't bring the block to the floating target, and the corrective_position simply restates the goal rather than a reachable intermediate pose."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50068,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.4252541065216064,
+          0.7335234880447388,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.1734404563903809,
+          0.6250391602516174,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 3.009626626968384,
+        "explanation": "The robot should have grasped the block and begun lifting it toward the target position instead of retracting without the object.",
+        "confidence": 0.92,
+        "corrective_position": [
+          1.34,
+          0.73,
+          0.5
+        ],
+        "corrective_action": [
+          0.65,
+          0.15,
+          0.45,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.34, 0.73, 0.50],\n  \"corrective_action\": [0.65, 0.15, 0.45, -1.0],\n  \"explanation\": \"The robot should have grasped the block and begun lifting it toward the target position instead of retracting without the object.\",\n  \"confidence\": 0.92\n}\n```",
+        "judge": {
+          "plausibility": null,
+          "goal_progress": null,
+          "specificity": null,
+          "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax1kp6sCEcAdht2gq6Pg'}"
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50085,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.3389878273010254,
+          0.8850302696228027,
+          0.5459770560264587
+        ],
+        "achieved_goal_at_failure": [
+          1.2428902387619019,
+          0.8713675141334534,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 3.1175098419189453,
+        "explanation": "The gripper should have descended to grasp the block while closing instead of retracting upward without securing it.",
+        "confidence": 0.92,
+        "corrective_position": [
+          1.34,
+          0.75,
+          0.43
+        ],
+        "corrective_action": [
+          0.0,
+          0.0,
+          -0.8,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.34, 0.75, 0.43],\n  \"corrective_action\": [0.0, 0.0, -0.8, -1.0],\n  \"explanation\": \"The gripper should have descended to grasp the block while closing instead of retracting upward without securing it.\",\n  \"confidence\": 0.92\n}\n```",
+        "judge": {
+          "plausibility": 0.75,
+          "goal_progress": 0.3,
+          "specificity": 0.8,
+          "verdict": "The grasp-and-close action is physically reasonable and well-explained, but the corrective position moves away from the desired goal in y and barely changes z, so it doesn't directly advance toward the target."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50102,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.4445830583572388,
+          0.8422929644584656,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.4710569381713867,
+          0.6785102486610413,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 3.323539972305298,
+        "explanation": "The gripper should have closed firmly on the block while positioned directly above it to secure a grasp before attempting any lift or transport motion.",
+        "confidence": 0.85,
+        "corrective_position": [
+          1.34,
+          0.75,
+          0.5
+        ],
+        "corrective_action": [
+          0.0,
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.34, 0.75, 0.50],\n  \"corrective_action\": [0.0, 0.0, 0.0, -1.0],\n  \"explanation\": \"The gripper should have closed firmly on the block while positioned directly above it to secure a grasp before attempting any lift or transport motion.\",\n  \"confidence\": 0.85\n}\n```",
+        "judge": {
+          "plausibility": 0.5,
+          "goal_progress": 0.2,
+          "specificity": 0.7,
+          "verdict": "The grasp-closing suggestion is actionable and within limits, but the corrective position is far from both the object and target, so it would not bring the achieved goal closer to the desired goal."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60000,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.3157259225845337,
+          0.7196225523948669,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.5188287496566772,
+          0.8417948484420776,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 3.107592821121216,
+        "explanation": "The robot should have moved downward and forward to make contact with the block instead of remaining elevated above the table surface.",
+        "confidence": 0.85,
+        "corrective_position": [
+          1.28,
+          0.72,
+          0.425
+        ],
+        "corrective_action": [
+          0.4,
+          0.0,
+          -0.6,
+          1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.28, 0.72, 0.425],\n  \"corrective_action\": [0.4, 0.0, -0.6, 1.0],\n  \"explanation\": \"The robot should have moved downward and forward to make contact with the block instead of remaining elevated above the table surface.\",\n  \"confidence\": 0.85\n}\n```",
+        "judge": {
+          "plausibility": 0.85,
+          "goal_progress": 0.95,
+          "specificity": 0.7,
+          "verdict": "The corrective position is near the desired goal and within workspace bounds, and the action direction is reasonable, though the explanation is somewhat generic about contact rather than specifying the precise push direction."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60017,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.4611833095550537,
+          0.6210954189300537,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2673813104629517,
+          0.705102801322937,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 2.9701597690582275,
+        "explanation": "The robot arm should have descended toward the block on the table instead of retracting upward and away, maintaining proximity to execute the push task.",
+        "confidence": 0.85,
+        "corrective_position": [
+          1.42,
+          0.65,
+          0.425
+        ],
+        "corrective_action": [
+          0.15,
+          -0.25,
+          -0.35,
+          1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.42, 0.65, 0.425],\n  \"corrective_action\": [0.15, -0.25, -0.35, 1.0],\n  \"explanation\": \"The robot arm should have descended toward the block on the table instead of retracting upward and away, maintaining proximity to execute the push task.\",\n  \"confidence\": 0.85\n}\n```",
+        "judge": {
+          "plausibility": null,
+          "goal_progress": null,
+          "specificity": null,
+          "verdict": "judge failed: Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': \"This request would exceed your organization's rate limit of 5 requests per minute (org: fd8ff8ce-0a12-4226-8827-3e3afe8a09dd, model: claude-opus-4-7). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase.\"}, 'request_id': 'req_011Cax2vuZBE2WQFyogkE1Eu'}"
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60034,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.3303241729736328,
+          0.8798641562461853,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2149897813796997,
+          0.7626038193702698,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 3.0570881366729736,
+        "explanation": "The robot should have moved downward to approach the block at table height instead of retracting upward away from the workspace.",
+        "confidence": 0.92,
+        "corrective_position": [
+          1.33,
+          0.88,
+          0.425
+        ],
+        "corrective_action": [
+          0.0,
+          0.0,
+          -1.0,
+          1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.33, 0.88, 0.425],\n  \"corrective_action\": [0.0, 0.0, -1.0, 1.0],\n  \"explanation\": \"The robot should have moved downward to approach the block at table height instead of retracting upward away from the workspace.\",\n  \"confidence\": 0.92\n}\n```",
+        "judge": {
+          "plausibility": 0.4,
+          "goal_progress": 0.2,
+          "specificity": 0.6,
+          "verdict": "The downward action is within limits but doesn't address the needed XY push toward the target, so it offers minimal goal progress despite a reasonably concrete rationale."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60051,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.3167601823806763,
+          0.7779345512390137,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2256109714508057,
+          0.8504523634910583,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 3.309126138687134,
+        "explanation": "The robot should have moved downward and toward the block to make contact and push it toward the target instead of retracting upward and away.",
+        "confidence": 0.85,
+        "corrective_position": [
+          1.28,
+          0.72,
+          0.425
+        ],
+        "corrective_action": [
+          0.15,
+          -0.25,
+          -0.15,
+          1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.28, 0.72, 0.425],\n  \"corrective_action\": [0.15, -0.25, -0.15, 1.0],\n  \"explanation\": \"The robot should have moved downward and toward the block to make contact and push it toward the target instead of retracting upward and away.\",\n  \"confidence\": 0.85\n}\n```",
+        "judge": {
+          "plausibility": 0.85,
+          "goal_progress": 0.8,
+          "specificity": 0.75,
+          "verdict": "The corrective position lies within workspace bounds and roughly between the block and target, and the action vector reasonably directs the gripper down and toward the block to push it closer to the goal."
+        }
+      }
+    ],
+    "openai:gpt-4o": [
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50000,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.358751893043518,
+          0.8798841238021851,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2575385570526123,
+          0.6070199012756348,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 2.0012190341949463,
+        "explanation": "The robot should have closed the gripper to secure the block before lifting.",
+        "confidence": 0.9,
+        "corrective_position": [
+          1.358,
+          0.879,
+          0.424
+        ],
+        "corrective_action": [
+          0.0,
+          0.0,
+          -0.2,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.358, 0.879, 0.424],\n  \"corrective_action\": [0.0, 0.0, -0.2, -1],\n  \"explanation\": \"The robot should have closed the gripper to secure the block before lifting.\",\n  \"confidence\": 0.9\n}\n```",
+        "judge": {
+          "plausibility": 0.5,
+          "goal_progress": 0.2,
+          "specificity": 0.7,
+          "verdict": "Closing the gripper is a reasonable corrective intent, but the action vector moves downward into the table rather than toward the elevated target, so it would not bring the achieved goal closer to the desired goal."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50034,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.4087731838226318,
+          0.7451496124267578,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.4643144607543945,
+          0.749208927154541,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 1.8585782051086426,
+        "explanation": "The robot should have closed the gripper to secure the block before lifting.",
+        "confidence": 0.9,
+        "corrective_position": [
+          1.408,
+          0.745,
+          0.424
+        ],
+        "corrective_action": [
+          0.0,
+          0.0,
+          -1.0,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.408, 0.745, 0.424],\n  \"corrective_action\": [0, 0, -1, -1],\n  \"explanation\": \"The robot should have closed the gripper to secure the block before lifting.\",\n  \"confidence\": 0.9\n}\n```",
+        "judge": {
+          "plausibility": 0.7,
+          "goal_progress": 0.4,
+          "specificity": 0.6,
+          "verdict": "Closing the gripper is reasonable and within limits, but the proposed action lacks lateral motion needed to reduce the ~0.056 m XY offset to the desired goal."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50051,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.257919192314148,
+          0.82340008020401,
+          0.6285263299942017
+        ],
+        "achieved_goal_at_failure": [
+          1.3198094367980957,
+          0.5636326670646667,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 1.318958044052124,
+        "explanation": "The robot should have lifted the block vertically to align with the target height.",
+        "confidence": 0.9,
+        "corrective_position": [
+          1.257,
+          0.823,
+          0.628
+        ],
+        "corrective_action": [
+          0.0,
+          0.0,
+          0.2,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.257, 0.823, 0.628],\n  \"corrective_action\": [0.0, 0.0, 0.2, -1],\n  \"explanation\": \"The robot should have lifted the block vertically to align with the target height.\",\n  \"confidence\": 0.9\n}\n```",
+        "judge": {
+          "plausibility": 0.6,
+          "goal_progress": 0.5,
+          "specificity": 0.5,
+          "verdict": "Lifting vertically is plausible and would close the z-gap, but the action ignores the substantial y-axis offset needed to reach the target."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50068,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.4252541065216064,
+          0.7335234880447388,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.1734404563903809,
+          0.6250391602516174,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 1.5636942386627197,
+        "explanation": "The robot should have closed the gripper to secure the block.",
+        "confidence": 0.9,
+        "corrective_position": [
+          1.25,
+          0.75,
+          0.45
+        ],
+        "corrective_action": [
+          0.0,
+          0.0,
+          0.0,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.25, 0.75, 0.45],\n  \"corrective_action\": [0, 0, 0, -1],\n  \"explanation\": \"The robot should have closed the gripper to secure the block.\",\n  \"confidence\": 0.9\n}\n```",
+        "judge": {
+          "plausibility": 0.85,
+          "goal_progress": 0.75,
+          "specificity": 0.6,
+          "verdict": "Closing the gripper is a reasonable and within-bounds correction that moves the block toward the target, though the explanation could specify timing and approach more precisely."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50085,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.3389878273010254,
+          0.8850302696228027,
+          0.5459770560264587
+        ],
+        "achieved_goal_at_failure": [
+          1.2428902387619019,
+          0.8713675141334534,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 2.8520758152008057,
+        "explanation": "The robot should have lowered the gripper to grasp the block.",
+        "confidence": 0.9,
+        "corrective_position": [
+          1.338,
+          0.885,
+          0.545
+        ],
+        "corrective_action": [
+          0.0,
+          0.0,
+          -0.2,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.338, 0.885, 0.545],\n  \"corrective_action\": [0.0, 0.0, -0.2, -1],\n  \"explanation\": \"The robot should have lowered the gripper to grasp the block.\",\n  \"confidence\": 0.9\n}\n```",
+        "judge": {
+          "plausibility": 0.4,
+          "goal_progress": 0.2,
+          "specificity": 0.3,
+          "verdict": "The corrective position matches the target but the action lowers the gripper and closes it, which contradicts the need to lift the block upward to the floating target."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50102,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.4445830583572388,
+          0.8422929644584656,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.4710569381713867,
+          0.6785102486610413,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 1.9275336265563965,
+        "explanation": "The robot should have lowered the gripper to grasp the block securely.",
+        "confidence": 0.9,
+        "corrective_position": [
+          1.25,
+          0.75,
+          0.4
+        ],
+        "corrective_action": [
+          0.0,
+          0.0,
+          -1.0,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.25, 0.75, 0.4],\n  \"corrective_action\": [0, 0, -1, -1],\n  \"explanation\": \"The robot should have lowered the gripper to grasp the block securely.\",\n  \"confidence\": 0.9\n}\n```",
+        "judge": {
+          "plausibility": 0.4,
+          "goal_progress": 0.1,
+          "specificity": 0.5,
+          "verdict": "The action of lowering and closing is reasonable for grasping, but the corrective_position moves away from the desired goal in x and does not advance toward the target in y."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60000,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.3157259225845337,
+          0.7196225523948669,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.5188287496566772,
+          0.8417948484420776,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 2.214273691177368,
+        "explanation": "The robot should have pushed the block directly towards the target position.",
+        "confidence": 0.9,
+        "corrective_position": [
+          1.315,
+          0.72,
+          0.425
+        ],
+        "corrective_action": [
+          0.0,
+          0.1,
+          0.0,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.315, 0.720, 0.425],\n  \"corrective_action\": [0.0, 0.1, 0.0, -1],\n  \"explanation\": \"The robot should have pushed the block directly towards the target position.\",\n  \"confidence\": 0.9\n}\n```",
+        "judge": {
+          "plausibility": 0.6,
+          "goal_progress": 0.9,
+          "specificity": 0.5,
+          "verdict": "The corrective position correctly matches the target and the action direction is roughly valid, but the action vector doesn't fully reflect the needed -x motion, making the suggestion only partially actionable."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60017,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.4611833095550537,
+          0.6210954189300537,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2673813104629517,
+          0.705102801322937,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 1.5487499237060547,
+        "explanation": "The robot arm should have pushed the block more directly towards the target.",
+        "confidence": 0.85,
+        "corrective_position": [
+          1.3,
+          0.7,
+          0.42
+        ],
+        "corrective_action": [
+          0.2,
+          -0.1,
+          0.0,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.3, 0.7, 0.42],\n  \"corrective_action\": [0.2, -0.1, 0, -1],\n  \"explanation\": \"The robot arm should have pushed the block more directly towards the target.\",\n  \"confidence\": 0.85\n}\n```",
+        "judge": {
+          "plausibility": 0.7,
+          "goal_progress": 0.4,
+          "specificity": 0.3,
+          "verdict": "The action direction is roughly correct toward the target in x but moves y away from the target, and the explanation is generic rather than specifying magnitudes or trajectory details."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60034,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.3303241729736328,
+          0.8798641562461853,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2149897813796997,
+          0.7626038193702698,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 1.9854624271392822,
+        "explanation": "The robot should have pushed the block towards the target instead of lifting the gripper.",
+        "confidence": 0.9,
+        "corrective_position": [
+          1.33,
+          0.88,
+          0.42
+        ],
+        "corrective_action": [
+          0.2,
+          0.2,
+          0.0,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.33, 0.88, 0.42],\n  \"corrective_action\": [0.2, 0.2, 0, -1],\n  \"explanation\": \"The robot should have pushed the block towards the target instead of lifting the gripper.\",\n  \"confidence\": 0.9\n}\n```",
+        "judge": {
+          "plausibility": 0.9,
+          "goal_progress": 0.95,
+          "specificity": 0.7,
+          "verdict": "The proposed corrective action pushes the block in the correct +x/+y direction toward the target while keeping the gripper down, which is physically valid and would clearly reduce the goal distance."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60051,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.3167601823806763,
+          0.7779345512390137,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2256109714508057,
+          0.8504523634910583,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 1.6320264339447021,
+        "explanation": "The robot should have adjusted its position to better align with the block's center for effective pushing.",
+        "confidence": 0.85,
+        "corrective_position": [
+          1.25,
+          0.75,
+          0.42
+        ],
+        "corrective_action": [
+          0.2,
+          0.1,
+          0.0,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "```json\n{\n  \"corrective_position\": [1.25, 0.75, 0.42],\n  \"corrective_action\": [0.2, 0.1, 0, -1],\n  \"explanation\": \"The robot should have adjusted its position to better align with the block's center for effective pushing.\",\n  \"confidence\": 0.85\n}\n```",
+        "judge": {
+          "plausibility": 0.7,
+          "goal_progress": 0.4,
+          "specificity": 0.3,
+          "verdict": "The action is within limits but the corrective position moves away from the target in x and overshoots in y, and the explanation is generic rather than specifying a direction of correction."
+        }
+      }
+    ],
+    "openai:gpt-5.2": [
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50000,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.358751893043518,
+          0.8798841238021851,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2575385570526123,
+          0.6070199012756348,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 4.42593789100647,
+        "explanation": "At the critical frame the gripper was not properly closing on the block and moving toward the target, so it should close firmly while translating the held block in +x/+y and slightly upward toward the desired floating position.",
+        "confidence": 0.42,
+        "corrective_position": [
+          1.358751893043518,
+          0.8798841238021851,
+          0.42489221692085266
+        ],
+        "corrective_action": [
+          1.0,
+          0.6,
+          0.2,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.358751893043518, 0.8798841238021851, 0.42489221692085266],\n  \"corrective_action\": [1.0, 0.6, 0.2, -1.0],\n  \"explanation\": \"At the critical frame the gripper was not properly closing on the block and moving toward the target, so it should close firmly while translating the held block in +x/+y and slightly upward toward the desired floating position.\",\n  \"confidence\": 0.42\n}",
+        "judge": {
+          "plausibility": 0.85,
+          "goal_progress": 0.9,
+          "specificity": 0.8,
+          "verdict": "The proposed action correctly drives the gripper in +x/+y and slightly +z toward the target while closing on the block, all within action and workspace limits."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50034,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.4087731838226318,
+          0.7451496124267578,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.4643144607543945,
+          0.749208927154541,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 3.0933339595794678,
+        "explanation": "At the critical frame the gripper is offset from the block and still open, so it should move toward the block and close to secure a grasp before lifting toward the target.",
+        "confidence": 0.41,
+        "corrective_position": [
+          1.41,
+          0.75,
+          0.43
+        ],
+        "corrective_action": [
+          1.0,
+          0.4,
+          0.2,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.41, 0.75, 0.43],\n  \"corrective_action\": [1.0, 0.4, 0.2, -1.0],\n  \"explanation\": \"At the critical frame the gripper is offset from the block and still open, so it should move toward the block and close to secure a grasp before lifting toward the target.\",\n  \"confidence\": 0.41\n}",
+        "judge": {
+          "plausibility": 0.85,
+          "goal_progress": 0.9,
+          "specificity": 0.8,
+          "verdict": "The proposed corrective position is within workspace limits and closer to the desired goal, and the action plausibly closes the gripper to secure the block before lifting."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50051,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.257919192314148,
+          0.82340008020401,
+          0.6285263299942017
+        ],
+        "achieved_goal_at_failure": [
+          1.3198094367980957,
+          0.5636326670646667,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 2.257916212081909,
+        "explanation": "At the critical mid-episode moment the arm should have moved toward the floating target while closing the gripper to secure the block instead of hovering away from it.",
+        "confidence": 0.41,
+        "corrective_position": [
+          1.257919192314148,
+          0.82340008020401,
+          0.6285263299942017
+        ],
+        "corrective_action": [
+          -0.8,
+          0.35,
+          0.55,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.257919192314148, 0.82340008020401, 0.6285263299942017],\n  \"corrective_action\": [-0.8, 0.35, 0.55, -1.0],\n  \"explanation\": \"At the critical mid-episode moment the arm should have moved toward the floating target while closing the gripper to secure the block instead of hovering away from it.\",\n  \"confidence\": 0.41\n}",
+        "judge": {
+          "plausibility": 0.85,
+          "goal_progress": 0.9,
+          "specificity": 0.8,
+          "verdict": "The correction sensibly directs the arm toward the target while closing the gripper, lies within workspace and action limits, and would meaningfully reduce the goal distance."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50068,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.4252541065216064,
+          0.7335234880447388,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.1734404563903809,
+          0.6250391602516174,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 2.2936205863952637,
+        "explanation": "At the critical frame the gripper is laterally misaligned with the block, so it should shift in +y and slightly down while closing to establish a secure grasp before lifting toward the target.",
+        "confidence": 0.42,
+        "corrective_position": [
+          1.3,
+          0.74,
+          0.425
+        ],
+        "corrective_action": [
+          0.0,
+          -0.6,
+          -0.2,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.3, 0.74, 0.425],\n  \"corrective_action\": [0.0, -0.6, -0.2, -1.0],\n  \"explanation\": \"At the critical frame the gripper is laterally misaligned with the block, so it should shift in +y and slightly down while closing to establish a secure grasp before lifting toward the target.\",\n  \"confidence\": 0.42\n}",
+        "judge": {
+          "plausibility": 0.7,
+          "goal_progress": 0.85,
+          "specificity": 0.6,
+          "verdict": "The corrective position moves clearly closer to the target and stays within workspace bounds, though the action vector's -0.2 z (downward) conflicts with the need to lift toward the floating target."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50085,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.3389878273010254,
+          0.8850302696228027,
+          0.5459770560264587
+        ],
+        "achieved_goal_at_failure": [
+          1.2428902387619019,
+          0.8713675141334534,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 2.4506280422210693,
+        "explanation": "At the critical moment the gripper had drifted away from the block, so it should have moved back over the block, descended to contact height, and closed to secure the grasp before lifting toward the target.",
+        "confidence": 0.62,
+        "corrective_position": [
+          1.34,
+          0.89,
+          0.55
+        ],
+        "corrective_action": [
+          0.9,
+          0.4,
+          -0.6,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.34, 0.89, 0.55],\n  \"corrective_action\": [0.9, 0.4, -0.6, -1.0],\n  \"explanation\": \"At the critical moment the gripper had drifted away from the block, so it should have moved back over the block, descended to contact height, and closed to secure the grasp before lifting toward the target.\",\n  \"confidence\": 0.62\n}",
+        "judge": {
+          "plausibility": 0.5,
+          "goal_progress": 0.85,
+          "specificity": 0.7,
+          "verdict": "The target position aligns well with the desired goal, but the action vector's negative z (descend) contradicts the need to lift upward toward the floating target, reducing physical consistency."
+        }
+      },
+      {
+        "env_name": "FetchPickAndPlace-v4",
+        "seed": 50102,
+        "episode_length": 50,
+        "task_description": "A robot arm must pick up a block from the table and place it at a floating target position.",
+        "desired_goal": [
+          1.4445830583572388,
+          0.8422929644584656,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.4710569381713867,
+          0.6785102486610413,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 2.735142946243286,
+        "explanation": "At the critical frame the end-effector is slightly offset and too high over the block, so it should move down while centering and closing the gripper to secure the grasp before lifting toward the target.",
+        "confidence": 0.55,
+        "corrective_position": [
+          1.33,
+          0.72,
+          0.44
+        ],
+        "corrective_action": [
+          0.2,
+          0.2,
+          -0.6,
+          -1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.33, 0.72, 0.44],\n  \"corrective_action\": [0.2, 0.2, -0.6, -1.0],\n  \"explanation\": \"At the critical frame the end-effector is slightly offset and too high over the block, so it should move down while centering and closing the gripper to secure the grasp before lifting toward the target.\",\n  \"confidence\": 0.55\n}",
+        "judge": {
+          "plausibility": 0.4,
+          "goal_progress": 0.2,
+          "specificity": 0.7,
+          "verdict": "The explanation is concrete but the corrective position moves away from the desired goal in x and y, making it unlikely to improve task success despite being within workspace bounds."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60000,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.3157259225845337,
+          0.7196225523948669,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.5188287496566772,
+          0.8417948484420776,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 2.8143370151519775,
+        "explanation": "At the midpoint the end-effector should have moved down and diagonally into the block's side (with the gripper open) to make firm contact and push it toward the target instead of hovering/missing it.",
+        "confidence": 0.44,
+        "corrective_position": [
+          1.3157,
+          0.7196,
+          0.4249
+        ],
+        "corrective_action": [
+          -0.6,
+          -0.3,
+          -0.2,
+          1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.3157, 0.7196, 0.4249],\n  \"corrective_action\": [-0.6, -0.3, -0.2, 1.0],\n  \"explanation\": \"At the midpoint the end-effector should have moved down and diagonally into the block's side (with the gripper open) to make firm contact and push it toward the target instead of hovering/missing it.\",\n  \"confidence\": 0.44\n}",
+        "judge": {
+          "plausibility": 0.8,
+          "goal_progress": 0.85,
+          "specificity": 0.8,
+          "verdict": "The proposed action direction (-x, -y) correctly drives the block toward the target and the explanation is concrete, though the -0.2 z component risks table collision since the block is already near the surface."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60017,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.4611833095550537,
+          0.6210954189300537,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2673813104629517,
+          0.705102801322937,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 2.5214176177978516,
+        "explanation": "At the critical frame the end-effector has drifted off to the right and away from the block, so it should move back left and slightly down to re-contact the block and push it toward the target.",
+        "confidence": 0.41,
+        "corrective_position": [
+          1.395,
+          0.665,
+          0.4249
+        ],
+        "corrective_action": [
+          -1.0,
+          -0.8,
+          -0.3,
+          1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.395, 0.665, 0.4249],\n  \"corrective_action\": [-1.0, -0.8, -0.3, 1.0],\n  \"explanation\": \"At the critical frame the end-effector has drifted off to the right and away from the block, so it should move back left and slightly down to re-contact the block and push it toward the target.\",\n  \"confidence\": 0.41\n}",
+        "judge": {
+          "plausibility": 0.4,
+          "goal_progress": 0.85,
+          "specificity": 0.6,
+          "verdict": "The corrective position is well-chosen and lies between the block and target, but the action vector points left (-x) when the block actually needs to be pushed right (+x) toward the target, contradicting the intended correction."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60034,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.3303241729736328,
+          0.8798641562461853,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2149897813796997,
+          0.7626038193702698,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 2.6315255165100098,
+        "explanation": "At the critical moment the end-effector lifted away instead of staying low and pushing toward the target, so it should move forward/up-table and down to make contact and drive the block to the goal.",
+        "confidence": 0.34,
+        "corrective_position": [
+          1.3303241729736328,
+          0.8798641562461853,
+          0.42489221692085266
+        ],
+        "corrective_action": [
+          0.6,
+          1.0,
+          -1.0,
+          1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.3303241729736328, 0.8798641562461853, 0.42489221692085266],\n  \"corrective_action\": [0.6, 1.0, -1.0, 1.0],\n  \"explanation\": \"At the critical moment the end-effector lifted away instead of staying low and pushing toward the target, so it should move forward/up-table and down to make contact and drive the block to the goal.\",\n  \"confidence\": 0.34\n}",
+        "judge": {
+          "plausibility": 0.75,
+          "goal_progress": 0.9,
+          "specificity": 0.8,
+          "verdict": "The correction sensibly directs the end-effector forward and down to push the block toward the goal, though the corrective_position equals the desired goal which is aspirational rather than a single-step achievable waypoint."
+        }
+      },
+      {
+        "env_name": "FetchPush-v4",
+        "seed": 60051,
+        "episode_length": 50,
+        "task_description": "A robot arm must push a block on a table to a target position.",
+        "desired_goal": [
+          1.3167601823806763,
+          0.7779345512390137,
+          0.42489221692085266
+        ],
+        "achieved_goal_at_failure": [
+          1.2256109714508057,
+          0.8504523634910583,
+          0.42489224672317505
+        ],
+        "failure_timestep": 25,
+        "failure_frame_pct": 51.02040816326531,
+        "wall_time_seconds": 2.8241710662841797,
+        "explanation": "At the midpoint the end-effector was pushing past the block without maintaining contact, so it should have moved slightly down and toward the target to re-establish a stable lateral push toward the goal.",
+        "confidence": 0.43,
+        "corrective_position": [
+          1.3167601823806763,
+          0.7779345512390137,
+          0.42489221692085266
+        ],
+        "corrective_action": [
+          0.7,
+          0.3,
+          -0.2,
+          1.0
+        ],
+        "parse_error": null,
+        "raw_response": "{\n  \"corrective_position\": [1.3167601823806763, 0.7779345512390137, 0.42489221692085266],\n  \"corrective_action\": [0.7, 0.3, -0.2, 1.0],\n  \"explanation\": \"At the midpoint the end-effector was pushing past the block without maintaining contact, so it should have moved slightly down and toward the target to re-establish a stable lateral push toward the goal.\",\n  \"confidence\": 0.43\n}",
+        "judge": {
+          "plausibility": 0.75,
+          "goal_progress": 0.9,
+          "specificity": 0.8,
+          "verdict": "The correction sensibly directs the end-effector toward the target with a downward component to re-establish contact, and both the position and action lie within workspace and action bounds."
+        }
+      }
+    ]
+  }
+}
