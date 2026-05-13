@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.11)  12 MAY 2026 22:51
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.11)  12 MAY 2026 23:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -589,13 +589,16 @@ st/fonts/enc/dvips/base/8r.enc}]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [2]
-[3] [4] [5]
-Underfull \hbox (badness 10000) in paragraph at lines 479--479
+[3] [4]
+Underfull \vbox (badness 7344) has occurred while \output is active []
+
+ [5]
+Underfull \hbox (badness 10000) in paragraph at lines 491--491
 []|\T1/ptm/m/n/9 (+20) MiniGrid, OG-Bench
  []
 
 [6] [7] [8] [9]
-Underfull \hbox (badness 1019) in paragraph at lines 896--910
+Underfull \hbox (badness 1019) in paragraph at lines 908--922
  []\T1/ptm/b/n/10 (+20) Why out-put type mat-ters: a mech-a-nis-tic ac-count.[]
  \T1/ptm/m/n/10 (+20) The two position-emitting vari-ants
  []
@@ -604,40 +607,43 @@ Underfull \hbox (badness 1019) in paragraph at lines 896--910
 <fig_envs.pdf, id=495, 468.07275pt x 403.40436pt>
 File: fig_envs.pdf Graphic file (type pdf)
 <use fig_envs.pdf>
-Package pdftex.def Info: fig_envs.pdf  used on input line 1093.
+Package pdftex.def Info: fig_envs.pdf  used on input line 1105.
 (pdftex.def)             Requested size: 397.48499pt x 342.57523pt.
  [12] [13 <./fig_envs.pdf>]
-<fig_headline_v4.pdf, id=592, 447.08908pt x 310.99261pt>
+<fig_headline_v4.pdf, id=590, 447.08908pt x 310.99261pt>
 File: fig_headline_v4.pdf Graphic file (type pdf)
 <use fig_headline_v4.pdf>
-Package pdftex.def Info: fig_headline_v4.pdf  used on input line 1177.
+Package pdftex.def Info: fig_headline_v4.pdf  used on input line 1189.
 (pdftex.def)             Requested size: 377.60951pt x 262.67459pt.
  [14 <./fig_headline_v4.pdf>]
-<figN_c1v2_model_comparison.pdf, id=711, 482.07416pt x 189.42987pt>
+<figN_c1v2_model_comparison.pdf, id=712, 482.07416pt x 189.42987pt>
 File: figN_c1v2_model_comparison.pdf Graphic file (type pdf)
 <use figN_c1v2_model_comparison.pdf>
-Package pdftex.def Info: figN_c1v2_model_comparison.pdf  used on input line 126
-5.
+Package pdftex.def Info: figN_c1v2_model_comparison.pdf  used on input line 127
+7.
 (pdftex.def)             Requested size: 377.60951pt x 148.38193pt.
  [15] [16 <./figN_c1v2_model_comparison.pdf>]
-<figN2_cross_task_transfer.pdf, id=787, 430.2041pt x 212.99736pt>
+<figN2_cross_task_transfer.pdf, id=788, 430.2041pt x 212.99736pt>
 File: figN2_cross_task_transfer.pdf Graphic file (type pdf)
 <use figN2_cross_task_transfer.pdf>
-Package pdftex.def Info: figN2_cross_task_transfer.pdf  used on input line 1412
+Package pdftex.def Info: figN2_cross_task_transfer.pdf  used on input line 1424
 .
 (pdftex.def)             Requested size: 337.86465pt x 167.28453pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
  [17 <./figN2_cross_task_transfer.pdf>]
 <figN_c1v2_real_vs_synthetic.pdf, id=845, 615.77367pt x 212.65076pt>
 File: figN_c1v2_real_vs_synthetic.pdf Graphic file (type pdf)
 <use figN_c1v2_real_vs_synthetic.pdf>
-Package pdftex.def Info: figN_c1v2_real_vs_synthetic.pdf  used on input line 14
-95.
+Package pdftex.def Info: figN_c1v2_real_vs_synthetic.pdf  used on input line 15
+07.
 (pdftex.def)             Requested size: 377.60951pt x 130.4079pt.
- [18]
-[19 <./figN_c1v2_real_vs_synthetic.pdf>] [20]
+ [18] [19 <./figN_c1v2_real_vs_synthetic.pdf>]
+[20]
 
 LaTeX Warning: Reference `tab:vlm_comparison' on page 21 undefined on input lin
-e 1762.
+e 1774.
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
@@ -648,80 +654,76 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 
-Underfull \hbox (badness 1590) in paragraph at lines 1807--1850
+Underfull \hbox (badness 1590) in paragraph at lines 1819--1862
 \T1/ptm/m/n/10 (+20) (run-ning mean of $\OMS/cmsy/m/n/10 k[] ^^@ \OML/cmm/m/it/
 10 g\OMS/cmsy/m/n/10 k[]$ \T1/ptm/m/n/10 (+20) for ac-cepted CFs), in-tro-duced
  in com-mit \T1/cmtt/m/n/10 a23998b\T1/ptm/m/n/10 (+20) : un-der
  []
 
 
-Underfull \vbox (badness 1237) has occurred while \output is active []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [22]
 [23] [24] (./main.bbl [25] [26])
-Underfull \hbox (badness 10000) in paragraph at lines 2086--2087
+Underfull \hbox (badness 10000) in paragraph at lines 2098--2099
 []\T1/cmtt/m/n/9 You are an expert robotics analyst. The robot is attempting th
 e
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2086--2087
+Underfull \hbox (badness 10000) in paragraph at lines 2098--2099
 \T1/cmtt/m/n/9 following task: {task_description}. Examine the {K} keyframes of
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2086--2087
+Underfull \hbox (badness 10000) in paragraph at lines 2098--2099
 \T1/cmtt/m/n/9 a failed episode shown below. Identify the single keyframe index
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2086--2087
+Underfull \hbox (badness 10000) in paragraph at lines 2098--2099
 \OMS/cmsy/m/n/9 2 f\OT1/cmr/m/n/9 0\OML/cmm/m/it/9 ; [] ; K  \OMS/cmsy/m/n/9 ^^
 @  \OT1/cmr/m/n/9 1\OMS/cmsy/m/n/9 g$ \T1/cmtt/m/n/9 at which the failure becam
 e inevitable, and a 1-2
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2086--2087
+Underfull \hbox (badness 10000) in paragraph at lines 2098--2099
 \T1/cmtt/m/n/9 sentence reasoning. Return strict JSON: {``failure_frame_index''
 : $\OML/cmm/m/it/9 i$\T1/cmtt/m/n/9 ,
  []
 
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 2
-092.
+104.
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 )
-Underfull \hbox (badness 2368) in paragraph at lines 2092--2093
+Underfull \hbox (badness 2368) in paragraph at lines 2104--2105
 []\T1/ptm/m/n/10 (+20) FetchPush: \T1/cmtt/m/n/10 ``the robot should push the r
 ed cube to the green target on
  []
 
 
-Underfull \hbox (badness 1502) in paragraph at lines 2093--2094
+Underfull \hbox (badness 1502) in paragraph at lines 2105--2106
 []\T1/ptm/m/n/10 (+20) FetchPickAndPlace: \T1/cmtt/m/n/10 ``the robot should pi
 ck up the red cube and place it
  []
 
 
-Underfull \hbox (badness 1552) in paragraph at lines 2094--2095
+Underfull \hbox (badness 1552) in paragraph at lines 2106--2107
 []\T1/ptm/m/n/10 (+20) FetchSlide: \T1/cmtt/m/n/10 ``the robot should strike th
 e red puck so that it slides to
  []
 
 [27] (./appendix.tex
 \c@algctr=\count303
- [28] [29]
-Underfull \vbox (badness 1571) has occurred while \output is active []
+ [28]
+Underfull \vbox (badness 1215) has occurred while \output is active []
 
- [30]
-[31]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [32]
-[33]
+ [29]
+[30] [31] [32] [33]
 Underfull \hbox (badness 1072) in paragraph at lines 587--611
  []\T1/ptm/b/n/10 (+20) Specialization of V-trace.[] \T1/ptm/m/n/10 (+20) V-tra
 ce de-fines per-step IS ra-tios $\OML/cmm/m/it/10 ^^Z[] \OT1/cmr/m/n/10 = \OML/
@@ -828,11 +830,11 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 Here is how much of TeX's memory you used:
  14770 strings out of 476182
  225006 string characters out of 5795595
- 1966975 words of memory out of 5000000
+ 1964975 words of memory out of 5000000
  35671 multiletter control sequences out of 15000+600000
  670854 words of font info for 492 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 75i,18n,79p,1398b,670s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,18n,79p,1398b,686s stack positions out of 10000i,1000n,20000p,200000b,200000s
  </home/daniel-grant/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectc1
 000.600pk> </home/daniel-grant/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/
 ec/ectt0900.600pk> </home/daniel-grant/.texlive2023/texmf-var/fonts/pk/ljfour/j
@@ -858,10 +860,10 @@ hare/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/sh
 are/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/urw/times/utmri8a.pfb>
-Output written on main.pdf (47 pages, 1050297 bytes).
+Output written on main.pdf (47 pages, 1050963 bytes).
 PDF statistics:
- 1707 PDF objects out of 1728 (max. 8388607)
- 1125 compressed objects within 12 object streams
+ 1708 PDF objects out of 1728 (max. 8388607)
+ 1126 compressed objects within 12 object streams
  284 named destinations out of 1000 (max. 500000)
  97642 words of extra memory for PDF output out of 106986 (max. 10000000)
 

@@ -92,7 +92,19 @@ and, very recently, for replay-buffer prioritization \citep{sharony2026vlmrb}. W
 argue these uses are best framed not as engineering recipes but as
 \emph{importance-sampled stochastic optimization with a foundation-model proposal
 distribution}: the VLM is a frozen approximation to the (intractable) posterior
-$p(t^\star\mid\tau)$ over which transitions caused an episode's outcome.
+$p(t^\star\mid\tau)$ over which transitions caused an episode's outcome. This
+framing exposes a structural constraint---the \emph{IS-pairing requirement}---that
+any non-uniform replay proposal must satisfy: the IS correction weight must be
+matched to the proposal; changing the proposal without adjusting the weight
+implicitly retargets the gradient to a different objective. Two consequences
+follow. First, the multiplicative form $\mu\!\propto\!\mu_P\!\cdot\!w_{\text{sem}}$
+is the structurally correct coupling because it keeps the standard PER IS weight
+trajectory-conditionally valid; the additive mixture of concurrent work
+\citep{sharony2026vlmrb} does not. Second, when the VLM generator is paired with
+the \emph{training simulator itself} as a symbolic verifier, the acceptance gate
+acts as an \emph{adaptive filter} whose pass-band widens monotonically as policy
+precision improves---making the cold-start verifier-rejection regime transitory
+by construction rather than a permanent throughput tax.
 
 This paper makes four contributions.
 
