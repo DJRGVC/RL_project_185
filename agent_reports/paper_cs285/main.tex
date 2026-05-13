@@ -85,9 +85,14 @@ parse / task-relevance / plausibility on Push / PickAndPlace / Slide.
 \paragraph{Honest negative and roadmap.}
 The verified-CF channel exhibits a cold-start regime (FetchPickAndPlace
 seed~42: 100\% verifier-rejection over the first $\sim\!80$ VLM calls) in
-which it reduces to a strictly costlier HER; the two failure modes are
+which it reduces to a costlier HER; the two failure modes are
 asymmetric (Semantic-PER variance inflation is bounded; verified-CF
-write-throughput collapse is not). \S\ref{sec:method} presents the
+write-throughput collapse is not).
+The multiplicative-vs-additive distinction is established analytically
+(Eq.~\ref{eq:headline}, App.~\ref{app:bias-bound}); the faithful Sharony
+VLM-RB head-to-head reproduction is pre-staged in our codebase
+(\texttt{src/buffers/vlm\_rb\_buffer.py}) and deferred to camera-ready.
+\S\ref{sec:method} presents the
 IS-posterior framing and verifier; \S\ref{sec:exp} reports headline,
 prompt, and kill results; \S\ref{sec:discussion} discusses limitations.
 Appendices contain prompts, hyperparameters, and the bias-bound sketch.
@@ -145,9 +150,10 @@ action cannot teleport a 50\,g block by 50\,cm under MuJoCo
 \textbf{(3) Empirical analysis: prompt design, VLM-family robustness, and
 cross-task transfer.}
 A head-to-head GPT-4o vs.\ Claude Opus 4.7 sweep on six synthetic Fetch
-failures identifies a strictly-dominating configuration:
+failures identifies a best non-degenerate configuration:
 \texttt{(GPT-4o, achieved\_goal)} eliminates teleport-collapse (0/6 vs.\
-Opus's 4/4). A second sweep on ten \emph{real} SAC-failure episodes
+Opus's 4/4); Opus retains a higher goal-progress score, but that score
+is attained by literal goal-copying. A second sweep on ten \emph{real} SAC-failure episodes
 confirms the fix transfers to a third VLM family (Sonnet~4.5).
 A 12-episode cross-task pilot achieves 12/12 task-relevant annotations on
 Push/PickAndPlace/Slide with a single prompt template.
@@ -354,8 +360,8 @@ tasks (mean $\pm$ SE, $n\!=\!3$ seeds; individual seeds overlaid).}
 italic gray stamp under each bar gives the training budget: Uniform/PER
 at 3M, HER at 250k, \emph{vlm\_cf} and \emph{verified\_cf} (ours) at
 500k, Oracle-CF at 250k (Push/Slide) or 1M (PickAndPlace).
-Within-horizon comparisons (same stamp) are statistically meaningful;
-cross-horizon comparisons should be read as efficiency claims.}
+Within-horizon comparisons (same stamp) are seed-level comparable at
+$n\!=\!3$; cross-horizon comparisons should be read as efficiency claims.}
 \label{fig:headline}
 \end{figure}
 
@@ -391,12 +397,12 @@ physics-consistent CF strike supplies the missing positive TD target.
 \label{sec:exp:prompt}
 
 A head-to-head Opus 4.7 vs.\ GPT-4o sweep on six bit-identical synthetic
-Fetch failures (Table~\ref{tab:prompt-variants}) identifies a
-strictly-dominating configuration: \texttt{(GPT-4o, achieved\_goal)}
+Fetch failures (Table~\ref{tab:prompt-variants}) identifies a best
+non-degenerate configuration: \texttt{(GPT-4o, achieved\_goal)}
 eliminates teleport-collapse ($0/6$ vs.\ Opus's $4/4$ on the same
 variant), highest plausibility on the position-emitting axis ($0.79$),
 and second-highest goal-progress ($0.83$, behind only Opus's $0.97$ which
-is achieved by literal goal-copying---a degenerate ``win''). Critically,
+is attained by literal goal-copying---a degenerate ``win''). Critically,
 GPT-4o still teleport-collapses in $4/6$ \textsc{all} episodes: the failure
 is \emph{prompt-architectural}, not model-specific. The load-bearing
 $0/6$ vs.\ $4/4$ contrast is judge-independent (decided by Euclidean
