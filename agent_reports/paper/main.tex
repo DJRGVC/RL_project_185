@@ -2061,6 +2061,9 @@ benefit---remains unablated.  The pre-registered $(W, w_{\max})$ sweep
 $W\!\in\!\{1,3,5,10\}$, but a direct clip-vs-timestep comparison on a fixed
 policy requires held-out data not yet collected; this ablation is a camera-ready
 priority once the Phase~2 in-flight runs conclude.
+A parallel sweep over the counterfactual mixing probability $p_{\text{CF}}\!\in\!\{0.0, 0.10, 0.25, 0.50, 0.75, 1.00\}$ --- the per-episode probability of activating a VLM-CF relabel versus falling back to the standard HER relabel --- is running at time of writing (18 runs, FetchPickAndPlace-v4, 500\,k steps, W\&B tag \texttt{path\_c\_vlm\_cf\_psweep\_2026-05-12}).
+Partial results (6/18 complete) are directionally consistent with the IS-posterior framing's prediction: $p_{\text{CF}}\!=\!0.00$ (pure HER) and $p_{\text{CF}}\!=\!0.25$ achieve comparable means ($0.330 \pm 0.045$ and $0.327 \pm 0.107$, $n\!=\!3$ seeds each), while the three highest-mass cells ($p_{\text{CF}}\!\in\!\{0.75, 1.00\}$, partial reads) are tracking $0.04$--$0.10$---consistent with a noisy $q_\phi$ at high CF injection rate overriding the HER relabel signal that provides most of the learning leverage on Fetch.
+We pre-register $p_{\text{CF}}\!=\!0.25$ as the production value (already used in Phase~2) pending the full 18-run result.
 (viii) The methodological differentiation from VLM-RB \citep{sharony2026vlmrb}
 in Table~\ref{tab:differentiation} rests on five axes, but the comparison is
 \emph{architectural}, not empirical: we do not run Semantic~PER on MiniGrid or
