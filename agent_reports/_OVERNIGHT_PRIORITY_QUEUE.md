@@ -1,7 +1,23 @@
 # Overnight Priority Queue — Daniel asleep, target morning bulletproof
 
-**Updated:** 2026-05-13 00:15 PDT
+**Updated:** 2026-05-13 02:20 PDT
 **Active mandate:** "Act as a 185 grader. Identify what's wrong. Run/edit until bulletproof. Use as much usage as need be."
+
+## 🚨 NEW HARD CONSTRAINTS (user mandate 2026-05-13 02:15 PDT)
+
+**PAGE LIMITS — STRICT:**
+- CS 285 paper: **8 pages main body + ~5 pages appendix MAX = ~13 pages total**
+- Current 42pp → must cut to ~13pp (70% reduction)
+- "only include most relevant and bulletproof info"
+
+**EVERY OVERNIGHT AGENT MUST**:
+1. Read `agent_reports/_GRADER_REFERENCE.md` BEFORE editing the CS 285 paper
+2. Respect the full 4-axis rubric matrix (Poor/Fair/Good/Excellent) — target Excellent on all 4
+3. Honor the 8+5 page limits
+4. Honor the hard guardrails (Extended Abstract, fig_headline_v4, verified-CF numbers, §1 bullets, §6 (ix), Contributions)
+5. Edit `paper_cs285/main.tex` and `paper_cs285/appendix.tex` for CS 285 work
+6. Edit `paper/main.tex` for NeurIPS preprint work (separate file)
+7. NEVER cross-contaminate the two papers
 
 ## STANDING DIRECTIVES FOR ALL OVERNIGHT AGENTS
 

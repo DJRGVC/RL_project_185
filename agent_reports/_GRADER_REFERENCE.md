@@ -16,21 +16,30 @@
 - **Final Report: May 13, 2026 — TODAY** ⚠️
 - Worth 15% of final grade (out of 20% project total; proposal 2.5%, milestone 2.5%)
 
-## What graders evaluate (the rubric)
+## What graders evaluate (the FULL rubric matrix, VERBATIM from outline)
 
 **THE EXTENDED ABSTRACT IS THE PRIMARY GRADING ARTIFACT.** Direct quote:
 > "We will primarily use the extended abstract for grading, and refer to your methods and experiments if we need to better understand the correctness of the solution."
 
-The 1-page Extended Abstract must, on its own, convince graders that the project is excellent across all 4 rubric axes.
+The 1-page Extended Abstract must, on its own, convince graders that the project is **Excellent** across all 4 rubric axes.
 
-### Four-axis rubric — what "Excellent (90-100%)" means
+### Four-axis rubric matrix (VERBATIM, all four columns)
 
-| Axis | Excellent (90-100%) | Our status |
+| Axis | Poor (0-50%) | Fair (50-75%) | Good (75-90%) | **Excellent (90-100%)** |
+|---|---|---|---|---|
+| **Novelty** | Replicates existing work without new contributions or perspectives. | Applies existing work to a new environment without novel perspective. | Replicates existing work with some modifications. | **Substantively original implementation or perspectives.** |
+| **Scope** | No implementation effort, e.g., running existing code on existing problem without in-depth analysis. | Relatively little implementation or analysis effort per group member. | Nearly ambitious enough for a workshop paper, with some missed opportunities. | **Similar scope to a conference workshop paper.** |
+| **Analysis** | No comparison with baselines or ablations. Experiments do not evaluate the proposed problem. | Experiments are trivial/superficial/do not test the proposed setting. Inappropriate baselines or ablations. | Solid comparison with multiple baselines and some ablations. Experiments effectively test the problem setting. | **Compares with several baselines and ablations. Experiments are well thought-out and explain why the methods work or don't work.** |
+| **Completeness** | No results due to incomplete implementation or training failure. Key elements are missing or not functional. | Implementation with significant issues. Experiments fail to effectively compare methods (e.g., all methods are identical). | Substantially complete. Experimental results differentiate between methods but may lack some discussion. | **All experiments are complete and results are discussed fully.** |
+
+### Our target: Excellent on ALL 4 axes (target 100%)
+
+| Axis | Evidence for Excellent | Status |
 |---|---|---|
-| **Novelty** | "Substantively original implementation or perspectives" | ✅ IS-posterior framing of Semantic PER + Verified CF via sim-fork + two-regime degeneracy taxonomy + generator-verifier dichotomy |
-| **Scope** | "Similar scope to a conference workshop paper" | ✅ 46pp NeurIPS-style paper. CS 285 paper at 45pp — **but main body too long; needs trim to 8-12pp** |
-| **Analysis** | "Compares with several baselines and ablations. Experiments are well thought-out and **explain why the methods work or don't work**" | ✅ HER + PER + Oracle-CF + Sharony repro + p_counterfactual sweep + 2×2 prompt ablation. ⚠️ "Why" explanation: §6 (ix) transitory cold-start, §5.5 policy-precision bridge — must be prominent in Extended Abstract |
-| **Completeness** | "All experiments are complete and results are discussed fully" | ⚠️ At risk: HER@1M finishing overnight, p_counterfactual sweep finishing ~02:00, Wave B running until ~21:00 tmrw. **Anything cited must actually be complete by submission.** |
+| **Novelty** | IS-posterior reweighting framing + multiplicative-vs-additive Sharony differentiation + Verified-CF sim-fork + two-regime degeneracy taxonomy + adaptive-filter insight (§2.4) | ✅ original substantive |
+| **Scope** | 3 envs × n=3 seeds at multiple horizons + 2 methodological contributions + 4+ baselines + multiple ablations | ✅ workshop-paper scope IF main body trimmed to ~8pp |
+| **Analysis** | Per-env mechanism explanations (§6 (ix) transitory cold-start; §5.5 policy-precision; §2.4 adaptive-filter); multiple baselines (HER, PER, Oracle-CF, Sharony, vlm_cf, verified_cf); ablations (p_counterfactual sweep, 2×2 prompt) | ✅ "WHY" explanations present |
+| **Completeness** | All cited results must be done + discussed. NO "in flight" wording in final paper. | ⚠️ Wave B + matched-horizon HER@500k may not finish before submission — anything not done must be cut from claims |
 
 ## Required Sections (per outline)
 
@@ -64,28 +73,58 @@ The 1-page Extended Abstract must, on its own, convince graders that the project
 - Discussion & Limitations
 - Contributions (one-line per team member)
 
-### Current state (as of 2026-05-13 02:00 PDT)
-- CS 285 paper total: **42 pages** (1.0 MB PDF)
-- Main body: **pages 1-17** (Extended Abstract on p1, then §1-§6+Contributions+Refs)
-- Appendix: **pages 18-42** (~25 pages)
+### HARD page targets (USER MANDATE 2026-05-13 02:15 PDT)
 
-### Main body is 17pp vs 8pp target = 2.1x over
-- Outline says "we will not penalize shorter or longer" — so technically OK
-- BUT "please keep the length reasonable" — a harsh grader could view 17pp main as unreasonable for a 3-person team workshop paper
-- **Further trimming recommended ONLY if the trim preserves all 4 rubric axes' content**
+- **Main body: 8 pages** (matches outline "about 8 pages" target)
+- **Appendix: ~5 pages MAX**
+- **Total: ~13 pages** (current 42pp must be cut to ~13pp — 70% reduction)
 
-### Acceptable trimming targets (in priority order, only if needed)
-1. §3 Theory body — currently retains derivation sketches that could be 1-paragraph + appendix ref
-2. §5.3, §5.4, §5.5 — sub-analyses with cross-refs to appendix already; main body summaries could be tighter
-3. §6 (i)-(iii) main-body limitations — could compress
+### Current state
+- CS 285 paper total: 42 pages (1.0 MB PDF) — **MUST CUT TO ~13 PAGES**
+- Main body: 17 pages (cut to 8)
+- Appendix: 25 pages (cut to ~5)
 
-### Trimming guardrails (DO NOT cut)
-- Extended Abstract (graders' primary artifact)
-- §5.6 (C) and (D) — main empirical results (Push/PnP/Slide × vlm_cf/verified_cf)
-- §1 contribution bullets (4 bullets)
-- §6 (ix) cold-start transitory framing
-- Per-member Contributions section
-- Any cited figure
+### Trim allocation (8 pages main body)
+
+| Section | Target pages | What to keep |
+|---|---:|---|
+| Extended Abstract | 1.0 | Verified-CF mean 0.606 + Slide win 0.617 + IS-pairing principle + adaptive-filter; honest negative (transitory cold-start) |
+| §1 Introduction | 1.0 | Problem framing + 4 contribution bullets (high level only) |
+| §2 Related Work | 0.5 | Sharony differentiation (multiplicative vs additive IS-pairing) — concise |
+| §3 Method | 1.5 | Semantic PER (IS-posterior) + Verified-CF (sim-fork); ONE equation each; details to appendix |
+| §4 Experiments/Results | 2.5 | fig_headline_v4 + per-env numbers in prose + §5.6 (C)(D) integrated |
+| §5 Discussion & Limitations | 1.0 | §6 (ix) transitory cold-start + 2-3 other limitations + future work |
+| §6 Contributions | 0.5 | Per-member 1-line bullets |
+
+### Appendix allocation (~5 pages)
+
+ONLY the most essential supporting material. Cut ruthlessly. Suggested:
+- A. Hyperparameter tables (0.5 pp)
+- B. Bias-bound proof sketch (1 pp) — full proof at GitHub
+- C. Per-env reproduction notes (1 pp)
+- D. 2-3 supporting figures from §5.3-§5.5 if needed (1.5 pp)
+- E. Broader impacts (1 pp)
+
+### Hard guardrails — DO NOT cut
+
+1. **Extended Abstract** (graders' primary artifact)
+2. **fig_headline_v4** with horizon stamps
+3. **Verified-CF empirical numbers** (Push 0.85, PnP 0.35, **Slide 0.617**, mean 0.606)
+4. **vlm_cf empirical numbers** (Push 0.95, PnP 0.367, Slide 0.55, mean 0.622)
+5. **§1 contribution bullets** (named contributions)
+6. **§6 (ix) transitory cold-start framing**
+7. **Per-member Contributions section**
+8. **At least 2 baselines + 2 ablations cited** (for Analysis rubric Excellent)
+9. **At least one "explain why the method works" passage** (Analysis rubric language)
+
+### Cut targets (in priority order)
+
+1. §3 long-form derivations → appendix
+2. §5.3 / §5.4 / §5.5 sub-analyses → appendix summary or cut entirely
+3. §6 (i)-(viii) limitations → keep 2-3 most important in main, cut rest
+4. Appendix sections B.1, B.2, B.3 (V-trace specializations, two-regime taxonomy) → cut or 1-paragraph summary
+5. Appendix D-G → cut or merge
+6. Bib entries not cited in body → remove
 
 ## Anti-patterns to avoid (would cost points)
 
