@@ -323,6 +323,44 @@ for---precisely the structural failure mode the paragraph above identifies.
 We return to this contrast in Table~\ref{tab:taxonomy} and in
 Section~\ref{sec:method:sper}.
 
+\paragraph{Demonstration-augmented replay.}
+A parallel family modifies the replay distribution from the
+\emph{content} side rather than the score side: expert trajectories are
+pre-loaded into the buffer, typically with an elevated priority that
+decays only through standard PER updates. DDPGfD~\citep{vecerik2017ddpgfd}
+and DQfD~\citep{hester2018dqfd} are the canonical examples in
+continuous and discrete control respectively; DAPG~\citep{rajeswaran2017dapg}
+and the demo-bootstrapped variants
+of~\citet{nair2018overcomingexploration} use the same two-mechanism
+recipe (seed the buffer with successes, sample them more often than
+fresh online transitions) and report large sample-efficiency gains on
+sparse-reward manipulation. Two mechanisms are conflated in this
+recipe---\emph{what} is in the buffer and \emph{how often} it is
+sampled---and the relative contribution of each is rarely ablated.
+A small auxiliary sweep on MetaWorld~\citep{yu2019metaworld}
+(\S\ref{sec:disc:metaworld}; full setup, results table, figures, and
+code trace in Appendix~\ref{app:metaworld}) attempts to disentangle
+them and surfaces a methodological subtlety: under the standard
+Schaul~\citep{schaul2016per} ``insert new transitions at the running
+$\max$-priority'' convention, pinning demonstrations at a fixed
+elevated priority is mathematically equivalent to flat priorities,
+because the $p_i^\alpha/\sum_j p_j^\alpha$ normalization is invariant
+under a multiplicative constant applied uniformly across all entries.
+The two variants therefore reduce to the same sampler whenever the
+pinned demo priority is below or equal to the largest TD-error-induced
+$\max$-priority the online stream subsequently inherits---an
+implementation-detail collapse, not a methodological one, but one that
+affects how the demo-priority mechanism is typically built on top of
+PER infrastructure. Cleanly testing demo priority requires either
+inserting online transitions at $\texttt{default\_priority}$ rather
+than $\max$-priority, capping online priorities below the pinned demo
+floor, or maintaining demo and online entries in two separate pools
+mixed at a fixed ratio (the SACfD/DAPG approach). Semantic~PER
+(\S\ref{sec:method:sper}) is not vulnerable to the same collapse:
+$w_{\text{sem}}$ varies continuously across transitions within the
+same episode and across episodes, so its action on the sampler is not
+absorbed by the constant-scale invariance.
+
 \paragraph{Foundation models in RL.}
 The 2024--2026 literature on foundation models in RL is best understood through
 \emph{where in the training loop} the VLM/LLM output is consumed.
@@ -2022,6 +2060,58 @@ cross-task. A camera-ready submission would scale these to $n\!\ge\!30$ per
 condition with bootstrapped CIs. The cross-task 12/12 is suggestive of strong
 transfer but not statistically distinguishable from an 80\% true rate at
 $n\!=\!12$. We pre-register the larger sweeps as the follow-on.
+
+\paragraph{Cross-benchmark corroboration on MetaWorld.}
+\label{sec:disc:metaworld}
+A small auxiliary sweep---$3$ tasks $\times$ $4$ replay variants
+$\times$ $5$ seeds $=$ $60$ SAC runs at $500$\,k env steps, $130.5$
+L4-GPU-hours---on MetaWorld~v3~\citep{yu2019metaworld} corroborates
+this paper's central premise that the replay sampler is load-bearing
+in sparse-reward continuous control. Full setup, per-variant
+results table with bootstrap CIs, figures, the implementation-detail
+code trace, and the pre-registered follow-on appear in
+Appendix~\ref{app:metaworld}
+(Table~\ref{tab:mw:results}, Figures~\ref{fig:mw:final}--\ref{fig:mw:curves}). Reward was replaced by
+$\texttt{float(success)}$ on \texttt{drawer-open-v3},
+\texttt{sweep-into-v3}, and \texttt{button-press-v3}, holding all
+other SAC hyperparameters fixed. Vanilla TD-error PER cut
+env-steps-to-$0.8$-success by roughly half over uniform replay (median
+across reaching seeds: uniform $455$k\,/\,$220$k\,/\,$80$k;
+PER $375$k\,/\,$300$k\,/\,$213$k) and lifted final success at
+$500$k by $+0.44$, $+0.12$, $+0.40$ on the three tasks respectively.
+We had pre-registered the opposite hypothesis---that TD-error PER
+contributes little in sparse-reward SAC because near-uniform TD errors
+dominate the early training phase---and the data refute it. The
+mechanism is the same one that motivates Semantic~PER's
+priority-shaping in this paper: once the first reward-bearing
+transitions occur, their elevated TD errors push the running
+$\texttt{max\_priority}$ that all subsequent online inserts inherit
+under Schaul's convention, propagating the signal forward as a
+recency boost layered on top of the TD-error bias. The independent
+corroboration is useful because the MetaWorld task family does not
+admit HER (no goal-conditioned reward function), so the result
+isolates the priority mechanism from the relabeling mechanism that
+dominates Fetch.
+Demonstration content (10 scripted-expert episodes pre-loaded
+into the buffer) saturates the two easier tasks---$1.00 \pm 0.00$
+final success across all five seeds on \texttt{drawer-open-v3} and
+\texttt{button-press-v3}, with steps-to-$0.8$ falling to $176$k and
+$32$k---but is insufficient on the harder \texttt{sweep-into-v3}
+($0.32 \pm 0.39$ final, despite all five seeds first crossing $0.8$
+success around $192$k steps). The exploration-then-stability split is
+the regime where mere buffer seeding underprovides credit-assignment
+signal: demos suffice to first stumble onto a successful trajectory
+but the policy does not stay there. This is precisely the regime
+Semantic~PER and verified-counterfactual hindsight were designed for,
+and a head-to-head Semantic~PER evaluation on MetaWorld manipulation
+is pre-registered as a follow-on. The auxiliary sweep also confirms
+the demo-replay~$\equiv$~demo-priority equivalence under the Schaul
+max-priority insert convention discussed in \S\ref{sec:related}
+(``Demonstration-augmented replay''): every (task, seed) pair
+produced bit-identical eval curves between the two variants, isolating
+the collapse to the priority-pinning implementation rather than to the
+demonstration-augmentation idea itself, and supporting the
+methodological recommendation made there.
 
 \paragraph{The oracle-CF kill experiment: result.}
 Our pre-registered kill criterion was violated: Oracle-CF underperformed
