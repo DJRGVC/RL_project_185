@@ -37,7 +37,7 @@
 \paragraph{Problem.}
 Sparse-reward manipulation is, at its core, a credit-assignment
 problem. On Gymnasium-Robotics Fetch~\citep{delazcano2024gymrobotics}
---- Push, PickAndPlace, Slide --- a fresh policy succeeds on fewer
+(Push, PickAndPlace, Slide), a fresh policy succeeds on fewer
 than one in a hundred episodes. The single bit of reward at the end
 of a 50-step trajectory must bootstrap backward through TD, and it
 decays geometrically along the way. HER patches over part of this by
@@ -62,7 +62,7 @@ The additive VLM-RB mixture, by contrast, quietly retargets the Bellman
 loss to a $\lambda$-weighted objective and does not correct for the
 shift.
 \textbf{(2) VLM-Verified Counterfactual Hindsight.}
-Asking a VLM for an alternative goal --- in language --- has a single
+Asking a VLM for an alternative goal in language has a single
 dominant failure: total teleport-collapse on Opus~4.7 over FetchPush.
 Our workaround is structural: ask instead for a corrective action
 sequence, run it in a fork of the training simulator, and only write
@@ -74,7 +74,7 @@ Confidence is then exactly $1.0$. Modeling error is exactly zero.
 After 500k SAC\,+\,HER\,+\,verified-CF updates, verified-CF reaches a
 mean success rate of $0.606$ across the three Fetch envs
 ($0.85 / 0.35 / 0.617$ on Push / PickAndPlace / Slide). VLM-CF hits
-$0.622$ --- effectively a tie at three seeds ($\Delta = -0.016$, mean
+$0.622$, effectively a tie at three seeds ($\Delta = -0.016$, mean
 $\pm$ standard error reported throughout). On Slide alone verified-CF
 posts the higher mean ($0.617$ vs.\ $0.550$, $+0.067$). Both gain
 $+0.45 / +0.434$ on Slide over PER@3M / HER@250k baselines
@@ -535,10 +535,10 @@ the judge is Claude Opus~4.7 throughout. \textbf{Bold}: best per column.}
 \toprule
 Variant & Model & $n$ & Plausibility & Goal-progress & Teleport-collapse \\
 \midrule
-\textsc{narrative}    & Opus 4.7 & 4 & $\mathbf{0.79\pm 0.04}$ & $\mathbf{0.68\pm 0.06}$ & --- \\
-\textsc{narrative}    & GPT-4o   & 6 & $0.70\pm 0.06$ & $0.40\pm 0.06$ & --- \\
-\textsc{action}       & Opus 4.7 & 4 & $0.55\pm 0.09$ & $0.53\pm 0.16$ & --- \\
-\textsc{action}       & GPT-4o   & 6 & $\mathbf{0.74\pm 0.04}$ & $0.42\pm 0.09$ & --- \\
+\textsc{narrative}    & Opus 4.7 & 4 & $\mathbf{0.79\pm 0.04}$ & $\mathbf{0.68\pm 0.06}$ & n/a \\
+\textsc{narrative}    & GPT-4o   & 6 & $0.70\pm 0.06$ & $0.40\pm 0.06$ & n/a \\
+\textsc{action}       & Opus 4.7 & 4 & $0.55\pm 0.09$ & $0.53\pm 0.16$ & n/a \\
+\textsc{action}       & GPT-4o   & 6 & $\mathbf{0.74\pm 0.04}$ & $0.42\pm 0.09$ & n/a \\
 \textsc{achieved\_goal} & Opus 4.7 & 4 & $0.46\pm 0.18$ & $\mathbf{0.97\pm 0.01}$ & $4/4$ (100\%) \\
 \textbf{\textsc{achieved\_goal}} & \textbf{GPT-4o} & 6 & $\mathbf{0.79\pm 0.06}$ & $0.83\pm 0.11$ & $\mathbf{0/6\ (0\%)}$ \\
 \textsc{all}          & Opus 4.7 & 2 & $0.70\pm 0.10$ & $0.62\pm 0.12$ & $2/2$ (100\%) \\
