@@ -23,7 +23,61 @@ INPUTS (read in order)
 6. `agent_reports/paper_cs285/main.tex` — paper
 7. `agent_reports/paper_cs285/build.log` — LaTeX warnings
 
-YOUR TASKS (apply ALL surgically — small mechanical issues only, NO content rewrites)
+YOUR TASKS (do TASK 0 FIRST, then TASK 1-14 surgically)
+
+### TASK 0 — Analyze Matei's MetaWorld PR and integrate strategically (DO FIRST, ~15 min)
+
+There is an OPEN PR #1 on `DJRGVC/RL_project_185` titled "Auxiliary MetaWorld study: replay-mechanism ablation" from `mateig:main` (Matei's fork). Opened 2026-05-13.
+
+**What it contains** (per PR body):
+- 60-run sweep: 3 MetaWorld tasks × 4 replay variants × 5 seeds, 130.5 L4-GPU-hours
+- Finding: PER beats uniform in sparse-reward SAC on MetaWorld across all 3 tasks (+0.12-0.44 final-success, steps-to-0.8 ~halved). **Refutes pre-registered H3.**
+- Demo content saturates easy tasks but not `sweep-into-v3`
+- 3 figures + results table with bootstrap CIs
+- Code trace for demo-replay==demo-priority implementation collapse at `src/replay.py:71`
+- 5 new bib entries: vecerik2017ddpgfd, hester2018dqfd, rajeswaran2017dapg, nair2018overcomingexploration, yu2019metaworld
+- 45,470 additions across 33 files (mostly the experiment dir + a few paper paragraphs)
+
+**ACTIONS**
+
+(a) Inspect the PR rigorously:
+```bash
+gh pr view 1 --repo DJRGVC/RL_project_185
+gh pr diff 1 --repo DJRGVC/RL_project_185 --name-only
+# Read the proposal + key result files:
+gh pr diff 1 --repo DJRGVC/RL_project_185 -- experiments/metaworld_replay_ablation/proposal.md
+gh pr diff 1 --repo DJRGVC/RL_project_185 -- experiments/metaworld_replay_ablation/results/manifest.json
+gh pr diff 1 --repo DJRGVC/RL_project_185 -- experiments/metaworld_replay_ablation/results/efficiency.json
+# Read the proposed paper additions:
+gh pr diff 1 --repo DJRGVC/RL_project_185 -- agent_reports/paper/main.tex | head -200
+gh pr diff 1 --repo DJRGVC/RL_project_185 -- agent_reports/paper/appendix.tex | head -200
+```
+
+(b) Verify rigor:
+- Are the bootstrap CIs computed correctly?
+- Does "PER beats uniform" match our existing 36-run aggregate (Push 0.95 vs 0.08)? It should — this is cross-benchmark corroboration.
+- Is the "demo-replay == demo-priority" finding a real bug or a design choice?
+- Are the 5 bib entries real (verify arxiv/doi)?
+
+(c) Decide for the **CS 285 paper** (your editing scope):
+- If the MetaWorld data substantively strengthens the narrative AND fits within the 11pp ceiling: integrate ONE PARAGRAPH (~0.4pp) in §6 Discussion as "Cross-benchmark corroboration on MetaWorld." Cite Matei's experiments/ directory.
+- If integration would force overflow OR the data is orthogonal: SKIP for CS 285. Write a skip-note in `_PASS_3_FINAL_POLISH.md` explaining the decision.
+- DO update Matei's contribution bullet to acknowledge the MetaWorld sweep (60-run, 130 GPU-h is substantial). The user's verbatim attribution covers his earlier alternative VLM-replay variant; this is additional substantial work. Add a clause: "...; later ran a 60-run MetaWorld replay-mechanism ablation reported in Appendix [if integrated] / [omitted for length]."
+
+(d) Decide for the **NeurIPS paper** (`agent_reports/paper/main.tex`):
+- The PR's proposed paper paragraphs target this paper directly. Merge intent vs cherry-pick:
+  - **DO NOT use `gh pr merge`** — there are likely conflicts with our overnight edits.
+  - INSTEAD: textually integrate Matei's proposed paragraphs into our current main.tex + appendix.tex via Edit tool, preserving our existing structure.
+  - Copy in: the Related Work paragraph (Demonstration-augmented replay), the Discussion paragraph (Cross-benchmark corroboration on MetaWorld), the Appendix section (Auxiliary Study), the 5 new bib entries, the 3 figure PNGs (copy to `agent_reports/figs/`).
+  - Note: the NeurIPS paper has no strict page ceiling (currently 49pp), so adding ~2pp of MetaWorld content is fine.
+
+(e) Also: copy Matei's `experiments/metaworld_replay_ablation/` directory to our main branch (cp from the PR's branch via `git checkout origin/pr/1 -- experiments/` or equivalent). This preserves Matei's code so it's reproducible.
+
+(f) Commit Matei's integration separately from the mechanical polish: "Integrate Matei's MetaWorld replay-mechanism ablation (PR #1, 60-run sweep, cross-benchmark corroboration)"
+
+(g) Push the integration commit. Then proceed to TASK 1.
+
+(h) Do NOT close PR #1 — Matei should review and close it himself. Just leave a comment on PR #1: `gh pr comment 1 --body "Integrated into agent/pathc-lead via commit <SHA>. Thank you for the cross-benchmark corroboration; the MetaWorld PER>Uniform finding strengthens the §6 Discussion and now appears in Appendix [X]. Closing manually after Daniel reviews."`
 
 ### TASK 1 — Apply Daniel's verbatim per-member contributions (HIGHEST PRIORITY)
 Read `agent_reports/_USER_CONTRIBUTIONS_VERBATIM.md`. Replace the `\begin{itemize}...\end{itemize}` block inside `\section*{Contributions}` with the EXACT LaTeX from that file. Do NOT interpret or embellish — paste verbatim.
