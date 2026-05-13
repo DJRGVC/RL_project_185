@@ -571,6 +571,17 @@ V-trace \citep{espeholt2018impala} and Retrace($\lambda$)
 \citep{munos2016retrace} are off-policy correction schemes for
 \emph{multi-step temporal-difference returns} with the proposal
 being the behavior policy. They specialize as follows.
+The key structural concept shared by all three methods is the
+\emph{IS-pairing requirement}: the IS weight used in the gradient
+estimate must be paired to the proposal that generated the data.
+Changing the proposal without changing the weight --- or vice versa ---
+implicitly retargets the loss and breaks the corrected-estimator
+interpretation. V-trace, Retrace, and Semantic PER each enforce IS-pairing
+via a truncation or under-correction whose magnitude is controlled by a
+single scalar parameter ($\bar\rho$, $\lambda$, and $w_{\max}$
+respectively); in each case the parameter governs a bias--variance
+tradeoff with the same signed effect (lower value = more bias toward
+the truncated tail, less variance).
 
 \paragraph{Specialization of V-trace.}
 V-trace defines per-step IS ratios $\rho_t = \pi(a_t\!\mid\!s_t)/\mu_b(a_t\!\mid\!s_t)$
@@ -581,17 +592,43 @@ $v_s = V(s) + \sum_{t\ge s}\gamma^{t-s}\bigl(\prod_{t'<t}c_{t'}\bigr) \min(\bar\
 and our scheme degenerates to PER --- which is single-step
 ($N\!=\!1$ in V-trace), with $\mu=\mu_P$ rather than $\mu_b$, and with
 the IS weight $w_{\text{IS}}=(|\mathcal{D}_B|\mu_P)^{-\beta_t}$ playing
-the role of V-trace's $\rho_t$. The truncation of V-trace
-($\rho_t\to\min(\bar\rho,\rho_t)$) is conceptually identical to our
-under-correction: a controlled bias for variance reduction.
+the role of V-trace's $\rho_t$.
+The structural mapping between the two truncation mechanisms is as follows.
+V-trace clips $\rho_t$ to $\bar\rho$; our under-correction clips the
+effective IS ratio $\mu_{\text{Sem}}/\mu_P = w_{\text{sem}}/Z$ to
+$w_{\max}/Z\!\le\! w_{\max}$. In V-trace, Espeholt et al.\ (2018, Lemma~1)
+bound the per-step bias introduced by the $\bar\rho$ truncation: the
+bias grows with $\bar\rho$ and with the policy gap $|\pi-\mu_b|$.
+In our setting the analogous bound is Eq.~\eqref{eq:bias-bound}: the
+bias grows with $w_{\max}^{\beta_t}$ (the maximum ratio truncation) and
+with the fractional window size $(2W+1)/T$ (the analog of policy gap ---
+how concentrated the proposal is on the boosted region). The two bounds
+share the form $[\text{truncation level}]\times[\text{concentration of
+proposal}]\times\|\ell\|_\infty$; in V-trace the first factor is $\bar\rho$
+and the second is a horizon-discounted policy-gap norm; in Semantic PER
+the first factor is $w_{\max}^{\beta_t}-1$ and the second is
+$(2W+1)/T$.
 
 \paragraph{Specialization of Retrace.}
 Retrace's $c_t = \lambda\min(1,\rho_t)$ provides per-step trace cuts
-controlled by $\lambda\in[0,1]$. Setting $\lambda=0$ reduces Retrace to
-1-step Q-learning. In our notation, this is again the special case where
-$q_\phi$ is uniform: the trace cut $c_t$ at every step is unity, no
-re-weighting occurs, and the estimator reduces to TD(0) on the buffer
-proposal.
+controlled by $\lambda\in[0,1]$. The IS-pairing requirement for Retrace
+is that the per-step clipped ratio $c_t$ is derived from the \emph{same}
+behavior policy $\mu_b$ that generated the trajectory; using a different
+weight function (e.g., clipping to a constant unrelated to $\rho_t$)
+would break the Retrace guarantee. Setting $\lambda=0$ reduces Retrace to
+1-step Q-learning, discarding all IS adjustment. Setting $\lambda=1$
+recovers the IS-corrected multi-step return (subject to the $\min(1,\cdot)$
+variance cap). In Semantic PER terms, the $\lambda$ knob in Retrace is
+analogous to the $\beta_t$ anneal: $\lambda=0$ (no correction) corresponds
+to $\beta_t=0$ (uniform weights), and $\lambda=1$ (full clipped correction)
+corresponds to $\beta_t=1$ (full IS correction), with the key difference
+that Retrace's truncation ceiling is fixed at $1$ while Semantic PER's
+ceiling grows with $w_{\max}^{\beta_t}$. In both cases violating the
+IS-pairing requirement --- using a weight not derived from the generating
+proposal --- introduces an uncontrolled bias; the design choice in Semantic
+PER to use $\mu_P$-derived weights rather than $\mu_{\text{Sem}}$-derived
+weights is precisely such a violation, acknowledged in Step~5 of
+\S\ref{app:is-derivation} and bounded by Eq.~\eqref{eq:bias-bound}.
 
 \paragraph{Why the analogy is loose.}
 V-trace and Retrace correct for \emph{policy mismatch} in multi-step
@@ -602,7 +639,13 @@ is the behavior policy at action selection; our $\mu_{\text{Sem}}$ is
 the per-slot sampling distribution at minibatch construction. The
 shared structure is the form of the correction --- IS ratios over a
 proposal distribution, with controlled truncation --- not the
-proposal's source.
+proposal's source. In particular, the bias bounds live in different
+problem geometries: V-trace's bound (Espeholt 2018, Lemma~1) depends
+on trajectory length and policy-gap norm; ours (Eq.~\eqref{eq:bias-bound})
+depends on window fraction and per-batch max loss. Neither bound implies
+the other, and the V-trace analogy should be read as a structural
+parallel in how truncation controls bias, not as a mathematical
+specialization in either direction.
 
 \subsection{Conditions for unbiasedness}
 \label{app:unbiased}
