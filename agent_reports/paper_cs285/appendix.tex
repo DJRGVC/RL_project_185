@@ -26,7 +26,7 @@ Per-env task-description substitutions:
 \textbf{Slide:} ``strike the red puck so it slides to the green target''.
 The verified-CF mechanism uses an \textsc{action} variant of this
 template eliciting a 4-vector action sequence; full prompt texts and
-the localizer code accompany the submission.
+the localizer code accompany the report.
 
 \paragraph{Heuristic localizer (Oracle v3).}
 \texttt{GoalDistanceLocalizer} reads privileged sim state and picks the
@@ -100,10 +100,10 @@ material.
 \begin{table}[t]
 \centering
 \footnotesize
-\caption{Headline hyperparameters. Full per-table breakdowns (SAC
+\caption{Main hyperparameters. Full per-table breakdowns (SAC
 architecture, HER strategy, PER schedule, Semantic-PER, Verified-CF, VLM
 call) are listed in the supplementary configuration files.}
-\label{tab:hparams-headline}
+\label{tab:hparams-main}
 \begin{tabular}{@{}l l l@{}}
 \toprule
 Parameter & Value & Notes \\
@@ -124,7 +124,7 @@ $\alpha$ / $\beta_0\!\to\!\beta_{\text{end}}$ & $0.6 / 0.4\!\to\!1.0$ & Linear o
 \multicolumn{3}{l}{\textit{Semantic PER}} \\
 Window half-width $W$ & 5 timesteps & $11$-slot box around $t_{\text{fail}}$ \\
 Boost cap $w_{\max}$ & 10 & Multiplicative factor on PER priority \\
-Keyframes $K$ / VLM provider & 5 / GPT-4o (production) & \texttt{gpt-4o-2024-08-06} \\
+Keyframes $K$ / VLM provider & 5 / GPT-4o (deployed) & \texttt{gpt-4o-2024-08-06} \\
 \midrule
 \multicolumn{3}{l}{\textit{Verified-CF}} \\
 Verifier rollout horizon $N$ & 50 steps & One Fetch episode \\
@@ -132,7 +132,7 @@ Success threshold $\eta$ / teleport reject $\rho$ & $0.05 / 0.05$\,m & Env's nat
 CF prompt variant & \textsc{action} & Structurally teleport-immune \\
 \midrule
 \multicolumn{3}{l}{\textit{Training}} \\
-Total env steps & 500k (paper-grade) & 250k--1M for selected ablations \\
+Total env steps & 500k (primary) & 250k--1M for selected ablations \\
 Random seeds & 42, 123, 999 & 3 per (method, env) cell \\
 Replay capacity & $10^6$ slots & Ring buffer with sum-tree priorities \\
 \bottomrule
@@ -140,7 +140,7 @@ Replay capacity & $10^6$ slots & Ring buffer with sum-tree priorities \\
 \end{table}
 
 \paragraph{Compute.}
-Paper-grade runs use a single NVIDIA RTX~5070~Ti (16\,GB) GPU;
+Primary runs use a single NVIDIA RTX~5070~Ti (16\,GB) GPU;
 Modal-cloud seeds use one L4 (24\,GB) per run. Wall-clock per run at
 500k steps is roughly $6$h for SAC+HER and $9$h for SAC+HER+VLM-CF
 (the extra three hours is VLM-API latency, not compute). Project
@@ -148,7 +148,7 @@ total: ${\sim}220$ GPU-hours across local and Modal, plus
 ${\sim}\$80$ in VLM-API spend. Snapshot round-trip latency for the
 verifier is $17.6$\,ms per call --- roughly $0.4\%$ overhead at
 ${\sim}1700$ failed episodes per 100k steps. Reproduction commands,
-W\&B run-IDs, and per-seed eval traces accompany the submission.
+W\&B run-IDs, and per-seed eval traces accompany the report.
 
 \section{Additional Experimental Detail}
 \label{app:results}
@@ -184,15 +184,14 @@ $4/4$ contrast in Table~\ref{tab:prompt-variants} is judge-independent
 equal proportions at $p\!<\!0.005$.
 
 \paragraph{Cross-task transfer (per-episode notes).}
-The 12-episode pilot runs $4$ episodes per env. The VLM's reasoning
+The 12-episode pilot uses $4$ episodes per env. The VLM's reasoning
 strings identify task-specific failure modes correctly in every case
 (Push: ``gripper passes over block without making contact'';
 PickAndPlace: ``gripper at block location but fails to close''; Slide:
 ``strike direction off-axis''). The $2/4$ PickAndPlace
-keyframe-agreement number reflects heuristic under-localization, not
+keyframe-agreement reflects heuristic under-localization rather than
 VLM error: closed-loop grip timing is the hardest mode for
-geometry-only oracles \citep{sayar2023cebp}, and the VLM assigns the
-failure frame one step earlier at the decisive grip sequence.
+geometry-only oracles \citep{sayar2023cebp}.
 
 \section{Broader Impacts and Reproducibility}
 \label{app:impact}
@@ -209,5 +208,5 @@ available); the simulator gate rejects hallucinated actions that fail
 the sparse reward; no robot-deployment risks remain beyond the usual
 sim-trained-policy caveats. Code, configs, pseudocode, prompt texts,
 the V-trace specialization, the two-regime $q_\phi$ proof, W\&B run
-identifiers, and a pre-staged VLM-RB \citep{sharony2026vlmrb}
-reproduction accompany the submission.
+identifiers, and a VLM-RB \citep{sharony2026vlmrb}
+reproduction skeleton accompany the report.

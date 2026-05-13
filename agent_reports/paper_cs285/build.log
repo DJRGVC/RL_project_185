@@ -146,30 +146,27 @@ For additional information on amsmath, use the `?' option.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd)
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg)
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd)
-Underfull \hbox (badness 2970) in paragraph at lines 70--90
- []\T1/ptm/b/n/10 (+20) Headline find-ings.[] \T1/ptm/m/n/10 (+20) (i) \T1/ptm/
-b/n/10 (+20) Verified-CF matches VLM-CF; wins on Slide. \T1/ptm/m/n/10 (+20) Af
--ter 500k
+Underfull \hbox (badness 6691) in paragraph at lines 73--94
+ []\T1/ptm/b/n/10 (+20) Main find-ings.[] \T1/ptm/m/n/10 (+20) (i) \T1/ptm/b/n/
+10 (+20) Verified-CF matches VLM-CF; wins on Slide. \T1/ptm/m/n/10 (+20) Af-ter
+ 500k
 [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-
-dist/fonts/enc/dvips/base/8r.enc}] [2] [3]
-Underfull \hbox (badness 10000) in paragraph at lines 334--348
- []\T1/ptm/b/n/10 (+20) Setup.[] \T1/ptm/m/n/10 (+20) We use Gymnasium-Robotics
- \T1/cmtt/m/n/10 FetchPush-v4\T1/ptm/m/n/10 (+20) , \T1/cmtt/m/n/10 FetchPickAn
-dPlace-v4\T1/ptm/m/n/10 (+20) , and
+dist/fonts/enc/dvips/base/8r.enc}]
+Underfull \vbox (badness 1264) has occurred while \output is active [2]
+[3]
+Underfull \hbox (badness 10000) in paragraph at lines 355--375
+ []\T1/ptm/b/n/10 (+20) Setup.[] \T1/ptm/m/n/10 (+20) We test on three envs fro
+m Gymnasium-Robotics: \T1/cmtt/m/n/10 FetchPush-v4\T1/ptm/m/n/10 (+20) ,
 
-Underfull \hbox (badness 1924) in paragraph at lines 334--348
-\T1/cmtt/m/n/10 FetchSlide-v4 \T1/ptm/m/n/10 (+20) (Fig. []2[], Ap-pendix []A[]
-). Each env is a 25-dim goal-conditioned obs, 4-
+Underfull \hbox (badness 1342) in paragraph at lines 355--375
+\T1/cmtt/m/n/10 FetchPickAndPlace-v4\T1/ptm/m/n/10 (+20) , and \T1/cmtt/m/n/10 
+FetchSlide-v4 \T1/ptm/m/n/10 (+20) (see Fig. []2[] and Ap-pendix []A[]). The ob
+-ser-
 
-Underfull \hbox (badness 1783) in paragraph at lines 334--348
-\T1/ptm/m/n/10 (+20) dim con-tin-u-ous ac-tion (end-effector $\OT1/cmr/m/n/10 ^
-^A\OML/cmm/m/it/10 xyz$ \T1/ptm/m/n/10 (+20) plus grip-per), and the built-in s
-parse re-ward
-
-Underfull \vbox (badness 1314) has occurred while \output is active [4]
-[5 <./fig_headline_v5.pdf>] [6]
-(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd) (./main.bbl [7]
-[8]) (./appendix.tex
+Underfull \vbox (badness 2221) has occurred while \output is active [4]
+Underfull \vbox (badness 1102) has occurred while \output is active [5 <./fig_h
+eadline_v5.pdf>] [6] (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
+ (./main.bbl [7] [8]) (./appendix.tex
 Underfull \hbox (badness 10000) in paragraph at lines 14--20
 []\T1/cmtt/m/n/9 You are an expert robotics analyst. The robot is attempting th
 e
@@ -189,9 +186,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 14--20
 Underfull \hbox (badness 10000) in paragraph at lines 14--20
 \T1/cmtt/m/n/9 sentence reasoning. Return strict JSON: {``failure_frame_index''
 : i,
-[9]
-Underfull \vbox (badness 4467) has occurred while \output is active [10 <./fig_
-envs.pdf>]) [11] (./main.aux) )
+[9] [10 <./fig_envs.pdf>] [11]) [12] (./main.aux) )
 (see the transcript file for additional information) </home/daniel-grant/.texli
 ve2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0900.600pk> </home/daniel-gran
 t/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1000.600pk></usr/share
@@ -212,7 +207,7 @@ mf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist
 type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (11 pages, 721981 bytes).
+Output written on main.pdf (12 pages, 718600 bytes).
 Transcript written on main.log.
 This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
 The top-level auxiliary file: main.aux
@@ -366,30 +361,27 @@ For additional information on amsmath, use the `?' option.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd)
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg)
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd)
-Underfull \hbox (badness 2970) in paragraph at lines 70--90
- []\T1/ptm/b/n/10 (+20) Headline find-ings.[] \T1/ptm/m/n/10 (+20) (i) \T1/ptm/
-b/n/10 (+20) Verified-CF matches VLM-CF; wins on Slide. \T1/ptm/m/n/10 (+20) Af
--ter 500k
+Underfull \hbox (badness 6691) in paragraph at lines 73--94
+ []\T1/ptm/b/n/10 (+20) Main find-ings.[] \T1/ptm/m/n/10 (+20) (i) \T1/ptm/b/n/
+10 (+20) Verified-CF matches VLM-CF; wins on Slide. \T1/ptm/m/n/10 (+20) Af-ter
+ 500k
 [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-
-dist/fonts/enc/dvips/base/8r.enc}] [2] [3]
-Underfull \hbox (badness 10000) in paragraph at lines 334--348
- []\T1/ptm/b/n/10 (+20) Setup.[] \T1/ptm/m/n/10 (+20) We use Gymnasium-Robotics
- \T1/cmtt/m/n/10 FetchPush-v4\T1/ptm/m/n/10 (+20) , \T1/cmtt/m/n/10 FetchPickAn
-dPlace-v4\T1/ptm/m/n/10 (+20) , and
+dist/fonts/enc/dvips/base/8r.enc}]
+Underfull \vbox (badness 1264) has occurred while \output is active [2]
+[3]
+Underfull \hbox (badness 10000) in paragraph at lines 355--375
+ []\T1/ptm/b/n/10 (+20) Setup.[] \T1/ptm/m/n/10 (+20) We test on three envs fro
+m Gymnasium-Robotics: \T1/cmtt/m/n/10 FetchPush-v4\T1/ptm/m/n/10 (+20) ,
 
-Underfull \hbox (badness 1924) in paragraph at lines 334--348
-\T1/cmtt/m/n/10 FetchSlide-v4 \T1/ptm/m/n/10 (+20) (Fig. []2[], Ap-pendix []A[]
-). Each env is a 25-dim goal-conditioned obs, 4-
+Underfull \hbox (badness 1342) in paragraph at lines 355--375
+\T1/cmtt/m/n/10 FetchPickAndPlace-v4\T1/ptm/m/n/10 (+20) , and \T1/cmtt/m/n/10 
+FetchSlide-v4 \T1/ptm/m/n/10 (+20) (see Fig. []2[] and Ap-pendix []A[]). The ob
+-ser-
 
-Underfull \hbox (badness 1783) in paragraph at lines 334--348
-\T1/ptm/m/n/10 (+20) dim con-tin-u-ous ac-tion (end-effector $\OT1/cmr/m/n/10 ^
-^A\OML/cmm/m/it/10 xyz$ \T1/ptm/m/n/10 (+20) plus grip-per), and the built-in s
-parse re-ward
-
-Underfull \vbox (badness 1314) has occurred while \output is active [4]
-[5 <./fig_headline_v5.pdf>] [6]
-(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd) (./main.bbl [7]
-[8]) (./appendix.tex
+Underfull \vbox (badness 2221) has occurred while \output is active [4]
+Underfull \vbox (badness 1102) has occurred while \output is active [5 <./fig_h
+eadline_v5.pdf>] [6] (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
+ (./main.bbl [7] [8]) (./appendix.tex
 Underfull \hbox (badness 10000) in paragraph at lines 14--20
 []\T1/cmtt/m/n/9 You are an expert robotics analyst. The robot is attempting th
 e
@@ -409,9 +401,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 14--20
 Underfull \hbox (badness 10000) in paragraph at lines 14--20
 \T1/cmtt/m/n/9 sentence reasoning. Return strict JSON: {``failure_frame_index''
 : i,
-[9]
-Underfull \vbox (badness 4467) has occurred while \output is active [10 <./fig_
-envs.pdf>]) [11] (./main.aux) )
+[9] [10 <./fig_envs.pdf>] [11]) [12] (./main.aux) )
 (see the transcript file for additional information) </home/daniel-grant/.texli
 ve2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0900.600pk> </home/daniel-gran
 t/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1000.600pk></usr/share
@@ -432,7 +422,7 @@ mf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist
 type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (11 pages, 721981 bytes).
+Output written on main.pdf (12 pages, 718600 bytes).
 Transcript written on main.log.
 This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex)
  restricted \write18 enabled.
@@ -582,30 +572,27 @@ For additional information on amsmath, use the `?' option.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd)
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg)
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd)
-Underfull \hbox (badness 2970) in paragraph at lines 70--90
- []\T1/ptm/b/n/10 (+20) Headline find-ings.[] \T1/ptm/m/n/10 (+20) (i) \T1/ptm/
-b/n/10 (+20) Verified-CF matches VLM-CF; wins on Slide. \T1/ptm/m/n/10 (+20) Af
--ter 500k
+Underfull \hbox (badness 6691) in paragraph at lines 73--94
+ []\T1/ptm/b/n/10 (+20) Main find-ings.[] \T1/ptm/m/n/10 (+20) (i) \T1/ptm/b/n/
+10 (+20) Verified-CF matches VLM-CF; wins on Slide. \T1/ptm/m/n/10 (+20) Af-ter
+ 500k
 [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-
-dist/fonts/enc/dvips/base/8r.enc}] [2] [3]
-Underfull \hbox (badness 10000) in paragraph at lines 334--348
- []\T1/ptm/b/n/10 (+20) Setup.[] \T1/ptm/m/n/10 (+20) We use Gymnasium-Robotics
- \T1/cmtt/m/n/10 FetchPush-v4\T1/ptm/m/n/10 (+20) , \T1/cmtt/m/n/10 FetchPickAn
-dPlace-v4\T1/ptm/m/n/10 (+20) , and
+dist/fonts/enc/dvips/base/8r.enc}]
+Underfull \vbox (badness 1264) has occurred while \output is active [2]
+[3]
+Underfull \hbox (badness 10000) in paragraph at lines 355--375
+ []\T1/ptm/b/n/10 (+20) Setup.[] \T1/ptm/m/n/10 (+20) We test on three envs fro
+m Gymnasium-Robotics: \T1/cmtt/m/n/10 FetchPush-v4\T1/ptm/m/n/10 (+20) ,
 
-Underfull \hbox (badness 1924) in paragraph at lines 334--348
-\T1/cmtt/m/n/10 FetchSlide-v4 \T1/ptm/m/n/10 (+20) (Fig. []2[], Ap-pendix []A[]
-). Each env is a 25-dim goal-conditioned obs, 4-
+Underfull \hbox (badness 1342) in paragraph at lines 355--375
+\T1/cmtt/m/n/10 FetchPickAndPlace-v4\T1/ptm/m/n/10 (+20) , and \T1/cmtt/m/n/10 
+FetchSlide-v4 \T1/ptm/m/n/10 (+20) (see Fig. []2[] and Ap-pendix []A[]). The ob
+-ser-
 
-Underfull \hbox (badness 1783) in paragraph at lines 334--348
-\T1/ptm/m/n/10 (+20) dim con-tin-u-ous ac-tion (end-effector $\OT1/cmr/m/n/10 ^
-^A\OML/cmm/m/it/10 xyz$ \T1/ptm/m/n/10 (+20) plus grip-per), and the built-in s
-parse re-ward
-
-Underfull \vbox (badness 1314) has occurred while \output is active [4]
-[5 <./fig_headline_v5.pdf>] [6]
-(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd) (./main.bbl [7]
-[8]) (./appendix.tex
+Underfull \vbox (badness 2221) has occurred while \output is active [4]
+Underfull \vbox (badness 1102) has occurred while \output is active [5 <./fig_h
+eadline_v5.pdf>] [6] (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
+ (./main.bbl [7] [8]) (./appendix.tex
 Underfull \hbox (badness 10000) in paragraph at lines 14--20
 []\T1/cmtt/m/n/9 You are an expert robotics analyst. The robot is attempting th
 e
@@ -625,9 +612,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 14--20
 Underfull \hbox (badness 10000) in paragraph at lines 14--20
 \T1/cmtt/m/n/9 sentence reasoning. Return strict JSON: {``failure_frame_index''
 : i,
-[9]
-Underfull \vbox (badness 4467) has occurred while \output is active [10 <./fig_
-envs.pdf>]) [11] (./main.aux) )
+[9] [10 <./fig_envs.pdf>] [11]) [12] (./main.aux) )
 (see the transcript file for additional information) </home/daniel-grant/.texli
 ve2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0900.600pk> </home/daniel-gran
 t/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1000.600pk></usr/share
@@ -648,5 +633,5 @@ mf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist
 type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (11 pages, 721981 bytes).
+Output written on main.pdf (12 pages, 718600 bytes).
 Transcript written on main.log.
