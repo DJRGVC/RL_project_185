@@ -352,6 +352,15 @@ prediction P2 of Section~\ref{sec:theory} makes explicit:
 \emph{semantic-PER tracks standard PER when the VLM is poorly calibrated
 and pulls ahead when it is reliable, without diverging.}
 TD-target methods cannot make this prediction.
+Crucially, only data-stream methods that modify $\mu$ ever face the
+IS-pairing requirement (\S\ref{sec:related}, PER paragraph; \S\ref{sec:theory}):
+TD-target methods leave $\mu_U$ unchanged, so the question of
+\emph{which IS weight is consistent with the modified proposal} does not
+arise for them. The IS-pairing question is therefore a defining structural
+feature of data-stream integration---not of foundation-model use in RL
+generally---and it is what makes the multiplicative-vs-additive blending
+choice between our approach and VLM-RB a methodological question with a
+principled answer rather than an engineering preference.
 
 We differ from AHA along three orthogonal axes beyond integration point:
 (i)~AHA \emph{describes} failures; we \emph{localize} to a single timestep as
@@ -373,14 +382,22 @@ subgoal decomposition in text-based environments. We place Semantic PER as the
 \emph{first vision-modality, prioritized-replay instantiation} of that
 program: the oracle is a frozen VLM (not an LLM), the domain is goal-conditioned
 robot manipulation (not text adventures), and the oracle output is consumed
-by the replay-sampling distribution rather than by a planner, with the
+by the replay-sampling distribution rather than by a planner. The methodological
+additions on top of CaLM's planner-only consumption are two: the
 multiplicative-with-PER coupling and the simulator-verified counterfactual
-gate (\S\ref{sec:method:verified}) as the two methodological additions on
-top of CaLM's planner-only consumption. This places our contribution inside
-the emerging causal-credit-assignment family rather than the reward-shaping
-family---a more useful placement than ``VLM in replay'' (an engineering
-label) and a more accurate one than ``a new credit-oracle category'' (CaLM
-precedes us).
+gate (\S\ref{sec:method:verified}). Importantly, CaLM consumes its oracle
+signal \emph{outside} the replay-sampling distribution---it modifies a
+planner's reward or subgoal, not $\mu$---so it never encounters the
+IS-pairing requirement. Semantic PER is the first instantiation in this
+lineage that must answer the IS-pairing question (because it does modify
+$\mu$), and the multiplicative-with-PER coupling is the answer. VLM-RB
+\citep{sharony2026vlmrb} also modifies $\mu$ but gives a different
+(additive) answer that does not preserve the IS-correction pairing
+(\S\ref{sec:related}, PER paragraph). This places our contribution inside
+the emerging causal-credit-assignment family---a more useful placement than
+``VLM in replay'' (an engineering label) and a more accurate one than ``a
+new credit-oracle category'' (CaLM precedes us on the oracle program;
+we differ on the IS-pairing axis).
 
 \paragraph{Generator--verifier and verified counterfactual reasoning.}
 Our verification protocol (Section~\ref{sec:method:verified}) sits inside the
