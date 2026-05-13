@@ -220,6 +220,26 @@ the \emph{exact training simulator} (zero modeling error) and verifies an
 because it requires physics-consistent execution under the original
 dynamics, not merely a dynamics-model consistency check.
 
+A structural point about where HER sits in the replay-correction hierarchy
+is worth surfacing before the next paragraph. Vanilla HER and all three
+extension families above leave the replay-\emph{sampling} distribution
+unchanged: a relabeled transition is appended to the buffer, after which
+the standard uniform-over-buffer sampler $\mu_U$ is invoked. The IS-pairing
+question---\emph{is the gradient reweighting consistent with the proposal
+that produced it?}---therefore arises only trivially under HER, with
+$w_{\text{IS}}\!=\!1$ and proposal $\mu_U$. HER's degree of freedom is the
+buffer's \emph{contents}; the sampler is fixed. PER and the methods we
+catalogue in the next paragraph (including the concurrent VLM-RB) instead
+modify $\mu$ itself, at which point the IS pairing becomes load-bearing
+and the choice of pairing form (multiplicative versus additive, corrected
+versus uncorrected) is no longer trivial. Our Semantic PER mechanism
+(\S\ref{sec:method:sper}) exercises \emph{both} degrees of freedom: a
+verified-counterfactual relabel modifies the buffer contents, and a
+multiplicative $w_{\text{sem}}$ modifies the sampler in a way that keeps
+the IS pairing tractable (\S\ref{sec:theory}). This is the principal
+structural difference from VLM-RB, which modifies the sampler but not the
+contents and whose pairing form is not IS-corrected.
+
 \paragraph{Prioritized replay and off-policy correction.}
 Prioritized DQN~\citep{schaul2016per} samples in proportion to
 $(|\delta|+\varepsilon)^\alpha$ and reweights every sampled gradient by the
