@@ -39,3 +39,6 @@ runs/
 # Jupyter
 .ipynb_checkpoints/
 .claude/
+
+# Winston AI API key
+.winston_key
