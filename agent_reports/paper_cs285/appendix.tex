@@ -63,7 +63,7 @@ estimator of $\mathcal{L}_U$ \citep[Sec.~3.4]{schaul2016per}. Our Semantic
 PER proposal $\mu_{\text{Sem}}\!\propto\!\mu_P\!\cdot\!w_{\text{sem}}$ is
 a re-weighting of $\mu_P$ by a trajectory-conditional factor bounded by
 $1\!\le\!w_{\text{sem}}\!\le\!w_{\max}$.
-The strictly-correct IS weight is
+The fully-correct IS weight is
 $w_{\text{IS},\text{Sem}}(i)\!=\!(|\mathcal{D}_B|\mu_{\text{Sem}}(i))^{-\beta_t}$.
 Our implementation under-corrects with $w_{\text{IS},P}$ (a V-trace-style
 \citep{espeholt2018impala} variance-reduction choice, akin to truncated
@@ -83,8 +83,8 @@ At our defaults ($w_{\max}\!=\!10$, $W\!=\!5$, $T\!=\!50$,
 $\beta_t\!\le\!1$) the bias multiplier is at most
 $(10\!-\!1)\!\cdot\!11/50\!\approx\!1.98\,C\|\ell\|_\infty$, and
 $\to\!0$ as $w_{\max}\!\to\!1$. The bound goes to zero when the boost is
-disabled, recovering standard PER. The strictly-correct ablation (run
-$w_{\text{IS},\text{Sem}}$) eliminates the residual bias entirely at the
+disabled, recovering standard PER. The fully-corrected ablation (run
+$w_{\text{IS},\text{Sem}}$) removes the residual bias entirely at the
 cost of maintaining $Z$. \textbf{Two-regime degeneracy.} On the verifier
 channel, miscalibration acts on
 $m_\phi(\tau)\!=\!m_{\text{gen}}\!\cdot\!m_{\text{ver}}(\sigma)$
@@ -155,33 +155,33 @@ per-seed eval traces are at
 \label{app:results}
 
 \paragraph{Real-data validation (extended).}
-The $n\!=\!10$ real-failure set is failed eval episodes from
+The $n\!=\!10$ real-failure set is drawn from failed eval episodes of
 partially-trained SAC+HER checkpoints (\texttt{FetchPickAndPlace} at
-50k steps, \texttt{FetchPush} at 30k steps, both at $\sim\!5\%$
-success). These are near-misses with final-distance $\in\![0.06,0.34]$\,m
-on Push and median $0.27$\,m on PickAndPlace. Three findings carry
-over from the synthetic set:
+50k steps, \texttt{FetchPush} at 30k steps, both around $5\%$ success).
+These are near-misses, with final-distance $\in\![0.06,0.34]$\,m on Push
+and a median $0.27$\,m on PickAndPlace. Three findings carry over from
+the synthetic set.
 \textbf{(i) Teleport-collapse persists and is task-conditioned.} On Push
-(planar target), Opus and Sonnet teleport on \textsc{achieved\_goal} at
-$100\%$ and $75\%$; on PickAndPlace (mid-air target), Opus teleports at
-$75\%$ but Sonnet drops to $0\%$, proposing a mid-air waypoint
+(planar target) Opus and Sonnet teleport on \textsc{achieved\_goal} at
+$100\%$ and $75\%$. On PickAndPlace (mid-air target) Opus teleports at
+$75\%$; Sonnet drops to $0\%$ and instead proposes a mid-air waypoint
 $\sim\!8$\,cm above the floating goal.
 \textbf{(ii) The 5\,cm reject-teleport gate is necessary.}
-Aggregated across both VLMs and position-emitting variants on $20$
-generations, the gate fires on $12$ ($60\%$); cross-vendor floor on
-Push is $75\%$. The action-emitting verifier sidesteps this.
+Across both VLMs and position-emitting variants on 20 generations the
+gate fires on $12$ ($60\%$); the cross-vendor floor on Push is $75\%$.
+The action-emitting verifier sidesteps this entirely.
 \textbf{(iii) Plausibility shifts only $\pm 0.07$ synthetic-to-real,
 but the \textsc{action} sign-flip rate worsens} (Opus
-$0.50\!\to\!0.55$, Sonnet $0.70$).
+$0.50\!\to\!0.55$; Sonnet $0.70$).
 
 \paragraph{Statistical methodology.}
 Each (method, env) cell uses $n\!=\!3$ seeds (42, 123, 999); metrics are
 mean~$\pm$~SE with the $t$-distribution at $n\!-\!1\!=\!2$ d.f.
 Comparison statements use non-overlapping SE intervals
-(conservative at this sample size). The load-bearing $0/6$ vs.\ $4/4$
+(conservative at this sample size). The pivotal $0/6$ vs.\ $4/4$
 contrast in Table~\ref{tab:prompt-variants} is judge-independent
-(Euclidean predicate); Fisher's exact test rejects equal proportions
-at $p\!<\!0.005$.
+(decided by a Euclidean predicate); Fisher's exact test rejects equal
+proportions at $p\!<\!0.005$.
 
 \paragraph{Cross-task transfer (per-episode notes).}
 A 12-episode pilot ($4$ per env). The VLM's reasoning strings identify
