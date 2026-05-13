@@ -1,7 +1,7 @@
 \documentclass{article}
 
-\usepackage[preprint,nonatbib]{neurips_2025}
-\usepackage[numbers,sort&compress,square]{natbib}
+\PassOptionsToPackage{numbers,sort&compress,square}{natbib}
+\usepackage[preprint]{neurips_2025}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -380,7 +380,7 @@ of 4.75M~\citep{plappert2018multigoal}. Comparisons here are drawn
 Fig.~\ref{fig:main} are sample-efficiency statements (more
 learning per training step), not asymptotic-dominance ones.
 
-\begin{figure}[t]
+\begin{figure}[!t]
 \centering
 \includegraphics[width=0.95\linewidth]{fig_headline_v5.pdf}
 \caption{\textbf{Final evaluation success rate across the three Fetch
@@ -445,7 +445,7 @@ to Sonnet~4.5 on real failures, though the three-model evidence is
 best read as two-vendor since Opus and Sonnet share Anthropic
 lineage.
 
-\begin{table}[t]
+\begin{table}[!t]
 \centering
 \footnotesize
 \caption{Prompt-variant analysis: mean~$\pm$~SE judge plausibility,

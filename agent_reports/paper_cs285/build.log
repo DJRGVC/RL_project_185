@@ -67,7 +67,7 @@ For additional information on amsmath, use the `?' option.
 (/usr/share/texlive/texmf-dist/tex/latex/multirow/multirow.sty)
 (/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty)
 (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
-(./main.aux)
+No file main.aux.
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -134,7 +134,6 @@ For additional information on amsmath, use the `?' option.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-(./main.out) (./main.out)
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-ptm.cfg)
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -146,27 +145,268 @@ For additional information on amsmath, use the `?' option.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd)
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg)
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd)
+
+Package natbib Warning: Citation `delazcano2024gymrobotics' on page 1 undefined
+ on input line 39.
+
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 1 undefined on inpu
+t line 49.
+
+
+LaTeX Warning: Reference `fig:main' on page 1 undefined on input line 81.
+
+
 Underfull \hbox (badness 6691) in paragraph at lines 73--94
  []\T1/ptm/b/n/10 (+20) Main find-ings.[] \T1/ptm/m/n/10 (+20) (i) \T1/ptm/b/n/
 10 (+20) Verified-CF matches VLM-CF; wins on Slide. \T1/ptm/m/n/10 (+20) Af-ter
  500k
+
+LaTeX Warning: Reference `eq:main' on page 1 undefined on input line 100.
+
 [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-
 dist/fonts/enc/dvips/base/8r.enc}]
+
+Package natbib Warning: Citation `schaul2016per' on page 2 undefined on input l
+ine 112.
+
+
+Package natbib Warning: Citation `andrychowicz2017her' on page 2 undefined on i
+nput line 115.
+
+
+Package natbib Warning: Citation `rocamonde2024vlmreward' on page 2 undefined o
+n input line 124.
+
+
+Package natbib Warning: Citation `lee2025kagi' on page 2 undefined on input lin
+e 124.
+
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 2 undefined on inpu
+t line 125.
+
+
+Package natbib Warning: Citation `duan2025aha' on page 2 undefined on input lin
+e 126.
+
+
+LaTeX Warning: Reference `sec:method' on page 2 undefined on input line 132.
+
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 2 undefined on inpu
+t line 138.
+
+
+LaTeX Warning: Reference `sec:method:verified' on page 2 undefined on input lin
+e 141.
+
+
+Package natbib Warning: Citation `todorov2012mujoco' on page 2 undefined on inp
+ut line 149.
+
+
+Package natbib Warning: Citation `zha2025tango' on page 2 undefined on input li
+ne 151.
+
+
+Package natbib Warning: Citation `andrychowicz2017her' on page 2 undefined on i
+nput line 176.
+
+
+Package natbib Warning: Citation `ozgur2025nextfuture' on page 2 undefined on i
+nput line 180.
+
+
+Package natbib Warning: Citation `sayar2023cebp' on page 2 undefined on input l
+ine 180.
+
+
+Package natbib Warning: Citation `zhao2018energy' on page 2 undefined on input 
+line 180.
+
+
+Package natbib Warning: Citation `urpi2024caiac' on page 2 undefined on input l
+ine 182.
+
+
+Package natbib Warning: Citation `hu2026echo' on page 2 undefined on input line
+ 182.
+
+
+Package natbib Warning: Citation `ding2026agentHER' on page 2 undefined on inpu
+t line 182.
+
+
+Package natbib Warning: Citation `mesnard2021cca' on page 2 undefined on input 
+line 182.
+
+
+Package natbib Warning: Citation `chuck2025hint' on page 2 undefined on input l
+ine 184.
+
+
+Package natbib Warning: Citation `lei2025gchr' on page 2 undefined on input lin
+e 184.
+
+
+LaTeX Warning: Reference `sec:method:verified' on page 2 undefined on input lin
+e 185.
+
+
+Package natbib Warning: Citation `schaul2016per' on page 2 undefined on input l
+ine 189.
+
+
+Package natbib Warning: Citation `pleiss2025reaper' on page 2 undefined on inpu
+t line 192.
+
+
+Package natbib Warning: Citation `yamani2025rpeper' on page 2 undefined on inpu
+t line 192.
+
+
+Package natbib Warning: Citation `wang2025prioritizedgenerative' on page 2 unde
+fined on input line 192.
+
+
+Package natbib Warning: Citation `krutsylo2025nonuniform' on page 2 undefined o
+n input line 192.
+
+
 Underfull \vbox (badness 1264) has occurred while \output is active [2]
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 3 undefined on inpu
+t line 195.
+
+
+LaTeX Warning: Reference `sec:method' on page 3 undefined on input line 205.
+
+
+LaTeX Warning: Reference `sec:method:verified' on page 3 undefined on input lin
+e 209.
+
+
+Package natbib Warning: Citation `pignatelli2024calm' on page 3 undefined on in
+put line 216.
+
+
+Package natbib Warning: Citation `rocamonde2024vlmreward' on page 3 undefined o
+n input line 220.
+
+
+Package natbib Warning: Citation `wu2026largerewardmodels' on page 3 undefined 
+on input line 220.
+
+
+Package natbib Warning: Citation `patel2025iker' on page 3 undefined on input l
+ine 220.
+
+
+Package natbib Warning: Citation `schaul2016per' on page 3 undefined on input l
+ine 236.
+
+
+LaTeX Warning: Reference `eq:main' on page 3 undefined on input line 256.
+
+
+Package natbib Warning: Citation `espeholt2018impala' on page 3 undefined on in
+put line 272.
+
+
+Package natbib Warning: Citation `munos2016retrace' on page 3 undefined on inpu
+t line 272.
+
+
+LaTeX Warning: Reference `app:bias-bound' on page 3 undefined on input line 273
+.
+
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 3 undefined on inpu
+t line 274.
+
+
+LaTeX Warning: Reference `sec:method:verified' on page 3 undefined on input lin
+e 286.
+
+
+LaTeX Warning: Reference `tab:prompt-variants' on page 3 undefined on input lin
+e 309.
+
 [3]
+
+LaTeX Warning: Reference `app:bias-bound' on page 4 undefined on input line 344
+.
+
+
+LaTeX Warning: Reference `fig:envs' on page 4 undefined on input line 357.
+
+
+LaTeX Warning: Reference `app:methods' on page 4 undefined on input line 358.
+
+
+Package natbib Warning: Citation `haarnoja2018sac' on page 4 undefined on input
+ line 364.
+
+
 Underfull \hbox (badness 10000) in paragraph at lines 355--375
  []\T1/ptm/b/n/10 (+20) Setup.[] \T1/ptm/m/n/10 (+20) We test on three envs fro
 m Gymnasium-Robotics: \T1/cmtt/m/n/10 FetchPush-v4\T1/ptm/m/n/10 (+20) ,
 
-Underfull \hbox (badness 1342) in paragraph at lines 355--375
+Underfull \hbox (badness 1038) in paragraph at lines 355--375
 \T1/cmtt/m/n/10 FetchPickAndPlace-v4\T1/ptm/m/n/10 (+20) , and \T1/cmtt/m/n/10 
-FetchSlide-v4 \T1/ptm/m/n/10 (+20) (see Fig. []2[] and Ap-pendix []A[]). The ob
--ser-
+FetchSlide-v4 \T1/ptm/m/n/10 (+20) (see Fig. [] and Ap-pendix []). The ob-
+
+Underfull \hbox (badness 1635) in paragraph at lines 355--375
+\T1/ptm/m/n/10 (+20) ser-va-tion is 25-dim and goal-conditioned, the ac-tion is
+ a 4-dim con-tin-u-ous end-effector
+
+Package natbib Warning: Citation `plappert2018multigoal' on page 4 undefined on
+ input line 378.
+
+
+LaTeX Warning: Reference `fig:main' on page 4 undefined on input line 380.
+
 
 Underfull \vbox (badness 2221) has occurred while \output is active [4]
+
+LaTeX Warning: Reference `sec:contributions' on page 5 undefined on input line 
+422.
+
+
+LaTeX Warning: Reference `tab:prompt-variants' on page 5 undefined on input lin
+e 432.
+
+
+LaTeX Warning: Reference `sec:exp:real' on page 5 undefined on input line 443.
+
+
+LaTeX Warning: Reference `app:results' on page 5 undefined on input line 487.
+
+
 Underfull \vbox (badness 1102) has occurred while \output is active [5 <./fig_h
-eadline_v5.pdf>] [6] (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
- (./main.bbl [7] [8]) (./appendix.tex
+eadline_v5.pdf>]
+
+LaTeX Warning: Reference `sec:method' on page 6 undefined on input line 503.
+
+
+LaTeX Warning: Reference `sec:method:verified' on page 6 undefined on input lin
+e 504.
+
+
+LaTeX Warning: Reference `sec:exp:kill' on page 6 undefined on input line 539.
+
+[6]
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 7 undefined on inpu
+t line 561.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
+
+LaTeX Warning: Reference `sec:method' on page 7 undefined on input line 599.
+
+No file main.bbl.
+(./appendix.tex
 Underfull \hbox (badness 10000) in paragraph at lines 14--20
 []\T1/cmtt/m/n/9 You are an expert robotics analyst. The robot is attempting th
 e
@@ -186,7 +426,62 @@ Underfull \hbox (badness 10000) in paragraph at lines 14--20
 Underfull \hbox (badness 10000) in paragraph at lines 14--20
 \T1/cmtt/m/n/9 sentence reasoning. Return strict JSON: {``failure_frame_index''
 : i,
-[9] [10 <./fig_envs.pdf>] [11]) [12] (./main.aux) )
+[7]
+
+Package natbib Warning: Citation `schaul2016per' on page 8 undefined on input l
+ine 62.
+
+
+Package natbib Warning: Citation `espeholt2018impala' on page 8 undefined on in
+put line 69.
+
+
+Package natbib Warning: Citation `munos2016retrace' on page 8 undefined on inpu
+t line 70.
+
+[8 <./fig_envs.pdf>]
+
+Package natbib Warning: Citation `haarnoja2018sac' on page 9 undefined on input
+ line 111.
+
+
+Package natbib Warning: Citation `andrychowicz2017her' on page 9 undefined on i
+nput line 118.
+
+
+Package natbib Warning: Citation `schaul2016per' on page 9 undefined on input l
+ine 121.
+
+
+LaTeX Warning: Reference `tab:prompt-variants' on page 9 undefined on input lin
+e 177.
+
+
+Package natbib Warning: Citation `sayar2023cebp' on page 9 undefined on input l
+ine 184.
+
+[9]
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 10 undefined on inp
+ut line 197.
+
+)
+
+Package natbib Warning: There were undefined citations.
+
+[10] (./main.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `main.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+ )
 (see the transcript file for additional information) </home/daniel-grant/.texli
 ve2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0900.600pk> </home/daniel-gran
 t/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1000.600pk></usr/share
@@ -207,7 +502,7 @@ mf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist
 type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (12 pages, 718600 bytes).
+Output written on main.pdf (10 pages, 699936 bytes).
 Transcript written on main.log.
 This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
 The top-level auxiliary file: main.aux
@@ -361,14 +656,161 @@ For additional information on amsmath, use the `?' option.
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd)
 (/usr/share/texlive/texmf-dist/tex/latex/microtype/mt-msb.cfg)
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd)
+
+Package natbib Warning: Citation `delazcano2024gymrobotics' on page 1 undefined
+ on input line 39.
+
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 1 undefined on inpu
+t line 49.
+
+
 Underfull \hbox (badness 6691) in paragraph at lines 73--94
  []\T1/ptm/b/n/10 (+20) Main find-ings.[] \T1/ptm/m/n/10 (+20) (i) \T1/ptm/b/n/
 10 (+20) Verified-CF matches VLM-CF; wins on Slide. \T1/ptm/m/n/10 (+20) Af-ter
  500k
 [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-
 dist/fonts/enc/dvips/base/8r.enc}]
+
+Package natbib Warning: Citation `schaul2016per' on page 2 undefined on input l
+ine 112.
+
+
+Package natbib Warning: Citation `andrychowicz2017her' on page 2 undefined on i
+nput line 115.
+
+
+Package natbib Warning: Citation `rocamonde2024vlmreward' on page 2 undefined o
+n input line 124.
+
+
+Package natbib Warning: Citation `lee2025kagi' on page 2 undefined on input lin
+e 124.
+
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 2 undefined on inpu
+t line 125.
+
+
+Package natbib Warning: Citation `duan2025aha' on page 2 undefined on input lin
+e 126.
+
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 2 undefined on inpu
+t line 138.
+
+
+Package natbib Warning: Citation `todorov2012mujoco' on page 2 undefined on inp
+ut line 149.
+
+
+Package natbib Warning: Citation `zha2025tango' on page 2 undefined on input li
+ne 151.
+
+
+Package natbib Warning: Citation `andrychowicz2017her' on page 2 undefined on i
+nput line 176.
+
+
+Package natbib Warning: Citation `ozgur2025nextfuture' on page 2 undefined on i
+nput line 180.
+
+
+Package natbib Warning: Citation `sayar2023cebp' on page 2 undefined on input l
+ine 180.
+
+
+Package natbib Warning: Citation `zhao2018energy' on page 2 undefined on input 
+line 180.
+
+
+Package natbib Warning: Citation `urpi2024caiac' on page 2 undefined on input l
+ine 182.
+
+
+Package natbib Warning: Citation `hu2026echo' on page 2 undefined on input line
+ 182.
+
+
+Package natbib Warning: Citation `ding2026agentHER' on page 2 undefined on inpu
+t line 182.
+
+
+Package natbib Warning: Citation `mesnard2021cca' on page 2 undefined on input 
+line 182.
+
+
+Package natbib Warning: Citation `chuck2025hint' on page 2 undefined on input l
+ine 184.
+
+
+Package natbib Warning: Citation `lei2025gchr' on page 2 undefined on input lin
+e 184.
+
+
+Package natbib Warning: Citation `schaul2016per' on page 2 undefined on input l
+ine 189.
+
+
+Package natbib Warning: Citation `pleiss2025reaper' on page 2 undefined on inpu
+t line 192.
+
+
+Package natbib Warning: Citation `yamani2025rpeper' on page 2 undefined on inpu
+t line 192.
+
+
+Package natbib Warning: Citation `wang2025prioritizedgenerative' on page 2 unde
+fined on input line 192.
+
+
+Package natbib Warning: Citation `krutsylo2025nonuniform' on page 2 undefined o
+n input line 192.
+
+
 Underfull \vbox (badness 1264) has occurred while \output is active [2]
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 3 undefined on inpu
+t line 195.
+
+
+Package natbib Warning: Citation `pignatelli2024calm' on page 3 undefined on in
+put line 216.
+
+
+Package natbib Warning: Citation `rocamonde2024vlmreward' on page 3 undefined o
+n input line 220.
+
+
+Package natbib Warning: Citation `wu2026largerewardmodels' on page 3 undefined 
+on input line 220.
+
+
+Package natbib Warning: Citation `patel2025iker' on page 3 undefined on input l
+ine 220.
+
+
+Package natbib Warning: Citation `schaul2016per' on page 3 undefined on input l
+ine 236.
+
+
+Package natbib Warning: Citation `espeholt2018impala' on page 3 undefined on in
+put line 272.
+
+
+Package natbib Warning: Citation `munos2016retrace' on page 3 undefined on inpu
+t line 272.
+
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 3 undefined on inpu
+t line 274.
+
 [3]
+
+Package natbib Warning: Citation `haarnoja2018sac' on page 4 undefined on input
+ line 364.
+
+
 Underfull \hbox (badness 10000) in paragraph at lines 355--375
  []\T1/ptm/b/n/10 (+20) Setup.[] \T1/ptm/m/n/10 (+20) We test on three envs fro
 m Gymnasium-Robotics: \T1/cmtt/m/n/10 FetchPush-v4\T1/ptm/m/n/10 (+20) ,
@@ -378,10 +820,19 @@ Underfull \hbox (badness 1342) in paragraph at lines 355--375
 FetchSlide-v4 \T1/ptm/m/n/10 (+20) (see Fig. []2[] and Ap-pendix []A[]). The ob
 -ser-
 
-Underfull \vbox (badness 2221) has occurred while \output is active [4]
+Package natbib Warning: Citation `plappert2018multigoal' on page 4 undefined on
+ input line 378.
+
+
+Underfull \vbox (badness 5119) has occurred while \output is active [4]
 Underfull \vbox (badness 1102) has occurred while \output is active [5 <./fig_h
-eadline_v5.pdf>] [6] (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
- (./main.bbl [7] [8]) (./appendix.tex
+eadline_v5.pdf>] [6]
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 7 undefined on inpu
+t line 561.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd) (./main.bbl [7]
+[8]) (./appendix.tex
 Underfull \hbox (badness 10000) in paragraph at lines 14--20
 []\T1/cmtt/m/n/9 You are an expert robotics analyst. The robot is attempting th
 e
@@ -401,7 +852,55 @@ Underfull \hbox (badness 10000) in paragraph at lines 14--20
 Underfull \hbox (badness 10000) in paragraph at lines 14--20
 \T1/cmtt/m/n/9 sentence reasoning. Return strict JSON: {``failure_frame_index''
 : i,
-[9] [10 <./fig_envs.pdf>] [11]) [12] (./main.aux) )
+
+Package natbib Warning: Citation `schaul2016per' on page 9 undefined on input l
+ine 62.
+
+
+Package natbib Warning: Citation `espeholt2018impala' on page 9 undefined on in
+put line 69.
+
+
+Package natbib Warning: Citation `munos2016retrace' on page 9 undefined on inpu
+t line 70.
+
+[9]
+
+Package natbib Warning: Citation `haarnoja2018sac' on page 10 undefined on inpu
+t line 111.
+
+
+Package natbib Warning: Citation `andrychowicz2017her' on page 10 undefined on 
+input line 118.
+
+
+Package natbib Warning: Citation `schaul2016per' on page 10 undefined on input 
+line 121.
+
+[10 <./fig_envs.pdf>]
+
+Package natbib Warning: Citation `sayar2023cebp' on page 11 undefined on input 
+line 184.
+
+
+Package natbib Warning: Citation `sharony2026vlmrb' on page 11 undefined on inp
+ut line 197.
+
+)
+Underfull \vbox (badness 10000) has occurred while \output is active [11]
+
+Package natbib Warning: There were undefined citations.
+
+[12] (./main.aux
+
+Package natbib Warning: Citation(s) may have changed.
+(natbib)                Rerun to get citations correct.
+
+)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ )
 (see the transcript file for additional information) </home/daniel-grant/.texli
 ve2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0900.600pk> </home/daniel-gran
 t/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1000.600pk></usr/share
@@ -422,7 +921,7 @@ mf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist
 type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (12 pages, 718600 bytes).
+Output written on main.pdf (12 pages, 715083 bytes).
 Transcript written on main.log.
 This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex)
  restricted \write18 enabled.
@@ -612,7 +1111,9 @@ Underfull \hbox (badness 10000) in paragraph at lines 14--20
 Underfull \hbox (badness 10000) in paragraph at lines 14--20
 \T1/cmtt/m/n/9 sentence reasoning. Return strict JSON: {``failure_frame_index''
 : i,
-[9] [10 <./fig_envs.pdf>] [11]) [12] (./main.aux) )
+[9] [10 <./fig_envs.pdf>])
+Underfull \vbox (badness 10000) has occurred while \output is active [11]
+[12] (./main.aux) )
 (see the transcript file for additional information) </home/daniel-grant/.texli
 ve2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0900.600pk> </home/daniel-gran
 t/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1000.600pk></usr/share
@@ -633,5 +1134,5 @@ mf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist
 type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/
 utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (12 pages, 718600 bytes).
+Output written on main.pdf (12 pages, 717379 bytes).
 Transcript written on main.log.
