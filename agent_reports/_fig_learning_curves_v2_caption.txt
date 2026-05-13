@@ -1,0 +1,8 @@
+Figure X. Learning curves for evaluation success rate vs training steps,
+faceted by Fetch env. Shaded bands show +/-1 SE across 3 random seeds. The
+verified_cf cold-start regime is visually apparent: success remains near
+zero from ~0--200k steps as the verifier rejects most VLM proposals, then
+climbs steeply once policy precision rises. By 500k, verified_cf reaches
+the same convergence-horizon SR as vlm_cf on Push/PnP and exceeds it on
+Slide. The HER baseline is truncated at 250k steps (its pre-registered
+horizon); Oracle-CF runs continue to 1M steps on PickAndPlace.

@@ -1,0 +1,8 @@
+Figure 1. Final evaluation success rate by method and environment.
+Methods reported at their pre-registered training horizons (Uniform/PER: 3M;
+HER: 250k; Oracle-CF: 250k--1M; vlm_cf and verified_cf: 500k). Error bars
+and overlaid dots show +/-1 SE and individual seeds (n=3). The horizontal
+dashed line marks HER's per-env reference. Both vlm_cf and verified_cf
+decisively beat HER+PER baselines on Slide; verified_cf exceeds vlm_cf on
+Slide (0.617 vs 0.55). The two CF mechanisms are statistically
+indistinguishable on aggregate across all three envs.
