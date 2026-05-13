@@ -1,0 +1,2727 @@
+{
+  "version": "2026-05-11-base",
+  "neatVersion": "4.6b",
+  "documents": [
+    {
+      "paragraphs": [
+        {
+          "start_sentence_index": 0,
+          "num_sentences": 6,
+          "completely_generated_prob": 0.9000234362273952
+        },
+        {
+          "start_sentence_index": 6,
+          "num_sentences": 10,
+          "completely_generated_prob": 0.9316904254198173
+        },
+        {
+          "start_sentence_index": 16,
+          "num_sentences": 14,
+          "completely_generated_prob": 0.9482332318004326
+        },
+        {
+          "start_sentence_index": 30,
+          "num_sentences": 4,
+          "completely_generated_prob": 0.8708627247549962
+        },
+        {
+          "start_sentence_index": 34,
+          "num_sentences": 8,
+          "completely_generated_prob": 0.0026598174038435928
+        },
+        {
+          "start_sentence_index": 42,
+          "num_sentences": 4,
+          "completely_generated_prob": 0.8708627247549962
+        },
+        {
+          "start_sentence_index": 46,
+          "num_sentences": 4,
+          "completely_generated_prob": 0.8708627247549962
+        },
+        {
+          "start_sentence_index": 50,
+          "num_sentences": 5,
+          "completely_generated_prob": 0.8871651474786718
+        },
+        {
+          "start_sentence_index": 55,
+          "num_sentences": 5,
+          "completely_generated_prob": 0.8871651474786718
+        },
+        {
+          "start_sentence_index": 60,
+          "num_sentences": 4,
+          "completely_generated_prob": 0.8708627247549962
+        },
+        {
+          "start_sentence_index": 64,
+          "num_sentences": 4,
+          "completely_generated_prob": 0.8708627247549962
+        },
+        {
+          "start_sentence_index": 68,
+          "num_sentences": 7,
+          "completely_generated_prob": 0.9103421900070616
+        },
+        {
+          "start_sentence_index": 75,
+          "num_sentences": 5,
+          "completely_generated_prob": 0.8871651474786718
+        },
+        {
+          "start_sentence_index": 80,
+          "num_sentences": 3,
+          "completely_generated_prob": 0.850090677245877
+        },
+        {
+          "start_sentence_index": 83,
+          "num_sentences": 3,
+          "completely_generated_prob": 0.850090677245877
+        },
+        {
+          "start_sentence_index": 86,
+          "num_sentences": 4,
+          "completely_generated_prob": 0.8708627247549962
+        },
+        {
+          "start_sentence_index": 90,
+          "num_sentences": 10,
+          "completely_generated_prob": 0.9316904254198173
+        },
+        {
+          "start_sentence_index": 100,
+          "num_sentences": 9,
+          "completely_generated_prob": 0.9257822263275673
+        },
+        {
+          "start_sentence_index": 109,
+          "num_sentences": 6,
+          "completely_generated_prob": 0.9000234362273952
+        },
+        {
+          "start_sentence_index": 115,
+          "num_sentences": 3,
+          "completely_generated_prob": 0.850090677245877
+        },
+        {
+          "start_sentence_index": 118,
+          "num_sentences": 4,
+          "completely_generated_prob": 0.8708627247549962
+        },
+        {
+          "start_sentence_index": 122,
+          "num_sentences": 10,
+          "completely_generated_prob": 0.9316904254198173
+        },
+        {
+          "start_sentence_index": 132,
+          "num_sentences": 1,
+          "completely_generated_prob": 0.8181818033057853
+        },
+        {
+          "start_sentence_index": 133,
+          "num_sentences": 2,
+          "completely_generated_prob": 0.8254776901813464
+        },
+        {
+          "start_sentence_index": 135,
+          "num_sentences": 5,
+          "completely_generated_prob": 0.8871651474786718
+        },
+        {
+          "start_sentence_index": 140,
+          "num_sentences": 6,
+          "completely_generated_prob": 0.9000234362273952
+        },
+        {
+          "start_sentence_index": 146,
+          "num_sentences": 6,
+          "completely_generated_prob": 0.3436238582234724
+        },
+        {
+          "start_sentence_index": 152,
+          "num_sentences": 4,
+          "completely_generated_prob": 0.8708627247549962
+        }
+      ],
+      "completely_generated_prob": 0.9628782907584972,
+      "average_generated_prob": 1,
+      "predicted_class": "ai",
+      "confidence_score": 0.9631480179993291,
+      "confidence_category": "high",
+      "overall_burstiness": 0,
+      "writing_stats": {},
+      "confidence_thresholds_raw": {
+        "identity": {
+          "ai": {
+            "reject": 0.33,
+            "low": 0.6,
+            "medium": 0.8
+          },
+          "human": {
+            "reject": 0.33,
+            "low": 0.6,
+            "medium": 0.8
+          },
+          "mixed": {
+            "reject": 0.33,
+            "low": 0.6,
+            "medium": 0.8
+          }
+        }
+      },
+      "sentences": [
+        {
+          "generated_prob": 0.9997215134568265,
+          "sentence": "Problem -- Sparse-reward manipulation is, at its core, a credit-assignment problem.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00027848654317352275,
+            "ai": 0.9570657969342683,
+            "paraphrased": 0.04265571652255818
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9998243401186464,
+          "sentence": "On Gymnasium-Robotics Fetch --- Push, PickAndPlace, Slide --- a fresh policy succeeds on fewer than one in a hundred episodes.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00017565988135367322,
+            "ai": 0.9596945547905135,
+            "paraphrased": 0.040129785328132904
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9997993343252841,
+          "sentence": "The single bit of reward at the end of a 50-step trajectory must bootstrap backward through TD, and it decays geometrically along the way.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00020066567471583427,
+            "ai": 0.9595934863712323,
+            "paraphrased": 0.04020584795405184
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.999890565481372,
+          "sentence": "HER patches over part of this by relabeling failures against whatever goal the agent did reach, but it cannot say which timestep made the failure inevitable.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0001094345186279546,
+            "ai": 0.9608030136475348,
+            "paraphrased": 0.0390875518338372
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.999882129304169,
+          "sentence": "Prioritized experience replay (PER) is in similar trouble: it upweights transitions with large TD-errors, but the sparse regime is exactly the one where the TD signal is missing.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00011787069583103732,
+            "ai": 0.9612256932063046,
+            "paraphrased": 0.03865643609786435
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999336806049144,
+          "sentence": "The concurrent VLM-RB of folds a frozen vision-language model into the priority as an additive bias; we go the other way, with a multiplicative form, and add a counterfactual channel that the simulator itself certifies.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 6.631939508560979e-05,
+            "ai": 0.9633288057429494,
+            "paraphrased": 0.03660487486196491
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999508627259837,
+          "sentence": "Methodological contributions -- (1) Semantic PER as IS-posterior reweighting.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 4.9137274016360025e-05,
+            "ai": 0.9625806716475016,
+            "paraphrased": 0.037370191078482044
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999167117688976,
+          "sentence": "Read the VLM as an approximation q_phi(t^) to the posterior over which timestep doomed the episode.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 8.328823110236983e-05,
+            "ai": 0.9620295435267271,
+            "paraphrased": 0.03788716824217056
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999266154042813,
+          "sentence": "Multiply that into the TD-error priority.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 7.338459571871156e-05,
+            "ai": 0.9611843859214411,
+            "paraphrased": 0.03874222948284027
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999387795850803,
+          "sentence": "PER's standard importance-sampling weight remains a sound correction, with a bias bound we can write down; miscalibration inflates the variance of mu, but it does not bias the value target.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 6.122041491973212e-05,
+            "ai": 0.9618282041125638,
+            "paraphrased": 0.03811057547251652
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999298569787387,
+          "sentence": "The additive VLM-RB mixture, by contrast, quietly retargets the Bellman loss to a lambda-weighted objective and does not correct for the shift.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 7.01430212613051e-05,
+            "ai": 0.9615012841674723,
+            "paraphrased": 0.03842857281126641
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.999881060624046,
+          "sentence": "(2) VLM-Verified Counterfactual Hindsight.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00011893937595397706,
+            "ai": 0.9639228203655277,
+            "paraphrased": 0.03595824025851836
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.999923905269138,
+          "sentence": "Asking a VLM for an alternative goal --- in language --- has a single dominant failure: total teleport-collapse on Opus 4.7 over FetchPush.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 7.609473086201705e-05,
+            "ai": 0.9614828389292137,
+            "paraphrased": 0.03844106633992432
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999296869732662,
+          "sentence": "Our workaround is structural: ask instead for a corrective action sequence, run it in a fork of the training simulator, and only write the trajectory to the buffer if the env's own sparse reward fires.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 7.031302673367329e-05,
+            "ai": 0.9614044637385363,
+            "paraphrased": 0.038525223234730004
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9998970492400652,
+          "sentence": "Confidence is then exactly 1.0.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00010295075993486536,
+            "ai": 0.9608429552755056,
+            "paraphrased": 0.03905409396455957
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9998906473153014,
+          "sentence": "Modeling error is exactly zero.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00010935268469858684,
+            "ai": 0.9598080224858129,
+            "paraphrased": 0.0400826248294885
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999026024626739,
+          "sentence": "Main findings -- (i) Verified-CF matches VLM-CF; wins on Slide.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 9.739753732607211e-05,
+            "ai": 0.9609370066902222,
+            "paraphrased": 0.03896559577245178
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.979884062046671,
+          "sentence": "After 500k SAC + HER + verified-CF updates, verified-CF reaches a mean success rate of 0.606 across the three Fetch envs (0.85 / 0.35 / 0.617 on Push / PickAndPlace / Slide).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.020115937953328975,
+            "ai": 0.9771639663751815,
+            "paraphrased": 0.002720095671489434
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9952981220339338,
+          "sentence": "VLM-CF hits 0.622 --- effectively a tie at three seeds (Delta = -0.016, mean a quantity standard error reported throughout).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.004701877966066254,
+            "ai": 0.9930664347161838,
+            "paraphrased": 0.002231687317749892
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9959173781474551,
+          "sentence": "On Slide alone verified-CF posts the higher mean (0.617 vs.\\ 0.550, +0.067).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.004082621852544896,
+            "ai": 0.9939139110469134,
+            "paraphrased": 0.0020034671005416498
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9971526471646285,
+          "sentence": "Both gain +0.45 / +0.434 on Slide over PER@3M / HER@250k baselines (Fig.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0028473528353714526,
+            "ai": 0.9955369862924591,
+            "paraphrased": 0.0016156608721693997
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9977324096313867,
+          "sentence": ".",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.002267590368613376,
+            "ai": 0.9956268726416317,
+            "paraphrased": 0.0021055369897548617
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9987032102606958,
+          "sentence": "(ii) Kill criterion, stated in advance and honored.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0012967897393042782,
+            "ai": 0.9967426693647894,
+            "paraphrased": 0.0019605408959063662
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9994641469718472,
+          "sentence": "The Phase-1 Oracle-CF ablation came in under our +0.10 kill threshold on FetchPickAndPlace at 250k steps (Delta = -0.05).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0005358530281528614,
+            "ai": 0.9980448403670317,
+            "paraphrased": 0.0014193066048154364
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9998130454416031,
+          "sentence": "We honored the kill and pivoted the focus to the IS-posterior framing and the verifier.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00018695455839687708,
+            "ai": 0.9988803599036488,
+            "paraphrased": 0.0009326855379543225
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9998697029815566,
+          "sentence": "(iii) Teleport-collapse is a prompt-architectural failure, not a model failure.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00013029701844330927,
+            "ai": 0.9989285984425024,
+            "paraphrased": 0.0009411045390543146
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9997082779745704,
+          "sentence": "Across six synthetic and ten real Fetch failures we swept two vendors and three models (GPT-4o, Opus 4.7, Sonnet 4.5).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00029172202542951213,
+            "ai": 0.9983556338698781,
+            "paraphrased": 0.0013526441046923185
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9997788443208165,
+          "sentence": "(GPT-4o, achieved\\_goal) teleports on zero of six; Opus teleports on four of four under the same prompt.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0002211556791833957,
+            "ai": 0.9985214237577507,
+            "paraphrased": 0.00125742056306593
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9998580834460739,
+          "sentence": "iv Cross task transfer.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00014191655392616412,
+            "ai": 0.9986344313636552,
+            "paraphrased": 0.0012236520824186858
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9998492468178042,
+          "sentence": "A single format-string template lands 12/12 on parse, task-relevance, and plausibility across Push, PickAndPlace, and Slide.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00015075318219583584,
+            "ai": 0.9988943738497675,
+            "paraphrased": 0.0009548729680366703
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9992369296614084,
+          "sentence": "Honest negative -- Verified-CF has a cold-start failure mode.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0007630703385916344,
+            "ai": 0.9976723051038803,
+            "paraphrased": 0.00156462455752813
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9995843355231759,
+          "sentence": "On PnP seed 42 it rejected the first roughly80 VLM calls outright (a full 100\\%), so for that window the agent was effectively running a more expensive flavor of HER.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00041566447682402574,
+            "ai": 0.9980658166713108,
+            "paraphrased": 0.001518518851865185
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9992807811595894,
+          "sentence": "The multiplicative-vs-additive contrast is analytical at this point (Eq.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0007192188404105916,
+            "ai": 0.9977307586979814,
+            "paraphrased": 0.0015500224616080108
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9977379012341667,
+          "sentence": "); a direct empirical VLM-RB head-to-head is left for future work.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0022620987658332863,
+            "ai": 0.9958761130512555,
+            "paraphrased": 0.001861788182911248
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9996926400954627,
+          "sentence": "Sparse-reward manipulation is a credit-assignment problem in disguise.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00030735990453739735,
+            "ai": 0.9983123450808685,
+            "paraphrased": 0.0013802950145941153
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9975552929908184,
+          "sentence": "A 50-step Fetch episode hands the learner one bit at the end, and the TD-error has to walk it backward; the gradient decays geometrically as it travels.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00244470700918156,
+            "ai": 0.9955374621340312,
+            "paraphrased": 0.002017830856787236
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.964906932908952,
+          "sentence": "Most transitions never see usable signal.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.035093067091047925,
+            "ai": 0.9628501585748539,
+            "paraphrased": 0.0020567743340981744
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.48876352260790346,
+          "sentence": "A fresh policy clears fewer than 1\\% of episodes, so the replay buffer holds almost no positive signal to propagate in the first place.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.5112364773920965,
+            "ai": 0.4004609197275135,
+            "paraphrased": 0.08830260288038992
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.45445313508273055,
+          "sentence": "PER skews sampling toward transitions with large TD-errors, but that sharpening lives downstream of a signal which has already faded away from the rare goal-achievement timestep.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.5455468649172694,
+            "ai": 0.3628929691213532,
+            "paraphrased": 0.09156016596137735
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.4474355372576243,
+          "sentence": "HER sidesteps the problem differently: it relabels a failed trajectory as a success against whatever goal the agent did reach.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.5525644627423757,
+            "ai": 0.3456643650555747,
+            "paraphrased": 0.10177117220204965
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.3608935951520804,
+          "sentence": "HER's relabel target is fixed to what the agent did, not to where it should have gone.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.6391064048479196,
+            "ai": 0.2748986277804801,
+            "paraphrased": 0.08599496737160031
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.6018537491974327,
+          "sentence": "The one transition we'd most like flagged --- the instant failure became unavoidable --- gets no special treatment.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.39814625080256727,
+            "ai": 0.500302802778098,
+            "paraphrased": 0.10155094641933471
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9203798565183612,
+          "sentence": "Recent work has begun plugging frozen VLMs into the RL loop as ``oracles'' for reward shaping , for replay-buffer prioritization , and for failure detection in manipulation .",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0796201434816388,
+            "ai": 0.8376887849489871,
+            "paraphrased": 0.0826910715693741
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9445592125675053,
+          "sentence": "We read all of these through a common lens: importance-sampled optimization with a foundation-model proposal.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.05544078743249471,
+            "ai": 0.8787629041029621,
+            "paraphrased": 0.06579630846454318
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9562481774716589,
+          "sentence": "In that view the VLM is a frozen approximation to the (intractable) posterior p(t^) over which transitions caused an episode's outcome.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.04375182252834107,
+            "ai": 0.8897348211461579,
+            "paraphrased": 0.06651335632550108
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9888701215386391,
+          "sentence": "Four contributions follow.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.011129878461360931,
+            "ai": 0.9402718544006348,
+            "paraphrased": 0.0485982671380043
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.984723002401456,
+          "sentence": "1 IS posterior framing of VLM guided replay.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.015276997598543871,
+            "ai": 0.914291042940719,
+            "paraphrased": 0.07043195946073713
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9807639076520627,
+          "sentence": "We re-derive PER inside a non-uniform-replay taxonomy, putting our scheme into the proposal-shaping slot with a frozen foundation-model credit-assignment oracle.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.019236092347937304,
+            "ai": 0.9277999495971975,
+            "paraphrased": 0.05296395805486518
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9850715701260695,
+          "sentence": "The multiplicative form mu_P*w_sem keeps PER's IS correction trajectory-conditionally well-defined.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.014928429873930518,
+            "ai": 0.9258000574767572,
+            "paraphrased": 0.05927151264931224
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9888754104884586,
+          "sentence": "The additive mixture used by VLM-RB reroutes the loss to a lambda-weighted objective without correcting for the shift.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.011124589511541435,
+            "ai": 0.9342363502855497,
+            "paraphrased": 0.05463906020290887
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9848708338533761,
+          "sentence": "2 VLM Verified Counterfactual Hindsight.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.015129166146623888,
+            "ai": 0.9431758786507662,
+            "paraphrased": 0.041694955202609914
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9832339166301296,
+          "sentence": "A direct prompt for an alternative achieved goal produces a degenerate output: 100\\% of Claude Opus 4.7 calls on FetchPush hand back corrective\\_position = desired\\_goal, which carries zero information.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.01676608336987036,
+            "ai": 0.9345442544058694,
+            "paraphrased": 0.04868966222426024
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9677706860712956,
+          "sentence": "We sidestep the trap by asking for a corrective action sequence, then running that sequence inside a fork of the training simulator.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.03222931392870441,
+            "ai": 0.9157439622854012,
+            "paraphrased": 0.05202672378589433
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9921889390897924,
+          "sentence": "Teleporting a 50 g block 50 cm with a 4-D end-effector action is physically impossible under MuJoCo , so the teleport mode simply cannot reach the buffer.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.007811060910207551,
+            "ai": 0.9484513759536788,
+            "paraphrased": 0.043737563136113614
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9953448243007257,
+          "sentence": "The pattern is a simulator-verified generator--verifier loop (cf.\\ ).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.004655175699274244,
+            "ai": 0.9619489612576405,
+            "paraphrased": 0.03339586304308523
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999168671432732,
+          "sentence": "(3) Empirical analysis of prompts, VLM family robustness, and cross-task transfer.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 8.313285672681174e-05,
+            "ai": 0.9898480297919522,
+            "paraphrased": 0.010068837351321015
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999052596883603,
+          "sentence": "A head-to-head GPT-4o vs.\\ Opus 4.7 sweep on six synthetic Fetch failures isolates the best non-degenerate configuration: (GPT-4o, achieved\\_goal) teleport-collapses on 0/6, against Opus's 4/4 on the same configuration.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 9.474031163967646e-05,
+            "ai": 0.9889747119597695,
+            "paraphrased": 0.010930547728590815
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9998591746400955,
+          "sentence": "Opus does post a higher goal-progress score --- but only by copying the goal verbatim.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0001408253599044955,
+            "ai": 0.9890185809427033,
+            "paraphrased": 0.01084059369739216
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.99989292114612,
+          "sentence": "A second sweep on ten real SAC-failure episodes shows the fix carries over to a third VLM family (Sonnet 4.5).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00010707885387993014,
+            "ai": 0.9892905768746806,
+            "paraphrased": 0.010602344271439442
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999436270932823,
+          "sentence": "A 12-episode cross-task pilot lands 12/12 task-relevant annotations across Push, PickAndPlace, and Slide with a single prompt template.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 5.637290671769993e-05,
+            "ai": 0.9898105055337506,
+            "paraphrased": 0.010133121559531671
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9998794945622972,
+          "sentence": "(4) Honest negative result, with the kill criterion stated in advance.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00012050543770282335,
+            "ai": 0.9896525884370783,
+            "paraphrased": 0.01022690612521891
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9998935481403306,
+          "sentence": "A 36-run Oracle-CF kill experiment came in below our +0.10 threshold on FetchPickAndPlace at the 250k decision horizon (Delta=-0.05 vs.\\ HER).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0001064518596693903,
+            "ai": 0.9891321866285895,
+            "paraphrased": 0.010761361511741094
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9998902278818179,
+          "sentence": "That caps the headroom for any VLM-in-replay method on Fetch at this horizon.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00010977211818215428,
+            "ai": 0.9898953466254801,
+            "paraphrased": 0.009994881256337816
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999458573998437,
+          "sentence": "We honored the kill and pivoted the focus to the IS-posterior framing.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 5.414260015633763e-05,
+            "ai": 0.9903815792934668,
+            "paraphrased": 0.009564278106376879
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999297824832785,
+          "sentence": "HER, PER, and counterfactual augmentation -- HER with the future relabel strategy at k=4 remains the de-facto recipe for sparse-reward goal-conditioned manipulation.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 7.021751672162062e-05,
+            "ai": 0.9900444759992288,
+            "paraphrased": 0.009885306484049575
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9998885458993158,
+          "sentence": "Recent extensions touch either the relabel target , the relabel proposal , or add a verification step .",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0001114541006842389,
+            "ai": 0.989438471478647,
+            "paraphrased": 0.010450074420668694
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999298959106766,
+          "sentence": "Our verified-CF mechanism () sits in the third family, but with two twists: it verifies inside the exact training simulator (zero modeling error), and it does so on a 4-D action sequence rather than a hindsight goal.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 7.010408932343921e-05,
+            "ai": 0.9892468710423232,
+            "paraphrased": 0.01068302486835333
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999262136531059,
+          "sentence": "On the PER side, Prioritized DQN samples in proportion to (|delta|+epsilon)^alpha and IS-corrects each gradient; the 2024--2026 lineage piles on auxiliary multiplicative modifiers .",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 7.378634689415139e-05,
+            "ai": 0.9892018131681842,
+            "paraphrased": 0.010724400484921582
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9998864323574738,
+          "sentence": "Differentiation from VLM-RB -- The concurrent (Feb 2026) VLM-RB is the closest published work: a frozen VLM scores 32-frame sub-trajectory clips for prioritized replay on MiniGrid and OGBench.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00011356764252620288,
+            "ai": 0.9892160852612454,
+            "paraphrased": 0.010670347096228418
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999130806388428,
+          "sentence": "Two methodological differences matter here.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 8.691936115718673e-05,
+            "ai": 0.990749421546878,
+            "paraphrased": 0.009163659091964852
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9984852541209855,
+          "sentence": "(success-direction scoring) --- and folds the answer additively into uniform sampling, the relevant expression.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0015147458790144806,
+            "ai": 0.8662720934790971,
+            "paraphrased": 0.13221316064188846
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.998869504568067,
+          "sentence": "The answer multiplies into the TD-error priority, the relevant expression.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0011304954319330562,
+            "ai": 0.8655791119411802,
+            "paraphrased": 0.13329039262688677
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9990921536977011,
+          "sentence": "The multiplicative form preserves PER's IS-correction interpretation (); the additive mixture quietly retargets the loss to a lambda-weighted objective which VLM-RB never corrects for.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0009078463022989421,
+            "ai": 0.8598338251907632,
+            "paraphrased": 0.13925832850693784
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9989777323975547,
+          "sentence": "Second, we ship a verified-counterfactual-hindsight mechanism () which lives outside the scope of any success-scoring scheme: VLM-RB's signal cannot drive relabels; ours can.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0010222676024453546,
+            "ai": 0.8656198821220662,
+            "paraphrased": 0.1333578502754885
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9992834790386227,
+          "sentence": "We are not aware of prior work that uses a VLM-localized failure timestep as a credit-assignment signal, or that verifies counterfactual relabels in the exact simulator the policy is trained on.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0007165209613772595,
+            "ai": 0.871991065527965,
+            "paraphrased": 0.1272924135106577
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9993497370005816,
+          "sentence": "Foundation-model credit assignment -- were the first to drop a frozen LLM into the credit-assignment loop, but on text-domain planning.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0006502629994183552,
+            "ai": 0.8711806558751186,
+            "paraphrased": 0.12816908112546302
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.999258203970776,
+          "sentence": "Semantic PER ports that move to vision and re-routes the foundation-model output: into the sampler, not the planner.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0007417960292240384,
+            "ai": 0.8704321892101465,
+            "paraphrased": 0.12882601476062944
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9988580825701386,
+          "sentence": "The other live thread --- VLM-as-reward --- pipes the VLM straight into the TD target.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0011419174298613435,
+            "ai": 0.8627076177107884,
+            "paraphrased": 0.13615046485935023
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9992840955275147,
+          "sentence": "The env's sparse reward stays put in the TD target; the VLM only nudges mu.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0007159044724852898,
+            "ai": 0.8630299207974196,
+            "paraphrased": 0.13625417473009516
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9993867781776914,
+          "sentence": "VLM miscalibration, on our side, surfaces as sampling variance, not as Q-bias.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0006132218223085443,
+            "ai": 0.8609898652666381,
+            "paraphrased": 0.1383969129110533
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.998989122421597,
+          "sentence": "Off-policy value learning, at its heart, is a regression problem sampled from replay: minimize L(theta)=E_i[(delta_i(theta))], where the relevant expression is the standard TD-error.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.001010877578403127,
+            "ai": 0.8627628365208562,
+            "paraphrased": 0.13622628590074076
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9991636275580454,
+          "sentence": "PER sets the relevant expression, and then pays the resulting bias back through an annealed importance-sampling weight w_IS(i)=(|D_B|mu_P(i))^-beta --- with beta climbing from beta_0 up to 1 over training.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0008363724419545542,
+            "ai": 0.863484927107607,
+            "paraphrased": 0.1356787004504384
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9963820465852531,
+          "sentence": "In the limit, what you recover is an unbiased estimator of the uniform-replay loss.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0036179534147468438,
+            "ai": 0.8777925739267914,
+            "paraphrased": 0.11858947265846168
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9957725626463356,
+          "sentence": "Now suppose we feed the same trajectory to a frozen VLM and ask which timestep made the outcome happen.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.004227437353664347,
+            "ai": 0.8829949695381746,
+            "paraphrased": 0.1127775931081611
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9981385401173715,
+          "sentence": "For a transition at index i, the window-kernel expectation under q_phi is the relevant expression.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0018614598826285644,
+            "ai": 0.9379976188514548,
+            "paraphrased": 0.06014092126591662
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9982440228637559,
+          "sentence": "Multiply this into PER; no addition,",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0017559771362439863,
+            "ai": 0.9287605128867698,
+            "paraphrased": 0.06948350997698621
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9986371603294616,
+          "sentence": "There are two axes at play in Eq.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0013628396705383911,
+            "ai": 0.9359173478361313,
+            "paraphrased": 0.06271981249333022
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9986804369025947,
+          "sentence": "The first, mu_P, tracks learning progress; the second, w_sem, tracks causal influence.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0013195630974054005,
+            "ai": 0.9338967778134973,
+            "paraphrased": 0.06478365908909729
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.998490538984308,
+          "sentence": "As q_phi approaches a uniform distribution the product collapses gracefully back to standard PER.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.001509461015692135,
+            "ai": 0.9404148149127451,
+            "paraphrased": 0.05807572407156275
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9985388151479493,
+          "sentence": "We use w_=10, W=5, and alpha=0.6 throughout.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0014611848520507565,
+            "ai": 0.9371581751445619,
+            "paraphrased": 0.06138064000338735
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9992448154070562,
+          "sentence": "Why multiplicative?",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0007551845929437703,
+            "ai": 0.9415869491666947,
+            "paraphrased": 0.057657866240361504
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9996142607897704,
+          "sentence": "i IS correction compatibility.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0003857392102295108,
+            "ai": 0.9457184916218563,
+            "paraphrased": 0.05389576916791416
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9984800439992382,
+          "sentence": "Using the PER weight as a deliberate under-correction then leaves a V-trace-analogous bias term, bounded by the relevant expression , and the full derivation is given in Appendix .",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0015199560007618023,
+            "ai": 0.9429278232124773,
+            "paraphrased": 0.055552220786760954
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9983893482474898,
+          "sentence": "The additive mixture _q+(1-lambda)mu_P used by , by way of contrast, shifts the betato1 limit over to a lambda-weighted objective which is no longer equal to E_U[].",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.001610651752510198,
+            "ai": 0.9381334324300925,
+            "paraphrased": 0.06025591581739733
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9991179693780727,
+          "sentence": "Splicing the VLM into the TD target as a per-timestep reward would pipe its calibration error directly into Q, which we deliberately avoid.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0008820306219272094,
+            "ai": 0.9384637885878779,
+            "paraphrased": 0.060654180790194814
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9985681893706395,
+          "sentence": "The env's true sparse reward stays in the TD target, untouched.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0014318106293605476,
+            "ai": 0.9403464102347276,
+            "paraphrased": 0.05822177913591185
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9977179778251392,
+          "sentence": "A prediction follows from this: Semantic PER should track PER closely under a poorly-calibrated VLM, then pull ahead once the VLM becomes reliable.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.002282022174860865,
+            "ai": 0.9363557323541422,
+            "paraphrased": 0.06136224547099695
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9964631271231913,
+          "sentence": "The two curves should not diverge.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.003536872876808728,
+            "ai": 0.9289670792063401,
+            "paraphrased": 0.06749604791685114
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9948933386644223,
+          "sentence": "We test the IS-pairing principle through the counterfactual-injection variants vlm\\_cf and verified\\_cf (), each of which inherits the same multiplicative IS structure.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0051066613355777064,
+            "ai": 0.9274838920966266,
+            "paraphrased": 0.0674094465677957
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9897806364091173,
+          "sentence": "Direct Semantic-PER training curves are deferred to follow-up work.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.010219363590882753,
+            "ai": 0.9227488126861753,
+            "paraphrased": 0.06703182372294202
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9654924982581568,
+          "sentence": "A corrective signal admits four output types along two axes: the kind of output (natural language or numerical) and whether the prompt mentions desired\\_goal.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.03450750174184329,
+            "ai": 0.8977018561299821,
+            "paraphrased": 0.0677906421281746
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9733655045652451,
+          "sentence": "The four are narrative, action, achieved\\_goal, and a unified all JSON.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.026634495434754893,
+            "ai": 0.900102841287065,
+            "paraphrased": 0.07326266327818014
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9526041824351231,
+          "sentence": "The two position-emitting variants (achieved\\_goal and all) hand the VLM desired\\_goal as a literal numerical triplet.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.047395817564876874,
+            "ai": 0.885847810026662,
+            "paraphrased": 0.0667563724084611
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9795233485297976,
+          "sentence": "The cheapest continuation, when prompted for a corrective position right inside the same frame, is to copy that triplet back.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.020476651470202334,
+            "ai": 0.9573433006898451,
+            "paraphrased": 0.022180047839952536
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9805556897229152,
+          "sentence": "No keyframe reasoning needed.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.019444310277084792,
+            "ai": 0.9554004295479338,
+            "paraphrased": 0.025155260174981386
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9937059652916789,
+          "sentence": "We call this teleport-collapse: for a failed episode with the relevant expression m, the VLM emits a p that sits within d_th of g --- a trajectory-independent Dirac q_phi(p)=delta(p-g).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00629403470832104,
+            "ai": 0.967363747298164,
+            "paraphrased": 0.026342217993514938
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9925459001265122,
+          "sentence": "This is a property of the schema, not of any one model.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.007454099873487786,
+            "ai": 0.9683223126909988,
+            "paraphrased": 0.02422358743551346
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9892725642299723,
+          "sentence": "Table : Opus 4.7 copies on 4/4 of FetchPush calls; GPT-4o copies on 4/6 all calls but on 0/6 achieved\\_goal calls.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.01072743577002762,
+            "ai": 0.9651387115342783,
+            "paraphrased": 0.02413385269569402
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9916692879982,
+          "sentence": "The verified-CF mechanism uses action, a variant in which teleport is simply unrepresentable.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.008330712001800031,
+            "ai": 0.969606388699937,
+            "paraphrased": 0.022062899298262977
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9971311361554703,
+          "sentence": "To plug the teleport loophole we elicit a 4-vector action sequence from the VLM and verify it inside a fork of the simulator.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.002868863844529726,
+            "ai": 0.978642772778191,
+            "paraphrased": 0.018488363377279275
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9987796176965305,
+          "sentence": "The per-episode protocol has five steps.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0012203823034695957,
+            "ai": 0.9784945661354836,
+            "paraphrased": 0.02028505156104682
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9987527166357758,
+          "sentence": "First, we snapshot the MuJoCo state at the localized failure timestep K, then fork a separate environment, write the snapshot, and invoke mujoco.mj\\_forward.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0012472833642241676,
+            "ai": 0.9786926383593529,
+            "paraphrased": 0.020060078276422852
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9982191724054779,
+          "sentence": "We next roll out the VLM-proposed action sequence for N=50 steps under the unmodified sparse reward.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0017808275945221457,
+            "ai": 0.9797084643566739,
+            "paraphrased": 0.01851070804880393
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9986654070097244,
+          "sentence": "If r_t>=0 fires at any step we append the trajectory along with a hindsight-relabeled copy at confidence 1.0; otherwise we reject and fall back to HER.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0013345929902756535,
+            "ai": 0.9772880754416525,
+            "paraphrased": 0.021377331568071853
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9986222097714329,
+          "sentence": "Under MuJoCo dynamics a 4-D end-effector action cannot move a 50 g block 50 cm in a 50-step rollout, so the teleport mode cannot reach the buffer through this channel.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0013777902285671316,
+            "ai": 0.9784244253373499,
+            "paraphrased": 0.02019778443408299
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9988551239343624,
+          "sentence": "A 4/4 smoke check confirms each design assertion.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0011448760656376524,
+            "ai": 0.9783371011918695,
+            "paraphrased": 0.020518022742492883
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9979050811536231,
+          "sentence": "Teleport counterfactuals are killed before the first rollout step; sensible-but-off actions, with final distances of 0.32 m and 0.16 m, are likewise rejected; a single hand-crafted near-goal action is verified at a final distance of 0.030 m. Snapshot round-trip equality holds to 0.00e+00 across all four Fetch envs.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0020949188463768448,
+            "ai": 0.9755932019979268,
+            "paraphrased": 0.022311879155696338
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9977416878105743,
+          "sentence": "CPU cost per verification is 17.6 ms, a 0.4\\% overhead.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.002258312189425735,
+            "ai": 0.9770900008787657,
+            "paraphrased": 0.020651686931808553
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999198291640505,
+          "sentence": "Asymmetric failure modes -- The two channels degrade in different ways when the VLM is wrong.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 8.017083594951335e-05,
+            "ai": 0.9947400501234721,
+            "paraphrased": 0.005179779040578386
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999707972534899,
+          "sentence": "Semantic PER treats q_phi as a re-weighting prior, so a miscalibrated VLM inflates sampling variance --- and the inflation is bounded (Appendix ).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 2.9202746510022315e-05,
+            "ai": 0.9954329527804789,
+            "paraphrased": 0.004537844473010993
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999542416724682,
+          "sentence": "The verifier, instead, treats q_phi as a candidate proposal, so a miscalibrated VLM is rejected more often.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 4.575832753180416e-05,
+            "ai": 0.9952697393028828,
+            "paraphrased": 0.0046845023695854
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999604532754945,
+          "sentence": "In either case the buffer never sees a biased write, since what we record is the env's own sparse reward, recomputed inside the verifier fork, rather than any reward signal suggested by the VLM.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 3.95467245054219e-05,
+            "ai": 0.9951627124985061,
+            "paraphrased": 0.004797740776988507
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999447773197174,
+          "sentence": "Setup -- We test on three envs from Gymnasium-Robotics: FetchPush-v4, FetchPickAndPlace-v4, and FetchSlide-v4 (see Fig.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 5.52226802825412e-05,
+            "ai": 0.9949805646459511,
+            "paraphrased": 0.004964212673766323
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9994641255718623,
+          "sentence": "and Appendix ).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0005358744281377519,
+            "ai": 0.9963195945633695,
+            "paraphrased": 0.003144531008492762
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.999981581133691,
+          "sentence": "The observation is 25-dim and goal-conditioned, the action is a 4-dim continuous end-effector displacement plus a gripper command, and the reward is the env's built-in sparse indicator the relevant expression over a 50-step horizon.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 1.8418866309128406e-05,
+            "ai": 0.9959273775687909,
+            "paraphrased": 0.004054203564900001
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999768320679017,
+          "sentence": "The agent itself is plain SAC --- two 256-unit ReLU hidden layers, gamma=0.98, learning rate 3times10^-4, batch 256 --- with HER future relabeling at k=4 on top.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 2.3167932098331977e-05,
+            "ai": 0.9951930743434301,
+            "paraphrased": 0.004783757724471619
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999797881989652,
+          "sentence": "PER is cranked at alpha=0.6 with an annealed beta0.4to1.0.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 2.0211801034862044e-05,
+            "ai": 0.9954871946223328,
+            "paraphrased": 0.00449259357663234
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999802237401411,
+          "sentence": "Primary runs go for 500k env steps on three seeds (42, 123, 999), with eval every 10k steps over 20 fresh episodes (everything is reported as mean a quantity SE).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 1.9776259858881858e-05,
+            "ai": 0.9956451226448978,
+            "paraphrased": 0.004335101095243318
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9999505840248143,
+          "sentence": "The VLM itself --- Claude Opus 4.7, GPT-4o (gpt-4o-2024-08-06), and Sonnet 4.5 --- is called through official APIs, capped at <=\\0.05the relevant expression0.950.03and verified\\_cf at0.850.10.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 4.941597518575322e-05,
+            "ai": 0.9952094565984858,
+            "paraphrased": 0.004741127426328479
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9997399895933334,
+          "sentence": "Both walk past HER 250k 0 617the relevant expression0 95the relevant expression0 3670 08and verified cf reaches0 350 076the relevant expression0 183the relevant expression0 6170 017against vlm cf s0 5500 150.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.000260010406666605,
+            "ai": 0.9946124048265262,
+            "paraphrased": 0.00512758476680718
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.841854265852284,
+          "sentence": "The+0.067the relevant expressionn=3the relevant expression+0.45over PER@3M (0.10), and verified\\_cf adds+0.434over HER@250k (0.183the relevant expression0.606and vlm\\_cf reaches0.622, for a difference of-0.016the relevant expression0.95the relevant expression0/6against Opus's4/4the relevant expression0.79the relevant expression0.83, behind only Opus's0.97the relevant expression4/6the relevant expression0/6vs.\\4/4the relevant expressionp<0.005the relevant expression4the relevant expression9/12(Slide4/4, Push3/4, PickAndPlace2/4).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.15814573414771604,
+            "ai": 0.8357728973273119,
+            "paraphrased": 0.006081368524972149
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9583611058007353,
+          "sentence": "A second sweep onn=10the relevant expression0/6the relevant expression4/4the relevant expression12/20the relevant expression3 seeds relevant expression+0.10the relevant expression0.1830.117against Oracle-CF at0.1170.044, a difference of-0.066the relevant expression0.617against Oracle-CF at0.3830.109the relevant expression0.183the relevant expression0.583) and HER (0.583,n=3; HER seed successes0.35/0.45/0.95the relevant expression0.367the relevant expressionN=50the relevant expression far fromgthe relevant expression80VLM calls at100\\%the relevant expressiongthe relevant expressionq_ relevant expressionq_ relevant expressionN, and a soft acceptancer-_rthe relevant expression+0.10the relevant expressionw_IS,Pinstead ofw_IS,Semthe relevant expressionncaveats:n=6synthetic,n=10real,n=12the relevant expressionn30the relevant expression100\\%the relevant expression0.606the relevant expression=-0.016the relevant expression=-0.066$, criterion stated in advance) caps the credit-assignment headroom on Fetch at this horizon, and we honored it.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0416388941992646,
+            "ai": 0.9525664918925837,
+            "paraphrased": 0.005794613908151665
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.975227501018762,
+          "sentence": "Cross-task VLM prompt template -- The single format-string prompt template used across the three Fetch envs is:",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.024772498981237945,
+            "ai": 0.9706584765419812,
+            "paraphrased": 0.0045690244767808
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9731793875656329,
+          "sentence": "Per-env task-description substitutions: Push: ``push the red cube to the green target on the table''; PickAndPlace: ``pick up the red cube and place it at the floating green target''; Slide: ``strike the red puck so it slides to the green target''.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.026820612434367074,
+            "ai": 0.9678265818584917,
+            "paraphrased": 0.005352805707141249
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9879075873816515,
+          "sentence": "The verified-CF mechanism uses an action variant of this template eliciting a 4-vector action sequence; full prompt texts and the localizer code accompany the report.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.012092412618348551,
+            "ai": 0.9605291023924356,
+            "paraphrased": 0.027378484989215877
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9909328805714681,
+          "sentence": "Heuristic localizer (Oracle v3) -- GoalDistanceLocalizer reads privileged sim state and picks the failure timestep in three phases, applied in precedence order.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.009067119428531879,
+            "ai": 0.9368721587006135,
+            "paraphrased": 0.05406072187085464
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9877599579415467,
+          "sentence": "(a) ballistic: the latest contiguous run of >=3 steps with post-peak object velocity >0.05 m/step (Slide free-flight).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.012240042058453238,
+            "ai": 0.9295239509145428,
+            "paraphrased": 0.05823600702700396
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9824030100643747,
+          "sentence": "(b) contact-loss: the latest transition in\\_contact_tto\\_contact_t+1 with run length >=2 and object-goal distance >0.10 m (Push and PnP drop-offs).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.017596989935625307,
+            "ai": 0.9352248941929076,
+            "paraphrased": 0.04717811587146713
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9841882397858537,
+          "sentence": "(c) argmin: closest-approach timestep, as a fallback.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.01581176021414638,
+            "ai": 0.9400637289891203,
+            "paraphrased": 0.04412451079673336
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.990786855340707,
+          "sentence": "The localizer plays two roles --- it supplies a supervised transfer target, and it gives Semantic PER its privileged-state upper-envelope curve.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.009213144659292972,
+            "ai": 0.9478553295209129,
+            "paraphrased": 0.04293152581979409
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9606828951810192,
+          "sentence": "Let the relevant expression be the uniform-replay target loss.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.03931710481898075,
+            "ai": 0.9220626319868019,
+            "paraphrased": 0.0386202631942173
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9638040311703248,
+          "sentence": "Standard PER with annealed correction yields, in the beta_tto1 limit, an unbiased self-normalized IS estimator of L_U .",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.03619596882967523,
+            "ai": 0.9222216388003455,
+            "paraphrased": 0.04158239236997931
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9441118579796562,
+          "sentence": "Our Semantic PER proposal the relevant expression is a re-weighting of mu_P by a trajectory-conditional factor bounded by 1<=w_sem<=w_.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.05588814202034367,
+            "ai": 0.9052191309242015,
+            "paraphrased": 0.038892727055454795
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9682962369355884,
+          "sentence": "Our implementation under-corrects with w_IS,P (a V-trace-style variance-reduction choice, akin to truncated importance ratios in Retrace, ).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.03170376306441162,
+            "ai": 0.9328955516170213,
+            "paraphrased": 0.03540068531856707
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.8235381211641539,
+          "sentence": "The per-slot ratio is the relevant expression where Z is the mu_Sem normalizer.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.1764618788358462,
+            "ai": 0.796894975209005,
+            "paraphrased": 0.026643145955148884
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.8542770426621697,
+          "sentence": "The window-kernel structure of w_sem confines the support of w_sem>1 to 2W+1 slots out of T. Combining these gives",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.1457229573378303,
+            "ai": 0.8181547983150365,
+            "paraphrased": 0.03612224434713325
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.7846445433223417,
+          "sentence": "with C a constant depending on |D_B| and the PER normalization.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.21535545667765832,
+            "ai": 0.7451891926869347,
+            "paraphrased": 0.039455350635406936
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.775785972719208,
+          "sentence": "At our defaults (w_=10, W=5, T=50, beta_t<=1) the bias multiplier is at most the relevant expression, and to0 as w_1.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.22421402728079198,
+            "ai": 0.7343016698740049,
+            "paraphrased": 0.04148430284520307
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9099449613332199,
+          "sentence": "The bound goes to zero when the boost is disabled, recovering standard PER.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.09005503866678002,
+            "ai": 0.8580204620728521,
+            "paraphrased": 0.051924499260367844
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9623384794776246,
+          "sentence": "The fully-corrected ablation (run w_IS,Sem) removes the residual bias entirely at the cost of maintaining Z. Two-regime degeneracy.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.037661520522375376,
+            "ai": 0.9112988797221959,
+            "paraphrased": 0.051039599755428745
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9989680402034705,
+          "sentence": "On the verifier channel, miscalibration acts on m_phi(tau)=m_gen*m_ver(sigma) (VLM parse rate times verifier acceptance rate); the epsilon_cal=0 guarantee holds vacuously when the accepted set is empty (cold-start: m_verto0).",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0010319597965294971,
+            "ai": 0.9980625683338524,
+            "paraphrased": 0.0009054718696180858
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.998747432787705,
+          "sentence": "A full proof, including the V-trace specialization, accompanies the supplementary material.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0012525672122950123,
+            "ai": 0.9979468647438756,
+            "paraphrased": 0.0008005680438293554
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9994677822330165,
+          "sentence": "Compute -- Primary runs use a single NVIDIA RTX 5070 Ti (16 GB); Modal-cloud seeds use one L4 (24 GB) per run.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0005322177669836269,
+            "ai": 0.9986229613662522,
+            "paraphrased": 0.0008448208667642484
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9996445876347302,
+          "sentence": "Wall-clock per 500k-step run is roughly 6h for SAC+HER and 9h for SAC+HER+VLM-CF, with the extra three hours dominated by VLM-API latency rather than compute.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.00035541236526986887,
+            "ai": 0.9989384913452719,
+            "paraphrased": 0.0007060962894582311
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9965706434813411,
+          "sentence": "The project total comes to roughly220 GPU-hours plus roughly\\80the relevant expression17.6ms per call (0.4\\%overhead at1700the relevant expressionn=10the relevant expression5\\%the relevant expression[0.06,0.34]m on Push and a median of0.27the relevant expression100\\%/75\\%the relevant expression75\\%/0\\%the relevant expression8the relevant expression12/20the relevant expression75\\%the relevant expression 0.07the relevant expression0.500.55; Sonnet0.70the relevant expressionn=3the relevant expression SE with thet-distribution atn-1=2the relevant expression0/6vs.\\4/4the relevant expressionp<0.005.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.003429356518658979,
+            "ai": 0.9954531932132246,
+            "paraphrased": 0.0011174502681164618
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        },
+        {
+          "generated_prob": 0.9978567973021065,
+          "sentence": "The 12-episode pilot uses4the relevant expression2/4the relevant expressionq_$ proof, W\\ B run-IDs, and a VLM-RB reproduction skeleton accompany the report.",
+          "perplexity": 0,
+          "class_probabilities": {
+            "human": 0.0021432026978934707,
+            "ai": 0.9969808996657558,
+            "paraphrased": 0.0008758976363507805
+          },
+          "interpretability_value": null,
+          "interpretability_normalized_value": null,
+          "interpretability_designation": null,
+          "interpretability_alpha": null,
+          "highlight_sentence_for_ai": true,
+          "special_highlight_type": null
+        }
+      ],
+      "class_probabilities": {
+        "human": 0,
+        "ai": 0.9631480179993291,
+        "mixed": 0.036851982000670816
+      },
+      "confidence_scores_raw": {
+        "identity": {
+          "ai": 0.9631480179993291,
+          "mixed": 0.036851982000670816,
+          "human": 0
+        }
+      },
+      "subclass": {
+        "ai": {
+          "predicted_class": "pure_ai",
+          "result_message": "",
+          "confidence_score": 1,
+          "confidence_category": "high",
+          "class_probabilities": {
+            "pure_ai": 1,
+            "ai_paraphrased": 0
+          },
+          "confidence_scores_raw": {
+            "identity": {
+              "pure_ai": 1,
+              "ai_paraphrased": 0
+            }
+          },
+          "confidence_thresholds_raw": {
+            "identity": {
+              "ai_paraphrased": {
+                "reject": 0.33,
+                "low": 0.6,
+                "medium": 0.8
+              },
+              "pure_ai": {
+                "reject": 0.33,
+                "low": 0.6,
+                "medium": 0.8
+              }
+            }
+          }
+        }
+      },
+      "pageNumber": 0,
+      "neatVersion": "4.6b",
+      "version": "2026-05-11-base",
+      "language": "en",
+      "result_message": "Our detector is highly confident that the text is written by AI.",
+      "result_sub_message": null,
+      "document_classification": "AI_ONLY",
+      "inputText": "Problem -- Sparse-reward manipulation is, at its core, a credit-assignment problem. On Gymnasium-Robotics Fetch --- Push, PickAndPlace, Slide --- a fresh policy succeeds on fewer than one in a hundred episodes. The single bit of reward at the end of a 50-step trajectory must bootstrap backward through TD, and it decays geometrically along the way. HER patches over part of this by relabeling failures against whatever goal the agent did reach, but it cannot say which timestep made the failure inevitable. Prioritized experience replay (PER) is in similar trouble: it upweights transitions with large TD-errors, but the sparse regime is exactly the one where the TD signal is missing. The concurrent VLM-RB of folds a frozen vision-language model into the priority as an additive bias; we go the other way, with a multiplicative form, and add a counterfactual channel that the simulator itself certifies.\n\nMethodological contributions -- (1) Semantic PER as IS-posterior reweighting. Read the VLM as an approximation q_phi(t^) to the posterior over which timestep doomed the episode. Multiply that into the TD-error priority. PER's standard importance-sampling weight remains a sound correction, with a bias bound we can write down; miscalibration inflates the variance of mu, but it does not bias the value target. The additive VLM-RB mixture, by contrast, quietly retargets the Bellman loss to a lambda-weighted objective and does not correct for the shift. (2) VLM-Verified Counterfactual Hindsight. Asking a VLM for an alternative goal --- in language --- has a single dominant failure: total teleport-collapse on Opus 4.7 over FetchPush. Our workaround is structural: ask instead for a corrective action sequence, run it in a fork of the training simulator, and only write the trajectory to the buffer if the env's own sparse reward fires. Confidence is then exactly 1.0. Modeling error is exactly zero.\n\nMain findings -- (i) Verified-CF matches VLM-CF; wins on Slide. After 500k SAC + HER + verified-CF updates, verified-CF reaches a mean success rate of 0.606 across the three Fetch envs (0.85 / 0.35 / 0.617 on Push / PickAndPlace / Slide). VLM-CF hits 0.622 --- effectively a tie at three seeds (Delta = -0.016, mean a quantity standard error reported throughout). On Slide alone verified-CF posts the higher mean (0.617 vs.\\ 0.550, +0.067). Both gain +0.45 / +0.434 on Slide over PER@3M / HER@250k baselines (Fig. ). (ii) Kill criterion, stated in advance and honored. The Phase-1 Oracle-CF ablation came in under our +0.10 kill threshold on FetchPickAndPlace at 250k steps (Delta = -0.05). We honored the kill and pivoted the focus to the IS-posterior framing and the verifier. (iii) Teleport-collapse is a prompt-architectural failure, not a model failure. Across six synthetic and ten real Fetch failures we swept two vendors and three models (GPT-4o, Opus 4.7, Sonnet 4.5). (GPT-4o, achieved\\_goal) teleports on zero of six; Opus teleports on four of four under the same prompt. (iv) Cross-task transfer. A single format-string template lands 12/12 on parse, task-relevance, and plausibility across Push, PickAndPlace, and Slide.\n\nHonest negative -- Verified-CF has a cold-start failure mode. On PnP seed 42 it rejected the first roughly80 VLM calls outright (a full 100\\%), so for that window the agent was effectively running a more expensive flavor of HER. The multiplicative-vs-additive contrast is analytical at this point (Eq. ); a direct empirical VLM-RB head-to-head is left for future work.\n\nSparse-reward manipulation is a credit-assignment problem in disguise. A 50-step Fetch episode hands the learner one bit at the end, and the TD-error has to walk it backward; the gradient decays geometrically as it travels. Most transitions never see usable signal. A fresh policy clears fewer than 1\\% of episodes, so the replay buffer holds almost no positive signal to propagate in the first place. PER skews sampling toward transitions with large TD-errors, but that sharpening lives downstream of a signal which has already faded away from the rare goal-achievement timestep. HER sidesteps the problem differently: it relabels a failed trajectory as a success against whatever goal the agent did reach. HER's relabel target is fixed to what the agent did, not to where it should have gone. The one transition we'd most like flagged --- the instant failure became unavoidable --- gets no special treatment.\n\nRecent work has begun plugging frozen VLMs into the RL loop as ``oracles'' for reward shaping , for replay-buffer prioritization , and for failure detection in manipulation . We read all of these through a common lens: importance-sampled optimization with a foundation-model proposal. In that view the VLM is a frozen approximation to the (intractable) posterior p(t^) over which transitions caused an episode's outcome. Four contributions follow.\n\n(1) IS-posterior framing of VLM-guided replay (). We re-derive PER inside a non-uniform-replay taxonomy, putting our scheme into the proposal-shaping slot with a frozen foundation-model credit-assignment oracle. The multiplicative form mu_P*w_sem keeps PER's IS correction trajectory-conditionally well-defined. The additive mixture used by VLM-RB reroutes the loss to a lambda-weighted objective without correcting for the shift.\n\n(2) VLM-Verified Counterfactual Hindsight (). A direct prompt for an alternative achieved goal produces a degenerate output: 100\\% of Claude Opus 4.7 calls on FetchPush hand back corrective\\_position = desired\\_goal, which carries zero information. We sidestep the trap by asking for a corrective action sequence, then running that sequence inside a fork of the training simulator. Teleporting a 50 g block 50 cm with a 4-D end-effector action is physically impossible under MuJoCo , so the teleport mode simply cannot reach the buffer. The pattern is a simulator-verified generator--verifier loop (cf.\\ ).\n\n(3) Empirical analysis of prompts, VLM family robustness, and cross-task transfer. A head-to-head GPT-4o vs.\\ Opus 4.7 sweep on six synthetic Fetch failures isolates the best non-degenerate configuration: (GPT-4o, achieved\\_goal) teleport-collapses on 0/6, against Opus's 4/4 on the same configuration. Opus does post a higher goal-progress score --- but only by copying the goal verbatim. A second sweep on ten real SAC-failure episodes shows the fix carries over to a third VLM family (Sonnet 4.5). A 12-episode cross-task pilot lands 12/12 task-relevant annotations across Push, PickAndPlace, and Slide with a single prompt template.\n\n(4) Honest negative result, with the kill criterion stated in advance. A 36-run Oracle-CF kill experiment came in below our +0.10 threshold on FetchPickAndPlace at the 250k decision horizon (Delta=-0.05 vs.\\ HER). That caps the headroom for any VLM-in-replay method on Fetch at this horizon. We honored the kill and pivoted the focus to the IS-posterior framing.\n\nHER, PER, and counterfactual augmentation -- HER with the future relabel strategy at k=4 remains the de-facto recipe for sparse-reward goal-conditioned manipulation. Recent extensions touch either the relabel target , the relabel proposal , or add a verification step . Our verified-CF mechanism () sits in the third family, but with two twists: it verifies inside the exact training simulator (zero modeling error), and it does so on a 4-D action sequence rather than a hindsight goal. On the PER side, Prioritized DQN samples in proportion to (|delta|+epsilon)^alpha and IS-corrects each gradient; the 2024--2026 lineage piles on auxiliary multiplicative modifiers .\n\nDifferentiation from VLM-RB -- The concurrent (Feb 2026) VLM-RB is the closest published work: a frozen VLM scores 32-frame sub-trajectory clips for prioritized replay on MiniGrid and OGBench. Two methodological differences matter here. First, VLM-RB poses a coarse question --- ``is this sub-trajectory good?'' (success-direction scoring) --- and folds the answer additively into uniform sampling, the relevant expression. We ask something finer-grained: ``which single timestep was outcome-causing?'' The answer multiplies into the TD-error priority, the relevant expression. The multiplicative form preserves PER's IS-correction interpretation (); the additive mixture quietly retargets the loss to a lambda-weighted objective which VLM-RB never corrects for. Second, we ship a verified-counterfactual-hindsight mechanism () which lives outside the scope of any success-scoring scheme: VLM-RB's signal cannot drive relabels; ours can. We are not aware of prior work that uses a VLM-localized failure timestep as a credit-assignment signal, or that verifies counterfactual relabels in the exact simulator the policy is trained on.\n\nFoundation-model credit assignment -- were the first to drop a frozen LLM into the credit-assignment loop, but on text-domain planning. Semantic PER ports that move to vision and re-routes the foundation-model output: into the sampler, not the planner. The other live thread --- VLM-as-reward --- pipes the VLM straight into the TD target. We don't. The env's sparse reward stays put in the TD target; the VLM only nudges mu. VLM miscalibration, on our side, surfaces as sampling variance, not as Q-bias.\n\nOff-policy value learning, at its heart, is a regression problem sampled from replay: minimize L(theta)=E_i[(delta_i(theta))], where the relevant expression is the standard TD-error. PER sets the relevant expression, and then pays the resulting bias back through an annealed importance-sampling weight w_IS(i)=(|D_B|mu_P(i))^-beta --- with beta climbing from beta_0 up to 1 over training. In the limit, what you recover is an unbiased estimator of the uniform-replay loss.\n\nNow suppose we feed the same trajectory to a frozen VLM and ask which timestep made the outcome happen. Call its answer q_phi(t^) --- a crude proxy for the unreachable posterior p(t^). For a transition at index i, the window-kernel expectation under q_phi is the relevant expression. Multiply this into PER; no addition,\n\nThere are two axes at play in Eq. . The first, mu_P, tracks learning progress; the second, w_sem, tracks causal influence. As q_phi approaches a uniform distribution the product collapses gracefully back to standard PER. We use w_=10, W=5, and alpha=0.6 throughout.\n\nWhy multiplicative? -- (i) IS-correction compatibility. Under mu_Sem_P* w_sem, the trajectory-conditional w_sem factor cancels inside the normalized expectation E_mu_Sem[w_IS,P]. Using the PER weight as a deliberate under-correction then leaves a V-trace-analogous bias term, bounded by the relevant expression , and the full derivation is given in Appendix . The additive mixture _q+(1-lambda)mu_P used by , by way of contrast, shifts the betato1 limit over to a lambda-weighted objective which is no longer equal to E_U[]. (ii) Replay-shaping versus reward-shaping. Splicing the VLM into the TD target as a per-timestep reward would pipe its calibration error directly into Q, which we deliberately avoid. The env's true sparse reward stays in the TD target, untouched. A prediction follows from this: Semantic PER should track PER closely under a poorly-calibrated VLM, then pull ahead once the VLM becomes reliable. The two curves should not diverge. We test the IS-pairing principle through the counterfactual-injection variants vlm\\_cf and verified\\_cf (), each of which inherits the same multiplicative IS structure. Direct Semantic-PER training curves are deferred to follow-up work.\n\nA corrective signal admits four output types along two axes: the kind of output (natural language or numerical) and whether the prompt mentions desired\\_goal. The four are narrative, action, achieved\\_goal, and a unified all JSON. The two position-emitting variants (achieved\\_goal and all) hand the VLM desired\\_goal as a literal numerical triplet. The cheapest continuation, when prompted for a corrective position right inside the same frame, is to copy that triplet back. No keyframe reasoning needed. We call this teleport-collapse: for a failed episode with the relevant expression m, the VLM emits a p that sits within d_th of g --- a trajectory-independent Dirac q_phi(p)=delta(p-g). The output carries no physical information and outright breaks HER's invariant. This is a property of the schema, not of any one model. Table : Opus 4.7 copies on 4/4 of FetchPush calls; GPT-4o copies on 4/6 all calls but on 0/6 achieved\\_goal calls. The verified-CF mechanism uses action, a variant in which teleport is simply unrepresentable.\n\nTo plug the teleport loophole we elicit a 4-vector action sequence from the VLM and verify it inside a fork of the simulator. The per-episode protocol has five steps. First, we snapshot the MuJoCo state at the localized failure timestep K, then fork a separate environment, write the snapshot, and invoke mujoco.mj\\_forward. We next roll out the VLM-proposed action sequence for N=50 steps under the unmodified sparse reward. If r_t>=0 fires at any step we append the trajectory along with a hindsight-relabeled copy at confidence 1.0; otherwise we reject and fall back to HER. Under MuJoCo dynamics a 4-D end-effector action cannot move a 50 g block 50 cm in a 50-step rollout, so the teleport mode cannot reach the buffer through this channel.\n\nA 4/4 smoke check confirms each design assertion. Teleport counterfactuals are killed before the first rollout step; sensible-but-off actions, with final distances of 0.32 m and 0.16 m, are likewise rejected; a single hand-crafted near-goal action is verified at a final distance of 0.030 m. Snapshot round-trip equality holds to 0.00e+00 across all four Fetch envs. CPU cost per verification is 17.6 ms, a 0.4\\% overhead.\n\nAsymmetric failure modes -- The two channels degrade in different ways when the VLM is wrong. Semantic PER treats q_phi as a re-weighting prior, so a miscalibrated VLM inflates sampling variance --- and the inflation is bounded (Appendix ). The verifier, instead, treats q_phi as a candidate proposal, so a miscalibrated VLM is rejected more often. In either case the buffer never sees a biased write, since what we record is the env's own sparse reward, recomputed inside the verifier fork, rather than any reward signal suggested by the VLM.\n\nSetup -- We test on three envs from Gymnasium-Robotics: FetchPush-v4, FetchPickAndPlace-v4, and FetchSlide-v4 (see Fig. and Appendix ). The observation is 25-dim and goal-conditioned, the action is a 4-dim continuous end-effector displacement plus a gripper command, and the reward is the env's built-in sparse indicator the relevant expression over a 50-step horizon. The agent itself is plain SAC --- two 256-unit ReLU hidden layers, gamma=0.98, learning rate 3times10^-4, batch 256 --- with HER future relabeling at k=4 on top. PER is cranked at alpha=0.6 with an annealed beta0.4to1.0. Primary runs go for 500k env steps on three seeds (42, 123, 999), with eval every 10k steps over 20 fresh episodes (everything is reported as mean a quantity SE). The VLM itself --- Claude Opus 4.7, GPT-4o (gpt-4o-2024-08-06), and Sonnet 4.5 --- is called through official APIs, capped at <=\\0.05the relevant expression0.950.03and verified\\_cf at0.850.10. Both walk past HER@250k (0.617the relevant expression0.95the relevant expression0.3670.08and verified\\_cf reaches0.350.076the relevant expression0.183the relevant expression0.6170.017against vlm\\_cf's0.5500.150. The+0.067the relevant expressionn=3the relevant expression+0.45over PER@3M (0.10), and verified\\_cf adds+0.434over HER@250k (0.183the relevant expression0.606and vlm\\_cf reaches0.622, for a difference of-0.016the relevant expression0.95the relevant expression0/6against Opus's4/4the relevant expression0.79the relevant expression0.83, behind only Opus's0.97the relevant expression4/6the relevant expression0/6vs.\\4/4the relevant expressionp<0.005the relevant expression4the relevant expression9/12(Slide4/4, Push3/4, PickAndPlace2/4). A second sweep onn=10the relevant expression0/6the relevant expression4/4the relevant expression12/20the relevant expression3 seeds relevant expression+0.10the relevant expression0.1830.117against Oracle-CF at0.1170.044, a difference of-0.066the relevant expression0.617against Oracle-CF at0.3830.109the relevant expression0.183the relevant expression0.583) and HER (0.583,n=3; HER seed successes0.35/0.45/0.95the relevant expression0.367the relevant expressionN=50the relevant expression far fromgthe relevant expression80VLM calls at100\\%the relevant expressiongthe relevant expressionq_ relevant expressionq_ relevant expressionN, and a soft acceptancer-_rthe relevant expression+0.10the relevant expressionw_IS,Pinstead ofw_IS,Semthe relevant expressionncaveats:n=6synthetic,n=10real,n=12the relevant expressionn30the relevant expression100\\%the relevant expression0.606the relevant expression=-0.016the relevant expression=-0.066$, criterion stated in advance) caps the credit-assignment headroom on Fetch at this horizon, and we honored it.\n\nCross-task VLM prompt template -- The single format-string prompt template used across the three Fetch envs is:\n\nPer-env task-description substitutions: Push: ``push the red cube to the green target on the table''; PickAndPlace: ``pick up the red cube and place it at the floating green target''; Slide: ``strike the red puck so it slides to the green target''. The verified-CF mechanism uses an action variant of this template eliciting a 4-vector action sequence; full prompt texts and the localizer code accompany the report.\n\nHeuristic localizer (Oracle v3) -- GoalDistanceLocalizer reads privileged sim state and picks the failure timestep in three phases, applied in precedence order. (a) ballistic: the latest contiguous run of >=3 steps with post-peak object velocity >0.05 m/step (Slide free-flight). (b) contact-loss: the latest transition in\\_contact_tto\\_contact_t+1 with run length >=2 and object-goal distance >0.10 m (Push and PnP drop-offs). (c) argmin: closest-approach timestep, as a fallback. The localizer plays two roles --- it supplies a supervised transfer target, and it gives Semantic PER its privileged-state upper-envelope curve.\n\nLet the relevant expression be the uniform-replay target loss. Standard PER with annealed correction yields, in the beta_tto1 limit, an unbiased self-normalized IS estimator of L_U . Our Semantic PER proposal the relevant expression is a re-weighting of mu_P by a trajectory-conditional factor bounded by 1<=w_sem<=w_. The fully-correct IS weight is the relevant expression. Our implementation under-corrects with w_IS,P (a V-trace-style variance-reduction choice, akin to truncated importance ratios in Retrace, ). The per-slot ratio is the relevant expression where Z is the mu_Sem normalizer. The window-kernel structure of w_sem confines the support of w_sem>1 to 2W+1 slots out of T. Combining these gives\n\nwith C a constant depending on |D_B| and the PER normalization. At our defaults (w_=10, W=5, T=50, beta_t<=1) the bias multiplier is at most the relevant expression, and to0 as w_1. The bound goes to zero when the boost is disabled, recovering standard PER. The fully-corrected ablation (run w_IS,Sem) removes the residual bias entirely at the cost of maintaining Z. Two-regime degeneracy. On the verifier channel, miscalibration acts on m_phi(tau)=m_gen*m_ver(sigma) (VLM parse rate times verifier acceptance rate); the epsilon_cal=0 guarantee holds vacuously when the accepted set is empty (cold-start: m_verto0). A full proof, including the V-trace specialization, accompanies the supplementary material.\n\nCompute -- Primary runs use a single NVIDIA RTX 5070 Ti (16 GB); Modal-cloud seeds use one L4 (24 GB) per run. Wall-clock per 500k-step run is roughly 6h for SAC+HER and 9h for SAC+HER+VLM-CF, with the extra three hours dominated by VLM-API latency rather than compute. The project total comes to roughly220 GPU-hours plus roughly\\80the relevant expression17.6ms per call (0.4\\%overhead at1700the relevant expressionn=10the relevant expression5\\%the relevant expression[0.06,0.34]m on Push and a median of0.27the relevant expression100\\%/75\\%the relevant expression75\\%/0\\%the relevant expression8the relevant expression12/20the relevant expression75\\%the relevant expression 0.07the relevant expression0.500.55; Sonnet0.70the relevant expressionn=3the relevant expression SE with thet-distribution atn-1=2the relevant expression0/6vs.\\4/4the relevant expressionp<0.005. The 12-episode pilot uses4the relevant expression2/4the relevant expressionq_$ proof, W\\ B run-IDs, and a VLM-RB reproduction skeleton accompany the report.\n",
+      "document_id": null
+    }
+  ]
+}

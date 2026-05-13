@@ -1,7 +1,7 @@
 \documentclass{article}
 
-\PassOptionsToPackage{numbers, compress}{natbib}
-\usepackage[preprint]{neurips_2025}
+\usepackage[preprint,nonatbib]{neurips_2025}
+\usepackage[numbers,sort&compress,square]{natbib}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -35,21 +35,21 @@
 \label{sec:extended-abstract}
 
 \paragraph{Problem.}
-Sparse-reward manipulation is, at its core, a credit-assignment problem.
-On Gymnasium-Robotics Fetch~\citep{delazcano2024gymrobotics} --- Push,
-PickAndPlace, Slide --- a fresh policy succeeds on fewer than one in a
-hundred episodes. The single bit of reward at the end of a 50-step
-trajectory has to bootstrap backward through TD, and it decays
-geometrically along the way. HER patches over part of this by relabeling
-failures against the goal the agent did happen to achieve, but it can't
-tell you \emph{which} timestep made the failure inevitable in the first
-place. Prioritized experience replay (PER) is in similar trouble: it
-upweights transitions with large TD-errors, and the sparse regime is
-precisely the one where the TD signal is missing. The concurrent VLM-RB
-of \citet{sharony2026vlmrb} folds a frozen vision-language model into
-the priority as an \emph{additive} bias; we go the other way --- a
-\emph{multiplicative} form --- and tack on a counterfactual channel that
-the simulator itself certifies.
+Sparse-reward manipulation is, at its core, a credit-assignment
+problem. On Gymnasium-Robotics Fetch~\citep{delazcano2024gymrobotics}
+--- Push, PickAndPlace, Slide --- a fresh policy succeeds on fewer
+than one in a hundred episodes. The single bit of reward at the end
+of a 50-step trajectory must bootstrap backward through TD, and it
+decays geometrically along the way. HER patches over part of this by
+relabeling failures against whatever goal the agent did reach, but
+it cannot say \emph{which} timestep made the failure inevitable.
+Prioritized experience replay (PER) is in similar trouble: it
+upweights transitions with large TD-errors, but the sparse regime is
+exactly the one where the TD signal is missing. The concurrent
+VLM-RB of \citet{sharony2026vlmrb} folds a frozen vision-language
+model into the priority as an \emph{additive} bias; we go the other
+way, with a \emph{multiplicative} form, and add a counterfactual
+channel that the simulator itself certifies.
 
 \paragraph{Methodological contributions.}
 \textbf{(1) Semantic PER as IS-posterior reweighting.}
@@ -93,12 +93,12 @@ $12/12$ on parse, task-relevance, and plausibility across Push,
 PickAndPlace, and Slide.
 
 \paragraph{Honest negative.}
-Verified-CF does have a cold-start failure mode. PnP seed~42 rejected
-the first ${\sim}80$ VLM calls outright --- one hundred percent of them
---- so for that window the agent was effectively running a more
-expensive flavor of HER. The multiplicative-vs-additive contrast is, at
-this point, analytical (Eq.~\ref{eq:main}); a direct empirical
-VLM-RB head-to-head remains for future work.
+Verified-CF has a cold-start failure mode. On PnP seed~42 it
+rejected the first ${\sim}80$ VLM calls outright (a full $100\%$),
+so for that window the agent was effectively running a more
+expensive flavor of HER. The multiplicative-vs-additive contrast is
+analytical at this point (Eq.~\ref{eq:main}); a direct empirical
+VLM-RB head-to-head is left for future work.
 
 \section{Introduction}
 \label{sec:intro}
@@ -429,21 +429,21 @@ strike can still supply a positive TD target.
 \label{sec:exp:prompt}
 
 A head-to-head Opus~4.7 vs.\ GPT-4o sweep on six bit-identical
-synthetic Fetch failures (Table~\ref{tab:prompt-variants}) pins down
+synthetic Fetch failures (Table~\ref{tab:prompt-variants}) isolates
 the best non-degenerate configuration.
-\texttt{(GPT-4o, achieved\_goal)} teleport-collapses on $0/6$, against
-Opus's $4/4$ on the same configuration. It also takes the highest
+\texttt{(GPT-4o, achieved\_goal)} teleport-collapses on $0/6$ against
+Opus's $4/4$ on the same prompt. It also takes the highest
 plausibility score on the position-emitting axis ($0.79$) and lands
-second on goal-progress ($0.83$, behind only Opus's $0.97$ --- but
+second on goal-progress ($0.83$, behind only Opus's $0.97$, although
 Opus's high score comes from literal goal-copying, a degenerate
 ``win''). GPT-4o still teleport-collapses on $4/6$ \textsc{all}
 episodes, so the failure is \emph{prompt-architectural}, not
-model-specific. The pivotal $0/6$ vs.\ $4/4$ contrast is
-judge-independent (decided by a Euclidean predicate); Fisher's exact
-test rejects equal proportions at $p\!<\!0.005$. \S\ref{sec:exp:real}
-extends the grid to Sonnet~4.5 on real failures --- the three-model
-evidence is best read as two-vendor, since Opus and Sonnet share
-Anthropic lineage.
+model-specific. The pivotal $0/6$ vs.\ $4/4$ contrast is decided by
+a Euclidean predicate, and Fisher's exact test rejects equal
+proportions at $p\!<\!0.005$. \S\ref{sec:exp:real} extends the grid
+to Sonnet~4.5 on real failures, though the three-model evidence is
+best read as two-vendor since Opus and Sonnet share Anthropic
+lineage.
 
 \begin{table}[t]
 \centering
@@ -473,13 +473,13 @@ Variant & Model & $n$ & Plausibility & Goal-progress & Teleport-collapse \\
 \subsection{Cross-task transfer and real-data validation}
 \label{sec:exp:real}
 
-A 12-episode cross-task pilot ($4$ per env) using a single
-format-string prompt template --- differing only in one
-task-description sentence --- lands 12/12 on parse, task-relevance,
-and plausibility across Push/PickAndPlace/Slide. Tolerant keyframe
-agreement is $9/12$ (Slide $4/4$, Push $3/4$, PickAndPlace $2/4$).
-A second sweep on $n\!=\!10$ \emph{real} SAC-failure eval episodes
-confirms two things. First, the prompt-architectural fix transfers to
+A 12-episode cross-task pilot ($4$ per env), using a single
+format-string prompt template that differs only in one
+task-description sentence, lands 12/12 on parse, task-relevance, and
+plausibility across Push/PickAndPlace/Slide. Tolerant keyframe
+agreement is $9/12$ (Slide $4/4$, Push $3/4$, PickAndPlace $2/4$). A
+second sweep on $n\!=\!10$ \emph{real} SAC-failure eval episodes
+confirms two facts. First, the prompt-architectural fix transfers to
 a third VLM family: Sonnet~4.5 teleports on $0/6$ PickAndPlace
 episodes under \textsc{achieved\_goal}, against Opus~4.7's $4/4$ on
 the same variant. Second, the 5\,cm reject-teleport gate fires on
@@ -513,27 +513,27 @@ at half the budget. None of this retracts the kill.
 \label{sec:discussion}
 
 \paragraph{Cold-start verifier-rejection regime (the main limitation).}
-The simulator-as-verifier gate trades recall for precision. What gets
-through is sparse-reward-positive every time. The price: admission
-needs two events to line up --- the VLM has to propose a corrective
-action \emph{and} that sequence has to cross the 5\,cm threshold in
-$\le\!N\!=\!50$ verifier steps. Early on, the joint event is rare. The
-snapshot $\sigma$ sits far from $g$ because the policy hasn't yet
-learned to carry the gripper near the object. On FetchPickAndPlace,
-seed~42 spent its first ${\sim}80$ VLM calls at $100\%$
-verifier-rejection --- from the gradient's point of view that stretch
-was plain SAC+HER with VLM-API bills attached. The regime ends once
-the policy starts bringing the gripper near the object: snapshots
-fall closer to $g$, the verifier admits relabels, and the small
-handful that gets through delivers low-variance, physics-consistent
-signal.
-So the two methods rot asymmetrically. Semantic PER reads $q_\phi$ as
-a re-weighting prior, so degeneracy shows up as bounded variance
-amplification. Verified-CF reads $q_\phi$ as a candidate proposal, so
-degeneracy shows up as signal extinction --- unbounded in the
-cold-start limit. Three knobs against this are designed but not
-executed in this report: base-policy warm-up, a longer $N$, and a soft acceptance
-$r\!\ge\!-\rho_r$.
+The simulator-as-verifier gate trades recall for precision, and
+whatever passes through it is sparse-reward-positive every time. The
+catch is that admission requires two events to coincide: the VLM has
+to propose a corrective action, \emph{and} that sequence must cross
+the 5\,cm threshold in at most $N\!=\!50$ verifier steps. Early in
+training the joint event is rare, because the snapshot $\sigma$ sits
+far from $g$ before the policy has learned to bring the gripper near
+the object. On FetchPickAndPlace, seed~42 spent its first
+${\sim}80$ VLM calls at $100\%$ verifier-rejection, which from the
+gradient's perspective is plain SAC+HER with VLM-API bills attached.
+The regime ends once the policy starts bringing the gripper near the
+object: snapshots fall closer to $g$, the verifier begins admitting
+relabels, and the small handful that passes through delivers
+low-variance, physics-consistent signal. The two methods therefore
+degrade in asymmetric ways. Semantic PER reads $q_\phi$ as a
+re-weighting prior, so degeneracy manifests as bounded variance
+amplification. Verified-CF reads $q_\phi$ as a candidate proposal,
+so degeneracy manifests as signal extinction, unbounded in the
+cold-start limit. Three knobs against this --- base-policy warm-up,
+a longer $N$, and a soft acceptance $r\!\ge\!-\rho_r$ --- are
+designed but left for follow-up work.
 
 \paragraph{Oracle-CF kill bounds the headroom.}
 The kill (\S\ref{sec:exp:kill}), with criterion stated in advance, caps the headroom for

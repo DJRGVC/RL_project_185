@@ -140,73 +140,59 @@ Replay capacity & $10^6$ slots & Ring buffer with sum-tree priorities \\
 \end{table}
 
 \paragraph{Compute.}
-Primary runs use a single NVIDIA RTX~5070~Ti (16\,GB) GPU;
-Modal-cloud seeds use one L4 (24\,GB) per run. Wall-clock per run at
-500k steps is roughly $6$h for SAC+HER and $9$h for SAC+HER+VLM-CF
-(the extra three hours is VLM-API latency, not compute). Project
-total: ${\sim}220$ GPU-hours across local and Modal, plus
-${\sim}\$80$ in VLM-API spend. Snapshot round-trip latency for the
-verifier is $17.6$\,ms per call --- roughly $0.4\%$ overhead at
-${\sim}1700$ failed episodes per 100k steps. Reproduction commands,
-W\&B run-IDs, and per-seed eval traces accompany the report.
+Primary runs use a single NVIDIA RTX~5070~Ti (16\,GB); Modal-cloud
+seeds use one L4 (24\,GB) per run. Wall-clock per 500k-step run is
+roughly $6$h for SAC+HER and $9$h for SAC+HER+VLM-CF, with the extra
+three hours dominated by VLM-API latency rather than compute. The
+project total comes to ${\sim}220$ GPU-hours plus ${\sim}\$80$ in
+VLM-API spend. Verifier snapshot round-trip latency is $17.6$\,ms per
+call ($0.4\%$ overhead at ${\sim}1700$ failed episodes per 100k
+steps). Reproduction commands, W\&B run-IDs, and per-seed eval traces
+accompany the report.
 
 \section{Additional Experimental Detail}
 \label{app:results}
 
 \paragraph{Real-data validation (extended).}
 The $n\!=\!10$ real-failure set is drawn from failed eval episodes of
-partially-trained SAC+HER checkpoints (\texttt{FetchPickAndPlace} at
-50k steps and \texttt{FetchPush} at 30k steps, both around $5\%$
-success). These are near-misses, with final-distance
-$\in\![0.06,0.34]$\,m on Push and a median $0.27$\,m on PickAndPlace.
-Three findings carry over from the synthetic set.
-\textbf{(i) Teleport-collapse persists, and it is task-conditioned.}
-On Push (planar target), Opus and Sonnet teleport on
-\textsc{achieved\_goal} at $100\%$ and $75\%$. On PickAndPlace
-(mid-air target), Opus teleports at $75\%$; Sonnet drops to $0\%$ and
-instead proposes a mid-air waypoint ${\sim}8$\,cm above the floating
-goal.
-\textbf{(ii) The 5\,cm reject-teleport gate is necessary.}
-Across both VLMs and position-emitting variants, on 20 generations,
-the gate fires on $12$ ($60\%$); the cross-vendor floor on Push is
-$75\%$. The action-emitting verifier sidesteps this entirely.
-\textbf{(iii) Plausibility shifts only $\pm 0.07$ from synthetic to
-real, but the \textsc{action} sign-flip rate worsens} (Opus
-$0.50\!\to\!0.55$; Sonnet $0.70$).
+partially-trained SAC+HER checkpoints (PickAndPlace at 50k steps and
+Push at 30k steps, both near $5\%$ success), with final-distance in
+$[0.06,0.34]$\,m on Push and a median of $0.27$\,m on PickAndPlace.
+Three findings carry over from the synthetic set: \textbf{(i)}
+teleport-collapse is task-conditioned (Push: $100\%/75\%$ for
+Opus/Sonnet on \textsc{achieved\_goal}; PickAndPlace: $75\%/0\%$,
+with Sonnet instead proposing a waypoint ${\sim}8$\,cm above the
+goal); \textbf{(ii)} the 5\,cm reject-teleport gate fires on $12/20$
+position-emitting generations across both vendors (cross-vendor
+floor on Push: $75\%$), and the action-emitting verifier sidesteps
+the issue entirely; \textbf{(iii)} plausibility shifts by only
+$\pm 0.07$ from synthetic to real, while the \textsc{action}
+sign-flip rate worsens (Opus $0.50\!\to\!0.55$; Sonnet $0.70$).
 
-\paragraph{Statistical methodology.}
-Each (method, env) cell uses $n\!=\!3$ seeds (42, 123, 999). Metrics
-are reported as mean~$\pm$~SE with the $t$-distribution at
-$n\!-\!1\!=\!2$ d.f. Comparison statements rely on non-overlapping SE
-intervals --- conservative at this sample size. The pivotal $0/6$ vs.\
-$4/4$ contrast in Table~\ref{tab:prompt-variants} is judge-independent
-(it is decided by a Euclidean predicate); Fisher's exact test rejects
-equal proportions at $p\!<\!0.005$.
-
-\paragraph{Cross-task transfer (per-episode notes).}
-The 12-episode pilot uses $4$ episodes per env. The VLM's reasoning
-strings identify task-specific failure modes correctly in every case
-(Push: ``gripper passes over block without making contact'';
-PickAndPlace: ``gripper at block location but fails to close''; Slide:
-``strike direction off-axis''). The $2/4$ PickAndPlace
-keyframe-agreement reflects heuristic under-localization rather than
-VLM error: closed-loop grip timing is the hardest mode for
-geometry-only oracles \citep{sayar2023cebp}.
+\paragraph{Statistical methodology and cross-task notes.}
+Each (method, env) cell uses $n\!=\!3$ seeds (42, 123, 999), reported
+as mean~$\pm$~SE with the $t$-distribution at $n\!-\!1\!=\!2$ d.f.;
+comparisons rely on non-overlapping SE intervals, a conservative
+choice at this sample size. The pivotal $0/6$ vs.\ $4/4$ contrast in
+Table~\ref{tab:prompt-variants} is decided by a Euclidean predicate,
+and Fisher's exact test rejects equal proportions at $p\!<\!0.005$.
+The 12-episode pilot uses $4$ episodes per env, with the VLM
+correctly identifying task-specific failure modes in every case; the
+$2/4$ PickAndPlace keyframe-agreement reflects heuristic
+under-localization rather than VLM error (closed-loop grip timing is
+the hardest mode for geometry-only oracles
+\citep{sayar2023cebp}).
 
 \section{Broader Impacts and Reproducibility}
 \label{app:impact}
 
-\paragraph{Broader impact and reproducibility.}
 This is methodological, simulation-only work; we make no real-robot
-or sim-to-real claims. \emph{Positive:} fewer environment steps lower
-GPU-hours; the IS-posterior framing is a principled lens on
-VLM-in-replay; the verified-CF gate is a transferable
-``language prior $+$ physics test'' pattern.
-\emph{Negative + mitigations:} VLM-API energy and dollar costs are
-non-trivial (per-run spend reported; heuristic Oracle fallback
-available); the simulator gate rejects hallucinated actions that fail
-the sparse reward; no robot-deployment risks remain beyond the usual
-sim-trained-policy caveats. Code, configs, pseudocode, prompt texts,
-the V-trace specialization, the two-regime $q_\phi$ proof, W\&B run
-identifiers, and a VLM-RB \citep{sharony2026vlmrb}
+or sim-to-real claims. On the positive side, fewer environment steps
+reduce GPU-hours, the IS-posterior framing offers a principled lens
+on VLM-in-replay, and the verified-CF gate is a transferable
+``language-prior + physics-test'' pattern. On the negative side, the
+VLM-API energy and dollar costs are non-trivial (per-run spend is
+reported, and a heuristic Oracle fallback is available). Code,
+configs, prompt texts, the V-trace specialization, the two-regime
+$q_\phi$ proof, W\&B run-IDs, and a VLM-RB \citep{sharony2026vlmrb}
 reproduction skeleton accompany the report.
