@@ -1543,6 +1543,48 @@ of the largest remaining VLM-side error and motivates either (a) gating
 \textsc{action} outputs on the empirical sign-check or (b) injecting
 $g\!-\!\mathrm{ag}_{t^\star}$ directly into the prompt as a shortcut.
 
+\paragraph{Policy-precision dependence and the bridge to the verifier.}
+Findings (i) and (iii) share a structural property worth naming
+explicitly: both VLM-side error modes are
+\emph{policy-precision-dependent}, and the dependence runs in
+\emph{opposite directions} for the two pipelines we ship. As the policy
+improves, the distribution of failures shifts from chaotic
+block-off-table episodes (the synthetic regime of
+Section~\ref{sec:exp:prompt}) to near-miss contact-task failures with
+small $\lVert g-\mathrm{ag}_{t^\star}\rVert$. This shift
+\emph{degrades} the \textsc{position}/\textsc{action}-emitting prompt
+families along two axes: the achieved-goal counterfactual approaches
+the desired goal in expectation (finding (i)), so $q_\phi$ drifts
+toward the teleport-Dirac that
+Section~\ref{sec:method:prompt} catalogs as the dominant
+$q_\phi$-degeneracy regime; and the
+action-axis sign vector becomes harder to read from a single keyframe
+because the displacement to recover is small (finding (iii)). A
+prompt-only pipeline therefore has its \emph{worst} VLM-side error
+profile in precisely the policy-precision regime in which it would
+otherwise have its largest marginal value---the converged-policy
+near-miss regime where one well-placed counterfactual could break a
+sample-efficiency plateau. The verified-CF mechanism
+(Section~\ref{sec:method:verified}) inverts this dependence by
+construction: its acceptance gate fires on simulator-confirmed
+sparse-reward crossing rather than on VLM-axis-direction correctness,
+so the same policy-precision improvement that shrinks displacement
+vectors \emph{raises} the verifier's joint-event base rate toward one
+(the snapshot state $\sigma$ sits closer to the goal, making the
+5\,cm threshold easier to cross within $N\!=\!50$ verifier steps).
+This is the conceptual reason the cold-start verifier-rejection regime
+documented in
+Section~\ref{sec:exp:inflight}(D) and Limitation~(ix) is transitory:
+the verifier's failure mode and the prompt-only pipeline's failure
+mode have \emph{anti-correlated} dependence on policy precision, so
+the two mechanisms have complementary regimes of utility and the
+verifier is the right tool exactly where the prompt-only pipeline
+degrades. The 0/6 Sonnet teleport rate on PickAndPlace (a
+mid-air task that admits a non-trivial waypoint) and the verified-CF
+\texttt{FetchSlide} result---$0.617$ vs.\ \texttt{vlm\_cf}'s $0.55$
+where prior baselines cluster near zero---are two reflections of the
+same phenomenon under the two complementary mechanisms.
+
 \paragraph{Caveats.}
 (i) $n\!=\!10$ episodes is a pilot, not a powered sweep; we pre-register
 $n\!\ge\!30$ per environment with bootstrapped CIs. (ii) The OpenAI quota
