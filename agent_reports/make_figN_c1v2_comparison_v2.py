@@ -141,7 +141,8 @@ def make_figure(
                 zorder=2,
             )
 
-            # Individual episode dots — jittered within the bar width
+            # Individual episode dots — white fill with dark edge so they read
+            # clearly against the coloured bars (same convention as fig4_averages)
             for j, v in enumerate(VARIANTS):
                 pts = raw.get(v, {}).get(mkey, [])
                 if pts:
@@ -149,8 +150,8 @@ def make_figure(
                     jitter = rng.uniform(-bar_w * 0.28, bar_w * 0.28, size=n_pts)
                     ax.scatter(
                         x[j] + offset + jitter, pts,
-                        s=12, color=color, edgecolors="white",
-                        linewidths=0.4, zorder=4, alpha=0.85,
+                        s=12, color="white", edgecolors="#222222",
+                        linewidths=0.6, zorder=4, alpha=0.90,
                     )
 
         # NeurIPS: no chart title — use panel letter + metric as x-axis label
