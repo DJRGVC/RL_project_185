@@ -43,6 +43,15 @@ INVENTORY OF CONFIRMED ARTIFACTS (from baseline grep on 2026-05-13 10:35 PDT)
 (g) "**verdict**" — 1 occurrence. Meta-language.
 - "the kill verdict" → "the kill decision" / "the kill criterion outcome" / "the decision to abandon"
 
+(g-bis) "**camera-ready**" — 4 occurrences. THIS IS WRONG FOR CS 285. There is no camera-ready for a CS 285 final report; this paper IS the final. The "camera-ready" phrasing is a fictional NeurIPS-submission narrative that leaked from agent context.
+- main.tex:101 "VLM-RB head-to-head is pre-staged for camera-ready." → "VLM-RB head-to-head remains for future work." or "We do not run a direct VLM-RB comparison in this report."
+- main.tex:285 "...to camera-ready." → "...to follow-up work." / "...to subsequent investigation."
+- main.tex:551 "head-to-head deferred to camera-ready" → "head-to-head left for future work" / drop entirely
+- appendix.tex:214-215 "head-to-head deferred to camera-ready" → same fix
+- DO NOT use "camera-ready" anywhere in the CS 285 paper. There is no camera-ready stage.
+
+(g-tris) Any other "preprint" / "extended preprint" / "manuscript" / "submission" meta-narrative — verify it makes sense in the CS 285 context. The Matei contribution bullet says "reported separately in the extended preprint" — this is acceptable as it refers to the actual longer NeurIPS variant we have at `paper/main.tex`. KEEP that one.
+
 ### 🟡 BORDERLINE — context-dependent
 
 (h) "**pre-registered**" — 6 occurrences. Only legit if there's an actual pre-registration document (OSF, AsPredicted, etc.). For our project there is no such document; we just decided on a kill criterion upfront.
