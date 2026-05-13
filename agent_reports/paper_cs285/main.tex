@@ -462,135 +462,72 @@ counterfactual relabels in the same simulator on which the policy trains.
 \label{sec:theory}
 
 \paragraph{Setup.}
-Let $\tau=(s_0,a_0,r_0,\dots,s_T)$ be an episode trajectory and
-$i\in\{0,\dots,T\!-\!1\}$ a transition index. Off-policy value learning solves a
-regression problem on a replay-sampling distribution $\mu(i)$ over a buffer
-$\mathcal{D}_B$:
-\begin{equation}
-  \mathcal{L}(\theta) \;=\; \mathbb{E}_{i\sim\mu}\bigl[\ell\bigl(\delta_i(\theta)\bigr)\bigr],
-  \qquad
-  \delta_i = r_i + \gamma\,Q\bigl(s_{i+1},\pi(s_{i+1})\bigr) - Q(s_i,a_i).
-  \label{eq:loss}
-\end{equation}
-Uniform replay $\mu_U(i)=1/|\mathcal{D}_B|$ is unbiased but variance-heavy.
-Prioritized replay~\citep{schaul2016per} uses
-$\mu_P(i)\propto(|\delta_i|+\varepsilon)^\alpha$ and recovers (an annealed
-estimator of) the uniform objective by reweighting each gradient by the IS
-correction
-\begin{equation}
-  w_{\text{IS}}(i) \;=\; \bigl(|\mathcal{D}_B|\cdot\mu_P(i)\bigr)^{-\beta},
-  \qquad \beta\colon\beta_0 \to 1.
-  \label{eq:per-is}
-\end{equation}
-This is an instance of self-normalized importance sampling: the proposal $\mu_P$
-concentrates on high-error transitions; the IS-weight returns the target to
-$\mathbb{E}_U[\ell]$ in expectation.
+Let $\tau=(s_0,a_0,r_0,\dots,s_T)$ be an episode and
+$i\in\{0,\dots,T\!-\!1\}$ a transition index. Off-policy value learning
+minimizes a replay-sampled regression
+$\mathcal{L}(\theta)=\mathbb{E}_{i\sim\mu}[\ell(\delta_i(\theta))]$ over a
+buffer $\mathcal{D}_B$, with TD error
+$\delta_i = r_i + \gamma\,Q(s_{i+1},\pi(s_{i+1})) - Q(s_i,a_i)$. Standard
+PER~\citep{schaul2016per} uses $\mu_P(i)\propto(|\delta_i|+\varepsilon)^\alpha$
+and reweights each gradient by the annealed IS correction
+$w_{\text{IS}}(i)=(|\mathcal{D}_B|\mu_P(i))^{-\beta}$,
+$\beta\colon\beta_0\!\to\!1$, recovering an unbiased estimator of the uniform
+loss in the limit.
 
 \paragraph{The VLM as a posterior.}
-A frozen VLM that answers ``which timestep caused this trajectory's outcome?''
-approximates the posterior $p(t^\star\mid\tau) \propto p(\tau\mid t^\star)p(t^\star)$
-where $t^\star$ is the (latent) outcome-causing timestep. Write
-$q_\phi(t^\star\mid\tau)$ for the VLM's approximation. We define a per-transition
-semantic boost as the expected kernel weight under the posterior,
+A frozen VLM answering ``which timestep caused this trajectory's outcome?''
+approximates the posterior $p(t^\star\mid\tau)$ over the latent
+outcome-causing timestep; write $q_\phi(t^\star\mid\tau)$ for the
+approximation. We define a per-transition semantic boost as the expected
+kernel weight under the posterior:
 \begin{equation}
   w_{\text{sem}}(i;\tau) \;:=\; \mathbb{E}_{t^\star\sim q_\phi(\cdot\mid\tau)}\bigl[K_W(i;t^\star)\bigr],
-  \qquad K_W(i;t^\star) = 1 + (w_{\max}\!-\!1)\,\mathbb{1}\bigl[|i-t^\star|\le W\bigr],
+  \quad K_W(i;t^\star) = 1 + (w_{\max}\!-\!1)\,\mathbb{1}\bigl[|i\!-\!t^\star|\!\le\!W\bigr],
   \label{eq:wsem}
 \end{equation}
-with window half-width $W$ and bounded boost $w_{\max}\ge 1$. The semantic-PER
-proposal is the product
+with window half-width $W$ and bounded boost $w_{\max}\ge 1$. The
+\textbf{Semantic PER proposal} is the multiplicative product
 \begin{equation}
   \boxed{\;\mu_{\text{Sem}}(i) \;\propto\; \mu_P(i)\,\cdot\,w_{\text{sem}}(i;\tau_i)\;}
   \label{eq:headline}
 \end{equation}
-Two factors drive priority: $\mu_P(i)$ captures \emph{learning progress} (how much
-the value head would reduce its loss by training on $i$); $w_{\text{sem}}$
-captures \emph{causal influence} (how much posterior mass the VLM places on $i$
-being outcome-causing). Standard PER uses only the first; uniform replay uses
-neither; Semantic PER multiplies the two. When $q_\phi$ is near-uniform,
-$w_{\text{sem}}\!\approx\!1$ and we degenerate to PER.
+$\mu_P$ captures \emph{learning progress}; $w_{\text{sem}}$ captures
+\emph{causal influence}. When $q_\phi$ is near-uniform we degenerate to PER.
+Our implementation uses hard elicitation (a chain-of-thought returns a single
+$\hat t\!=\!\mathrm{argmax}_{t^\star}q_\phi$, equivalent to a Dirac at
+$\hat t$); the bias bound (Eq.~\ref{eq:bias-bound},
+Appendix~\ref{app:is-derivation}) controls this collapse via the
+$w_{\max}\!-\!1$ multiplier. A soft-elicitation ablation is pre-registered.
 
-\emph{Soft versus hard elicitation of $q_\phi$.} Eq.~\eqref{eq:wsem} is written
-in its general expectation form so that two elicitation regimes nest under the
-same definition. \textbf{(i) Hard elicitation (our implementation):} a
-chain-of-thought prompt returns a single \texttt{failure\_frame\_index}
-$\hat t = \mathrm{argmax}_{t^\star} q_\phi(t^\star\!\mid\!\tau)$, which is
-equivalent to setting $q_\phi$ to a Dirac at $\hat t$; Eq.~\eqref{eq:wsem} then
-collapses to $w_{\text{sem}}(i;\tau)=K_W(i;\hat t)$, the closed-box-window form
-used in Algorithm~\ref{alg:sem-per}. \textbf{(ii) Soft elicitation (an
-ablation we pre-register):} the VLM emits a normalized $K$-vector of frame
-logits, and the expectation in Eq.~\eqref{eq:wsem} is computed exactly over
-those logits. Regime (i) is operationally a degenerate special case of (ii);
-the bias bound (Eq.~\eqref{eq:bias-bound} in Appendix~\ref{app:is-derivation})
-controls the consequence of (i)'s Dirac collapse via the $w_{\max}\!-\!1$
-multiplier. We use regime (i) because it is API-cheap and because the
-chain-of-thought trace doubles as a sanity-check artifact; we flag the soft
-ablation in Section~\ref{sec:discussion}'s limitations as the natural follow-on
-when a calibrated soft posterior is required.
-
-\paragraph{Non-uniform replay taxonomy.}
-Eq.~\eqref{eq:headline} sits inside a non-uniform-replay taxonomy
-(Table~\ref{tab:taxonomy}); we also note the relationship to multi-step
-off-policy correction methods (Retrace, V-trace) that share the IS-ratio
-form but address policy mismatch rather than replay-distribution mismatch
-(Appendix~\ref{app:vtrace} gives the precise analogy and its limits).
-In our current implementation we use the
-PER IS-weight $w_{\text{IS},P}$ rather than the strictly-correct
-$w_{\text{IS},\text{Sem}}=(|\mathcal{D}_B|\mu_{\text{Sem}})^{-\beta}$. This is a
-conservative under-correction whose bias is bounded by
-Eq.~\eqref{eq:bias-bound} and controlled by $(w_{\max},W,\beta_t)$;
-it is analogous to V-trace's ratio truncation as a controlled bias--variance
-tradeoff (Appendix~\ref{app:vtrace}).
-
-\paragraph{Why multiplicative? IS-correction analysis, additive mixtures, and what this buys us.}
-Two observations motivate Eq.~\eqref{eq:headline}'s multiplicative form over
-neighboring options. \textbf{(P1) IS-correction compatibility.}
-We choose the multiplicative form because it admits a clean IS-correction
-analysis. Under $\mu_{\text{Sem}}(i)\propto\mu_P(i)\cdot w_{\text{sem}}(i;\tau)$
-the standard PER IS-weight
-$w_{\text{IS},P}(i)=(|\mathcal{D}_B|\mu_P(i))^{-\beta}$
-remains trajectory-conditionally well-defined: the $w_{\text{sem}}$ factor
-is trajectory-conditional and cancels in the normalized
-$\mathbb{E}_{\mu_{\text{Sem}}}[w_{\text{IS},P}\ell]$, so the under-correction
-is bounded and interpretable as a V-trace-analogous bias--variance tradeoff.
-By contrast, an additive mixture $\lambda \mu_q + (1\!-\!\lambda)\mu_P$
-\citep{sharony2026vlmrb} changes the IS denominator to
-$(|\mathcal{D}_B|(\lambda\mu_q+(1\!-\!\lambda)\mu_P))^{-\beta}$, whose
-$\beta\!\to\!1$ limit is the $\lambda$-weighted objective
-$\lambda\mathbb{E}_{\mu_q}[\ell]+(1\!-\!\lambda)\mathbb{E}_{\mu_P}[\ell]$,
-\emph{not} $\mathbb{E}_U[\ell]$, unless $\lambda$ is itself folded into the
-correction. We note that the \emph{class} of multiplicative modifications
-$\mu'(i)\propto\mu_P(i)\cdot g(q_\phi(i;\tau))$ is broad (any positive
-trajectory-conditional $g$ belongs), so the choice is not unique; the
-specific $g=K_W(\cdot;t^\star)$ is an additional design choice motivated
-by the step-localization structure of the VLM output.
-\textbf{(P2) Replay-shaping vs.\ reward-shaping.} A natural alternative use of the VLM
-is to splice it into the TD target as a per-timestep reward
-\citep{wu2026largerewardmodels,patel2025iker,rocamonde2024vlmreward};
-that propagates VLM calibration error directly into $Q$ as bias. Our scheme
-keeps the env's true sparse reward intact in the TD target and uses the VLM
-only to modify $\mu$; VLM miscalibration shifts the sampling distribution
-but does not inject bias into the value function. Under the strictly-corrected
-estimator (Appendix~\ref{app:is-derivation}, Eq.~\eqref{eq:sem-corrected})
-miscalibration affects only variance; under our implemented under-corrected
-variant it additionally contributes a bounded sampling bias
-(Eq.~\eqref{eq:bias-bound}), controlled by $(w_{\max},W,\beta_t)$. The framing
-forces a clean prediction: \emph{semantic-PER should track standard PER
-closely when the VLM is poorly calibrated, and pull ahead when the VLM is
-reliable; neither curve should diverge}---a prediction reward-shaping cannot
-make.
+\paragraph{Why multiplicative? Two reasons.}
+\textbf{(P1) IS-correction compatibility.} Under
+$\mu_{\text{Sem}}\propto\mu_P\cdot w_{\text{sem}}$ the trajectory-conditional
+$w_{\text{sem}}$ factor cancels in the normalized
+$\mathbb{E}_{\mu_{\text{Sem}}}[w_{\text{IS},P}\ell]$, so using the PER weight
+$w_{\text{IS},P}=(|\mathcal{D}_B|\mu_P)^{-\beta}$ as an under-correction yields
+a bounded V-trace-analogous bias (Appendix~\ref{app:vtrace}). An additive
+mixture $\lambda\mu_q+(1\!-\!\lambda)\mu_P$ \citep{sharony2026vlmrb} instead
+shifts the $\beta\!\to\!1$ limit to a $\lambda$-weighted objective
+$\lambda\mathbb{E}_{\mu_q}[\ell]+(1\!-\!\lambda)\mathbb{E}_{\mu_P}[\ell]
+\!\ne\!\mathbb{E}_U[\ell]$ unless $\lambda$ is folded into the correction.
+\textbf{(P2) Replay-shaping vs.\ reward-shaping.} Splicing the VLM into the
+TD target as a per-timestep reward
+\citep{wu2026largerewardmodels,patel2025iker,rocamonde2024vlmreward}
+propagates VLM calibration error directly into $Q$ as bias. We keep the
+env's true sparse reward intact in the TD target and use the VLM only to
+modify $\mu$. The framing yields a clean falsifiable prediction:
+\emph{Semantic PER tracks standard PER when the VLM is poorly calibrated and
+pulls ahead when it is reliable; neither curve should diverge}---which
+reward-shaping cannot match.
 
 \begin{table}[t]
   \centering
   \scriptsize
   \setlength{\tabcolsep}{4pt}
-  \caption{Non-uniform replay and off-policy correction methods. Top two rows
-  (Retrace, V-trace) correct for \emph{policy mismatch} in multi-step returns;
-  bottom three rows (PER, VLM-RB, Sem.\ PER) are \emph{replay-distribution}
-  schemes over a fixed buffer. The shared IS-ratio form is the structural
-  connection; the correction targets differ (see Appendix~\ref{app:vtrace}).
-  Semantic PER (this paper) is the only replay scheme whose modifier is
-  exogenous and trajectory-level.}
+  \caption{Non-uniform replay and off-policy correction. Retrace / V-trace
+  correct policy mismatch in multi-step returns; PER / VLM-RB / Sem.\ PER
+  are replay-distribution schemes over a fixed buffer. Semantic PER is the
+  only scheme whose modifier is exogenous and trajectory-level.}
   \label{tab:taxonomy}
   \begin{tabular}{p{0.19\linewidth} p{0.24\linewidth} p{0.22\linewidth} p{0.24\linewidth}}
     \toprule
@@ -605,36 +542,17 @@ make.
   \end{tabular}
 \end{table}
 
-\paragraph{Connection to causal credit assignment.}
-The credit-assignment survey of \citet{pignatelli2023survey} categorizes methods
-by how they identify outcome-influential actions. Endogenous oracles include
-TD-error (PER), return-decomposition (RUDDER \citep{arjonamedina2019rudder},
-HCA \citep{harutyunyan2019hca}), and counterfactual policy-gradient baselines
-(CCA-PG \citep{mesnard2021cca}). The 2024--2026 literature has opened an
-\emph{exogenous} branch of this taxonomy in which the credit signal comes
-from a frozen pre-trained foundation model rather than from a critic-internal
-estimate: \citet{pignatelli2024calm} establish the foundation-model-as-credit-oracle
-program by showing that an LLM can serve as a zero-shot credit oracle via
-subgoal decomposition in text-based environments; \citet{khandoga2026causalcredit}
-extend the counterfactual variant to LLM tokens via masking of reasoning spans.
-Semantic PER is best placed as a \emph{vision-modality, prioritized-replay
-instantiation} of this program: the FM is a frozen VLM rather than an LLM, the
-domain is goal-conditioned manipulation rather than text adventures, and the
-oracle output is consumed by the replay-sampling distribution
-$\mu_{\text{Sem}}$ (Eq.~\eqref{eq:headline}) rather than by a subgoal-decomposition
-planner. Two specifics make this instantiation non-trivial rather than a
-domain port: (i) the multiplicative $\mu_P\!\cdot\!w_{\text{sem}}$ form
-preserves PER's IS-correction structure (the analysis in this section),
-which CaLM does not need because text-environment credit assignment is not
-coupled to a TD-error proposal; (ii) the verified-counterfactual-hindsight
-gate of Section~\ref{sec:method:verified} converts the FM credit signal into
-an acceptance test under the training simulator's exact dynamics, a step
-absent from both CaLM's planner-only consumption and Khandoga's
-LLM-token-masking. The framing is not ``VLM in replay'' (an
-engineering label) and not a new top-level taxon (CaLM precedes us); it is
-the first vision-and-prioritized-replay instance of CaLM's
-exogenous-FM-credit-oracle program, with the IS-correction structure and the
-simulator-gated counterfactual relabeling as the two methodological additions.
+\paragraph{Placement in causal credit assignment.}
+Semantic PER instantiates the foundation-model-as-credit-oracle program of
+\citet{pignatelli2024calm}---originally an LLM, text-domain, planner-side
+scheme---in the vision modality with the FM output consumed by the
+replay-sampling distribution rather than a planner. The multiplicative
+$\mu_P\!\cdot\!w_{\text{sem}}$ form (which preserves PER's IS-correction
+structure) and the simulator-verified counterfactual gate of
+\S\ref{sec:method:verified} are the two methodological additions on top of
+CaLM's planner-only consumption. Appendix~\ref{app:is-derivation} contains
+the full bias-bound proof and the placement of our scheme within the
+broader credit-assignment taxonomy of \citet{pignatelli2023survey}.
 
 \section{Method}
 \label{sec:method}
@@ -809,140 +727,64 @@ in Fetch-style environments.
 \subsection{Counterfactual Prompting and the Teleport-Collapse Failure Mode}
 \label{sec:method:prompt}
 
-The verification protocol of Section~\ref{sec:method:verified} requires a
-\emph{corrective signal} from the VLM that the simulator can replay. The
-design choice---what to ask the VLM for---is not neutral: we show below that
-some prompts elicit a degenerate output mode in which the VLM ignores image
-content and copies a number out of the prompt. Naming this failure, locating
-its source in the prompt's output-type axis, and choosing the configuration
-that suppresses it are the prerequisites for §\ref{sec:method:verified}'s
-mechanism to be evaluated rather than reduced to noise.
+The verifier of \S\ref{sec:method:verified} requires a corrective signal the
+simulator can replay. The design choice---what to ask the VLM for---is not
+neutral: some prompts elicit a degenerate output in which the VLM ignores
+image content and copies a number out of the prompt. Naming this failure and
+locating its source in the prompt's output-type axis are prerequisites for
+the verifier mechanism to be evaluated rather than reduced to noise.
 
 \paragraph{Output-type design space.}
-A corrective signal can be elicited in four output types, organized along
-two axes---\emph{output kind} (natural language vs.\ numerical) and
-\emph{goal-conditioning} (the prompt mentions \texttt{desired\_goal} or
-does not). We instantiate one prompt per cell of the resulting 2$\times$2:
-(\textsc{narrative}) a free-form English diagnosis, the AHA-style output
-\citep{duan2025aha}; (\textsc{action}) a corrective 4-vector
-$(\Delta x,\Delta y,\Delta z,\text{grip})$ to be replayed by the controller;
-(\textsc{achieved\_goal}) a hindsight $\text{achieved\_goal}\!\in\!\mathbb{R}^3$
-in world coordinates, the HER-style relabel target
-\citep{andrychowicz2017her}; and (\textsc{all}) a unified JSON containing all
-three. The four variants share an identical preamble, an identical
-$K\!=\!5$ keyframe block, and an identical task-description sentence; only
-the answer-schema field differs.
+A corrective signal admits four output types along two axes---\emph{output
+kind} (natural language vs.\ numerical) and \emph{goal-conditioning}
+(prompt mentions \texttt{desired\_goal} or not): (\textsc{narrative}) a
+free-form English diagnosis, AHA-style \citep{duan2025aha};
+(\textsc{action}) a corrective 4-vector
+$(\Delta x,\Delta y,\Delta z,\text{grip})$;
+(\textsc{achieved\_goal}) a hindsight $\text{achieved\_goal}\!\in\!\mathbb{R}^3$,
+HER-style \citep{andrychowicz2017her}; and (\textsc{all}) a unified JSON of
+all three. All four share an identical preamble, $K\!=\!5$ keyframe block,
+and task-description sentence; only the answer schema differs.
 
 \begin{figure}[t]
 \centering
 \fbox{\parbox{0.92\linewidth}{
 \textbf{Definition (Teleport-collapse).}
-Fix a failed FetchPush/PickAndPlace episode with desired goal
-$g\!\in\!\mathbb{R}^3$ and final achieved position $\text{ag}_T$ with
-$\|\text{ag}_T-g\|_2\gg d_{\text{th}}\!=\!0.05$\,m. A VLM exhibits
-\emph{teleport-collapse} on a position-emitting variant if its output
-\texttt{corrective\_position} $\hat{p}$ satisfies
-$\|\hat{p}-g\|_2\le d_{\text{th}}$, i.e., the proposed corrective endpoint
-lies within the success-threshold ball of the desired goal.
-\textbf{Why it is degenerate.} An $\hat{p}\!\approx\!g$ relabel is
-trivially attainable for the relabeled goal $\hat{p}$ (the agent did not
-reach $g$, but $\hat{p}\!\approx\!g$ implies it did not reach $\hat{p}$
-either; HER's invariant is broken), and a hindsight buffer accepts it as
-``successful'' only by virtue of evaluating distance against the
-\emph{re-relabeled} goal. The transition carries zero physical
-information about how to close the failure gap; in the IS-posterior view
-(§\ref{sec:theory}) it is a Dirac on $g$, $q_\phi(\hat{p}\!\mid\!\tau)
-=\delta(\hat{p}-g)$, independent of the trajectory.
-\textbf{Detectability without the simulator.} Teleport-collapse is
-identifiable from the prompt and the response alone via the literal test
-$\|\hat{p}-g\|_2\!\le\!d_{\text{th}}$; this is the
-\texttt{reject\_teleport\_radius} gate used in C1's adapter and is a
-necessary but not sufficient hygiene check, since it leaves intact the
-underlying prompt-architectural cause.
+For a failed episode with desired goal $g$ and final achieved position
+$\text{ag}_T$ with $\|\text{ag}_T-g\|_2\gg d_{\text{th}}\!=\!0.05$\,m, a VLM
+exhibits \emph{teleport-collapse} on a position-emitting variant if its
+output \texttt{corrective\_position} $\hat{p}$ satisfies
+$\|\hat{p}-g\|_2\le d_{\text{th}}$. In the IS-posterior view, the
+trajectory-independent Dirac $q_\phi(\hat{p}\!\mid\!\tau)=\delta(\hat{p}-g)$
+breaks HER's invariant and carries zero physical information about closing
+the failure gap. The post-hoc \texttt{reject\_teleport\_radius} predicate
+$\|\hat{p}-g\|_2\!\le\!d_{\text{th}}$ catches it without simulator access
+but does not remove the prompt-architectural cause.
 }}
-\caption{The teleport-collapse failure mode formalized. The detectability
-note motivates the post-hoc rejection gate used as a fallback in
-Section~\ref{sec:exp:real}; that gate is empirically necessary on every
-model and variant we tested. Removing the underlying cause---the prompt's
-exposure of \texttt{desired\_goal} as an in-context number---is the
-mechanism-level fix delivered in §\ref{sec:method:verified}.}
+\caption{The teleport-collapse failure mode formalized. Removing the
+underlying cause---the prompt's exposure of \texttt{desired\_goal} as an
+in-context number---is the mechanism-level fix delivered in
+\S\ref{sec:method:verified}.}
 \label{fig:teleport-def}
 \end{figure}
 
-\paragraph{Why output type matters: a mechanistic account.}
+\paragraph{Mechanism and the production configuration.}
 The two position-emitting variants (\textsc{achieved\_goal}, \textsc{all})
-expose \texttt{desired\_goal} as a literal numerical triplet inside the
-prompt window; when the VLM is asked for a separate position in the same
-coordinate system, the lowest-perplexity numeric continuation is to copy
-the in-context goal triplet---a position-copy bias that requires no
-grounded reasoning about the keyframes. Empirically Claude Opus 4.7
-copies in $4/4\!=\!100\%$ of synthetic FetchPush calls and GPT-4o copies
-in $4/6$ of \textsc{all}-variant calls (Table~\ref{tab:prompt-variants}).
-The two non-position variants are immune by construction:
-\textsc{narrative} answers in natural language and has no numerical
-attractor; \textsc{action} answers in body-frame deltas
-$(\Delta x,\Delta y,\Delta z,\text{grip})$, a coordinate system absent
-from the goal field. This is the prompt-architectural source of the
-failure---a property of the schema's output type, not of any one model.
-
-\paragraph{Mapping variants to $q_\phi$-degeneracy regimes.}
-The teleport-collapse predicate
-$\|\hat{p}\!-\!g\|_2\!\le\!d_{\text{th}}$ is the empirical signature of a
-trajectory-independent posterior, $q_\phi(\hat{p}\!\mid\!\tau)
-\!=\!\delta(\hat{p}\!-\!g)$, and the two-regime taxonomy of
-Appendix~\ref{app:unbiased} (paragraph ``Two regimes of $q_\phi$-degeneracy'')
-fixes the operational meaning of that Dirac: on the verifier channel of
-\S\ref{sec:method:verified} it is the limiting case $m_{\text{gen}}\!>\!0$,
-$m_{\text{ver}}(\sigma)\!\to\!0$, i.e., the VLM emits a parseable goal but
-the simulator rejects it because no executable controller closes the
-implied $\hat{p}\!\approx\!g$ gap (the position-emitting variants land
-here). The \textsc{narrative} variant is in a degenerate-by-modality
-state: $m_{\text{gen}}$ for an action 4-vector is identically zero
-because the output schema does not produce one; the variant cannot be
-gated by the verifier at all. The \textsc{action} variant is the only
-cell in the design space where $q_\phi$ is conditioned on
-$(\Delta x, \Delta y, \Delta z, \text{grip})$ rather than on a position
-in the same coordinate frame as the in-context $g$; the numerical
-attractor is absent by construction, so the empirically observed
-$m_{\text{gen}}$ is the (model-specific) parse rate of a well-posed
-schema, and any residual $m_{\text{ver}}\!\to\!0$ behavior we observe is
-attributable to snapshot-state difficulty rather than to a structural
-Dirac. The four-by-two map is therefore: (\textsc{narrative}, any model)
-$\Rightarrow$ $m_{\text{gen}}\!=\!0$ on the verifier channel;
-(\textsc{achieved\_goal}/\textsc{all}, position-emitting model)
-$\Rightarrow$ Dirac $q_\phi$, $m_{\text{ver}}\!\to\!0$;
-(\textsc{action}, any model) $\Rightarrow$ non-degenerate $q_\phi$. The
-production configuration of the next paragraph and the verified-CF
-mechanism of \S\ref{sec:method:verified} occupy different cells of this
-map (\textsc{achieved\_goal} with the rejection gate vs.\
-\textsc{action}) for the regime-specific reasons just enumerated.
-
-\paragraph{Why this matters for the verifier-as-gate.}
-Output type is also what makes §\ref{sec:method:verified}'s simulator
-verification possible. A \textsc{narrative} output is not replayable; an
-\textsc{achieved\_goal} output is replayable only via inverse kinematics
-(a separately-engineered controller, with its own failure modes); an
-\textsc{action} output is directly executable by the env's step
-function. Asking for \textsc{action} thus serves two purposes
-simultaneously: (i) it removes the numerical attractor that drives
-teleport-collapse, and (ii) it produces an output the symbolic verifier
-can consume. The mechanism of §\ref{sec:method:verified} is then a
-\emph{generator--verifier} pairing \citep{zha2025tango} in which the
-prompt's output-type axis is the generator-side knob and the simulator
-fork is the verifier-side gate; the two co-design.
-
-\paragraph{Production configuration and the role of the rejection gate.}
-On the position-emitting axis we adopt \texttt{(GPT-4o,
-achieved\_goal)} as the production configuration: it is the only cell
-that combines zero teleport-collapse ($0/6$) with the highest
-plausibility tier (0.79; Table~\ref{tab:prompt-variants}). The
-\texttt{reject\_teleport\_radius}~=~$d_{\text{th}}$ gate of
-Figure~\ref{fig:teleport-def} is retained as a defense in depth: it
-catches model regressions, prompt drift, and the real-data residual
-identified in Section~\ref{sec:exp:real}. For the verified-CF mechanism
-itself we use the \textsc{action} variant, which sidesteps the
-position-copy bias by construction; the position-emitting analysis is
-how we identify which fields the prompt may safely include.
+expose \texttt{desired\_goal} as a literal numerical triplet; the
+lowest-perplexity continuation when asked for a same-coordinate position is
+to copy it---a position-copy bias requiring no keyframe reasoning. The two
+non-position variants are immune by construction (\textsc{narrative} has no
+numerical attractor; \textsc{action} uses body-frame deltas absent from
+the goal field). This is a property of the schema's output type, not of any
+one model. Empirically (Table~\ref{tab:prompt-variants}), Opus~4.7 copies
+in $4/4\!=\!100\%$ of FetchPush calls; GPT-4o copies in $4/6$ of
+\textsc{all} calls but $0/6$ of \textsc{achieved\_goal} calls. We adopt
+\texttt{(GPT-4o, achieved\_goal)} as the production configuration on the
+position-emitting axis, with the \texttt{reject\_teleport\_radius} gate
+retained as defense in depth; the verified-CF mechanism instead uses
+\textsc{action}, which is structurally immune. Appendix~\ref{app:prompts}
+details the prompt template and the full four-by-two
+$q_\phi$-degeneracy map.
 
 \subsection{VLM-Verified Counterfactual Hindsight}
 \label{sec:method:verified}
@@ -1129,20 +971,24 @@ in Appendix~\ref{app:prompts}.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.95\linewidth]{fig1_headline_success.pdf}
-\caption{\textbf{[Pre-fix run, retained for transparency.]}
-Success rate vs.\ environment steps for \emph{Uniform}, \emph{PER},
-\emph{Semantic-PER (Oracle v3)}, and \emph{Semantic-PER (GPT-4o)} on the three
-Fetch tasks, mean $\pm$~SE across 3 seeds.
-\emph{The GPT-4o curve uses a known-buggy pipeline}
-(all-variant prompt without the teleport gate), which silently admitted
-$\sim$67\% degenerate counterfactuals as relabels; see Section~\ref{sec:discussion}.
-The curve is therefore not a valid evaluation of Semantic PER; it is retained to
-document the pre-fix behavior and motivate the corrected runs in
-Section~\ref{sec:exp:inflight}.
-The Oracle $-$ PER gap is interpretable as a valid upper envelope because the
-Oracle uses only privileged sim state and is unaffected by the prompt bug.
-Sections~\ref{sec:exp:prompt}--\ref{sec:exp:real} identify and close the bug.}
+\includegraphics[width=0.95\linewidth]{fig_headline_v4.pdf}
+\caption{\textbf{Final evaluation success rate across the three Fetch tasks
+(mean $\pm$ SE, $n\!=\!3$ seeds; individual seeds overlaid as dots).}
+\emph{Methods are reported at heterogeneous training horizons} --- the
+italic gray stamp under each bar gives the training budget for that cell:
+Uniform and PER at 3M steps; HER at 250k steps; \emph{vlm\_cf} and
+\emph{verified\_cf} (ours) at 500k steps; Oracle-CF at 250k steps for
+FetchPush and FetchSlide and 1M steps for FetchPickAndPlace.
+\textbf{Within-horizon comparisons (same stamp value) are statistically
+meaningful}; \textbf{cross-horizon comparisons should be read as efficiency
+claims (more learning per training step) rather than asymptotic dominance.}
+The dashed gray line in each environment marks the HER baseline at 250k for
+visual reference. As a transparency note, an earlier pre-fix variant of this
+figure (Uniform/PER/Semantic-PER-Oracle/Semantic-PER-GPT-4o, 500k each) used
+a known-buggy all-variant prompt without the teleport gate that silently
+admitted $\sim$67\% degenerate counterfactuals as relabels; the corrected
+\emph{vlm\_cf} and \emph{verified\_cf} bars shown here replace those numbers
+(see Sections~\ref{sec:exp:prompt}--\ref{sec:exp:real} for the bug and fix).}
 \label{fig:headline}
 \end{figure}
 
@@ -1247,113 +1093,24 @@ Variant & Model & $n$ & Plausibility & Goal-progress & Teleport-collapse \\
 \end{tabular}
 \end{table}
 
-\textbf{Key finding.} On the position-emitting axis (the only axis on which
-teleport-collapse is observable), the \texttt{(GPT-4o, achieved\_goal)}
-configuration dominates every comparable cell:
-$0/6$ teleport-collapse (vs.\ Opus's $4/4$ on the same variant and $2/2$ on
-\textsc{all}), the highest plausibility in the position-emitting block
-($0.79$, tying \textsc{narrative}-Opus across the whole grid), and the
-second-highest goal-progress ($0.83$, behind only Opus's
-$0.97$ on \textsc{achieved\_goal}, which by inspection is achieved by
-trivially copying \texttt{desired\_goal}---the same mechanism that produces
-its $4/4$ teleport rate, so a degenerate ``win''). We adopt
-\texttt{(GPT-4o, achieved\_goal)} as the production configuration for
-position-emitting prompts; the verified-CF mechanism (\S\ref{sec:method:verified})
-uses the \textsc{action} variant instead, which is structurally immune.
-Critically, GPT-4o still teleport-collapses on the joint \textsc{all} variant
-in $4/6$ episodes, identifying the failure mode as
-\emph{prompt-architectural} (a function of which fields the prompt exposes
-to the model), not model-specific.
-Section~\ref{sec:exp:real} extends this prompt grid to a third VLM family
-(Sonnet~4.5) on real on-policy failures and confirms the prompt-architectural
-fix transfers; combined, the three families (Opus~4.7, GPT-4o, Sonnet~4.5)
-constitute the closest reading of a \emph{VLM-family robustness
-sub-ablation} the present budget allowed. We note in agreement with the
-limitations of \S\ref{sec:discussion} that two of the three families share
-training-corpus and RLHF lineage (Opus/Sonnet are both Anthropic), so the
-``three-family'' claim should be read as two-vendor.
-
-\paragraph{Mechanism of the position-copy attractor.}
-Section~\ref{sec:method:prompt} gives the mechanistic account at the
-output-schema level; here we add the empirical signature. Across the four
-\textsc{achieved\_goal} Opus calls the predicted
-\texttt{corrective\_position} matched \texttt{desired\_goal} to within
-$\le\!1$\,cm in $4/4$ cases; on \textsc{all} the match held in $2/2$ Opus
-calls. GPT-4o's $0/6$ on \textsc{achieved\_goal} vs.\ $4/6$ on \textsc{all}
-is the discriminating signature: the only structural difference between the
-two prompts is the inclusion of the full action-history block in
-\textsc{all}, which lengthens the prompt and crowds out the discouragement
-of position-copying in the system message. This is consistent with a
-prompt-length-dependent attentional dilution: longer prompts shift relative
-weight away from the late-prompt instruction discouraging
-position-copying, while leaving the in-context goal triplet as the strongest
-local numerical attractor. The interpretation is testable:
-shortening the \textsc{all} variant's action history should monotonically
-reduce GPT-4o's teleport-collapse rate; this is a falsifiable prediction we
-flag for the camera-ready follow-on (\S\ref{sec:discussion}).
-
-\paragraph{Judge-bias and inter-rater reliability.}
-The judge for Table~\ref{tab:prompt-variants} is Claude Opus 4.7, which is
-also one of the two candidate models. This same-vendor judge-candidate
-overlap is the most direct external-validity threat to the table: the
-$0.97$ goal-progress score that Opus's degenerate goal-copy receives---a
-literal copy of \texttt{desired\_goal} into \texttt{corrective\_position}---is
-exactly the failure mode a self-preferring judge would amplify, since the
-prediction matches the rubric's ``goal-progress'' anchor mechanically. We mitigate
-in three ways. (i) The \emph{teleport-collapse} metric is computed by
-predicate, not judge: $\mathbb{1}[\|\hat p\!-\!g\|_2\!\le\!d_{\text{th}}]$
-is decided by Euclidean distance, so the load-bearing $0/6$ vs.\ $4/4$
-comparison is judge-independent. (ii) Plausibility is computed against a
-fixed 5-point rubric in the system prompt (Appendix~\ref{app:prompts}),
-which constrains the response space relative to free-form scoring. (iii)
-The Section~\ref{sec:exp:real} replication on real on-policy data uses
-Sonnet~4.5 as the candidate, removing the same-vendor judge-candidate edge
-case for the load-bearing GPT-4o comparison. We do not run a cross-judge
-ablation in the present budget; if Opus-as-judge over-weights the Opus
-\textsc{narrative} $0.79$ relative to ground truth, the table's effect
-would be to \emph{inflate} Opus's plausibility rank, biasing
-\emph{against} the GPT-4o adoption claim that the table is used to
-support. The honest reading is that the judge-bias direction is
-adversarial to our preferred conclusion, which is the safer of the two
-mis-specifications.
-
-\paragraph{Statistical-power and pre-registration framing.}
-Cell sizes are $n\!=\!6$ on the GPT-4o rows and $n\!=\!2$--$4$ on the Opus
-rows (Opus calls were re-used from C1's partial grid to avoid
-re-billing). At $n\!=\!6$ a $0/6$ outcome is consistent with any true
-teleport-collapse rate $\le\!0.39$ at $\alpha\!=\!0.05$ (Clopper--Pearson
-upper); at $n\!=\!4$ a $4/4$ outcome is consistent with any true rate
-$\ge\!0.40$. The two intervals are disjoint, so the $0/6$ vs.\ $4/4$
-contrast between \texttt{(GPT-4o, achieved\_goal)} and
-\texttt{(Opus, achieved\_goal)} is the strongest single
-binary-classification claim the table makes; the plausibility and
-goal-progress numbers are weaker, with $n\!=\!4$ standard errors of
-$0.04$--$0.18$ that admit ranking swaps under any single retry. We
-pre-register the following falsification: \emph{a $30$-episode
-re-evaluation of \texttt{(GPT-4o, achieved\_goal)} on
-\texttt{FetchPickAndPlace} with the production prompt should show a
-teleport-collapse rate $\le 5\%$}. A higher rate falsifies the
-prompt-architectural claim and reverts the recommendation to the
-\textsc{action} variant alone. The cost is $\le\!\$2$ of GPT-4o calls and
-is queued for the camera-ready window.
-
-\paragraph{Connection to the IS-posterior framing.}
-The prompt-design ablation sits upstream of the \S\ref{sec:theory}
-posterior framing: $q_\phi$, the VLM's approximation to
-$p(t^\star\!\mid\!\tau)$, is what is being measured here in the
-specific case where the localization is of a \emph{corrective} timestep,
-not a \emph{failure-causing} one. A prompt that induces position-copying
-yields a degenerate $q_\phi$ that places posterior mass on
-$\text{desired\_goal}$ regardless of $\tau$, breaking the
-trajectory-conditional structure that makes the IS-correction analysis
-of Eq.~\eqref{eq:headline} go through. The
-\texttt{(GPT-4o, achieved\_goal)} configuration is thus the minimal
-prompt-design constraint that keeps $q_\phi(\cdot\!\mid\!\tau)$
-$\tau$-dependent at all. Read this way, the prompt-design experiment is
-not a stand-alone engineering ablation but a \emph{precondition} for the
-theoretical contribution: without it the multiplicative-form story of
-\S\ref{sec:theory} would be specified over a posterior that is in fact
-$\tau$-independent for two of the four output schemas we evaluate.
+\textbf{Key finding.} The \texttt{(GPT-4o, achieved\_goal)} cell dominates
+the position-emitting axis: $0/6$ teleport-collapse (vs.\ Opus's $4/4$ on
+the same variant and $2/2$ on \textsc{all}), highest plausibility in the
+position-emitting block ($0.79$), and second-highest goal-progress ($0.83$,
+behind only Opus's $0.97$ which is achieved by literal goal-copying---a
+degenerate ``win''). Critically, GPT-4o still teleport-collapses in $4/6$
+\textsc{all} episodes: the failure is \emph{prompt-architectural}, not
+model-specific. The load-bearing $0/6$ vs.\ $4/4$ contrast is
+judge-independent (decided by Euclidean predicate) and the Clopper--Pearson
+intervals on the two cells are disjoint at $\alpha\!=\!0.05$. We adopt
+\texttt{(GPT-4o, achieved\_goal)} as the production configuration
+(with the \texttt{reject\_teleport\_radius} gate retained as defense in
+depth); the verified-CF mechanism uses \textsc{action}, which is
+structurally immune. Appendix~\ref{app:c1v2-stats} contains the full
+statistical-power, judge-bias, mechanism-of-attractor, and
+IS-posterior-precondition analyses. \S\ref{sec:exp:real} extends the grid
+to Sonnet~4.5 on real failures; combined, the three-model evidence is
+properly read as two-vendor (Opus/Sonnet share Anthropic lineage).
 
 \subsection{Cross-Task Transferability}
 \label{sec:exp:transfer}
@@ -1362,74 +1119,34 @@ $\tau$-independent for two of the four output schemas we evaluate.
 \centering
 \includegraphics[width=0.85\linewidth]{figN2_cross_task_transfer.pdf}
 \caption{Cross-task transferability. Same prompt template, three Fetch
-environments. \emph{Parse rate}, \emph{judge task-relevance}, and \emph{judge
-physical-plausibility} are all 12/12 (100\%) across environments. \emph{Tolerant
-keyframe agreement} (VLM vs.\ heuristic Oracle within $\pm 1$ keyframe) improves
-monotonically with failure visual-distinctiveness: FetchSlide (4/4) $>$
-FetchPush (3/4) $>$ FetchPickAndPlace (2/4). This gradient reflects the
-heuristic Oracle's harder-to-segment task rather than VLM error (see text).}
+environments. Parse rate, judge task-relevance, and judge physical-plausibility
+are all $12/12$ (100\%). Tolerant keyframe agreement (VLM vs.\ heuristic Oracle
+within $\pm 1$ keyframe) improves monotonically with failure visual
+distinctiveness: Slide ($4/4$) $>$ Push ($3/4$) $>$ PickAndPlace ($2/4$).}
 \label{fig:transfer}
 \end{figure}
 
-\paragraph{What ``transfer'' requires.}
-A learned priority head trained on \texttt{FetchPush} encodes a task-specific
-correlation between pixel features (or state features) and outcome-causing
-transitions; when moved to \texttt{FetchPickAndPlace} it encounters a
-qualitatively different failure geometry (block stays on table vs.\ block
-fails to lift) and must be retrained or fine-tuned.
-A foundation-VLM localizer transfers \emph{not} by extrapolation within a
-training distribution but because its prior is the world-model baked into
-web-scale image-text pretraining: it knows that a gripper should close around
-an object before lifting, that a puck needs a correctly-angled strike to slide
-toward a target, and that ``block does not move'' is a proximal failure cause
-on FetchPush. These are \emph{semantic} facts about object manipulation, not
-task-specific features learned from RL trajectories. The single-sentence task
-description provides a grounding anchor; the VLM supplies the failure-mode
-taxonomy.
-
-\paragraph{Pilot results.}
-We tested 12 failed episodes (4 per environment) with a single format-string
-prompt differing only in one task-description sentence
-(Appendix~\ref{app:prompts}).
-Parse rate: 12/12 (100\%). Judge-rated task-relevance: 12/12 (100\%). Judge-rated
-physical plausibility: 12/12 (100\%).
-Tolerant keyframe agreement (VLM vs.\ heuristic Oracle within
-$\pm1$ keyframe): 9/12 (Figure~\ref{fig:transfer}).
-The full-string reasoning output shows correct task-specific failure-mode
-identification in every case: for Push, \textit{``gripper passes over block without making
-contact''}; for PickAndPlace, \textit{``gripper at block location but fails to close''};
-for Slide, \textit{``strike direction off-axis''}.
-
-\paragraph{Interpreting the keyframe-agreement gradient.}
-Tolerant agreement improves monotonically with failure visual-distinctiveness:
-FetchSlide (4/4) $>$ FetchPush (3/4) $>$ FetchPickAndPlace (2/4).
-We attribute this gradient to the heuristic Oracle rather than the VLM.
-On FetchSlide the critical event (puck launch) produces a sharp velocity change
-detectable by both the ballistic heuristic and the keyframe images.
-On FetchPush the contact-loss event is visually salient (gripper separates from
-block before goal proximity) and the heuristic fires reliably.
-On FetchPickAndPlace the ``grip failed'' failure occurs over $\sim$1--3
-consecutive timesteps with little visual change between frames; the heuristic
-argmin fallback localizes to the closest-approach timestep, while the VLM
-assigns the failure frame one step earlier at the decisive grip
-sequence---a systematically \emph{different} but arguably more
-physically-correct localization than the state-geometry proxy provides.
-This suggests the 2/4 agreement on PickAndPlace reflects heuristic under-localization
-rather than VLM error, consistent with contact-energy prioritization literature
-\citep{sayar2023cebp} noting that closed-loop grip timing is the hardest mode
-for geometry-only oracles.
-
-\paragraph{Implications for the IS-posterior framing.}
-In the language of Section~\ref{sec:theory}, cross-task transfer is a
-\emph{prior-quality} claim: the VLM's posterior $q_\phi(t^\star\mid\tau)$
-approximates the true outcome-causing timestep reliably across task families
-because the prior is world-knowledge, not task-specific learned features.
-A per-task trained priority head has no such prior; it is by construction
-a maximum-likelihood fit to the in-distribution task's failure geometry.
-The pilot evidence at $n\!=\!12$ is consistent with (but does not conclusively
-establish) the stronger claim that foundation-VLM posteriors generalize
-within the Fetch task family; Section~\ref{sec:discussion} pre-registers the
-$n\!\ge\!30$-per-task sweep and non-Fetch transfer as the quantitative follow-on.
+A foundation-VLM localizer transfers across task families because its prior
+is world-knowledge baked into image-text pretraining
+(gripper-should-close-around-object, puck-needs-angled-strike), not
+task-specific features learned from RL trajectories. We tested $12$ failed
+episodes ($4$ per env) with a single format-string prompt differing only in
+one task-description sentence: parse / task-relevance / plausibility are
+$12/12$; tolerant keyframe agreement is $9/12$ (Fig.~\ref{fig:transfer}).
+The VLM's reasoning strings identify task-specific modes correctly in every
+case---Push: \emph{``gripper passes over block without making contact''};
+PickAndPlace: \emph{``gripper at block location but fails to close''};
+Slide: \emph{``strike direction off-axis''}. The $2/4$ PickAndPlace
+agreement reflects heuristic under-localization (closed-loop grip timing is
+the hardest mode for geometry-only oracles \citep{sayar2023cebp}) rather
+than VLM error: the VLM assigns the failure frame one step earlier at the
+decisive grip sequence, a different but arguably more physically-correct
+localization. In the language of \S\ref{sec:theory} this is a
+\emph{prior-quality} claim about $q_\phi$ generalizing across task families;
+the $n\!=\!12$ pilot is consistent with (but does not conclusively
+establish) the stronger generalization claim, and we pre-register the
+$n\!\ge\!30$ sweep in \S\ref{sec:discussion}. Appendix~\ref{app:transfer-details}
+contains the per-episode reasoning strings.
 
 \subsection{Real-Data Validation}
 \label{sec:exp:real}

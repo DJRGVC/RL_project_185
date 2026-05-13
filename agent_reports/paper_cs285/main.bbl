@@ -1,4 +1,4 @@
-\begin{thebibliography}{36}
+\begin{thebibliography}{34}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -12,14 +12,6 @@ Marcin Andrychowicz, Filip Wolski, Alex Ray, Jonas Schneider, Rachel Fong,
 \newblock Hindsight experience replay.
 \newblock In \emph{Advances in Neural Information Processing Systems
   (NeurIPS)}, 2017.
-
-\bibitem[Arjona-Medina et~al.(2019)Arjona-Medina, Gillhofer, Widrich,
-  Unterthiner, Brandstetter, and Hochreiter]{arjonamedina2019rudder}
-Jose~A. Arjona-Medina, Michael Gillhofer, Michael Widrich, Thomas Unterthiner,
-  Johannes Brandstetter, and Sepp Hochreiter.
-\newblock {RUDDER}: Return decomposition for delayed rewards.
-\newblock In \emph{Advances in Neural Information Processing Systems
-  (NeurIPS)}, 2019.
 
 \bibitem[Chen et~al.(2024)Chen, Mees, Kumar, and Levine]{chen2024promptable}
 William Chen, Oier Mees, Aviral Kumar, and Sergey Levine.
@@ -81,15 +73,6 @@ Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and Sergey Levine.
 \newblock Soft actor-critic: Off-policy maximum entropy deep reinforcement
   learning with a stochastic actor.
 \newblock In \emph{International Conference on Machine Learning (ICML)}, 2018.
-
-\bibitem[Harutyunyan et~al.(2019)Harutyunyan, Dabney, Mesnard, Azar, Piot,
-  Heess, van Hasselt, Wayne, Singh, Precup, and Munos]{harutyunyan2019hca}
-Anna Harutyunyan, Will Dabney, Thomas Mesnard, Mohammad Azar, Bilal Piot,
-  Nicolas Heess, Hado van Hasselt, Greg Wayne, Satinder Singh, Doina Precup,
-  and R{\'e}mi Munos.
-\newblock Hindsight credit assignment.
-\newblock \emph{Advances in Neural Information Processing Systems (NeurIPS)},
-  2019.
 
 \bibitem[Hu et~al.(2026)Hu, Van~Durme, Andreas, and Jhamtani]{hu2026echo}
 Michael~Y. Hu, Benjamin Van~Durme, Jacob Andreas, and Harsh Jhamtani.

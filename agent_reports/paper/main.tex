@@ -1135,20 +1135,24 @@ in Appendix~\ref{app:prompts}.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.95\linewidth]{fig1_headline_success.pdf}
-\caption{\textbf{[Pre-fix run, retained for transparency.]}
-Success rate vs.\ environment steps for \emph{Uniform}, \emph{PER},
-\emph{Semantic-PER (Oracle v3)}, and \emph{Semantic-PER (GPT-4o)} on the three
-Fetch tasks, mean $\pm$~SE across 3 seeds.
-\emph{The GPT-4o curve uses a known-buggy pipeline}
-(all-variant prompt without the teleport gate), which silently admitted
-$\sim$67\% degenerate counterfactuals as relabels; see Section~\ref{sec:discussion}.
-The curve is therefore not a valid evaluation of Semantic PER; it is retained to
-document the pre-fix behavior and motivate the corrected runs in
-Section~\ref{sec:exp:inflight}.
-The Oracle $-$ PER gap is interpretable as a valid upper envelope because the
-Oracle uses only privileged sim state and is unaffected by the prompt bug.
-Sections~\ref{sec:exp:prompt}--\ref{sec:exp:real} identify and close the bug.}
+\includegraphics[width=0.95\linewidth]{fig_headline_v4.pdf}
+\caption{\textbf{Final evaluation success rate across the three Fetch tasks
+(mean $\pm$ SE, $n\!=\!3$ seeds; individual seeds overlaid as dots).}
+\emph{Methods are reported at heterogeneous training horizons} --- the
+italic gray stamp under each bar gives the training budget for that cell:
+Uniform and PER at 3M steps; HER at 250k steps; \emph{vlm\_cf} and
+\emph{verified\_cf} (ours) at 500k steps; Oracle-CF at 250k steps for
+FetchPush and FetchSlide and 1M steps for FetchPickAndPlace.
+\textbf{Within-horizon comparisons (same stamp value) are statistically
+meaningful}; \textbf{cross-horizon comparisons should be read as efficiency
+claims (more learning per training step) rather than asymptotic dominance.}
+The dashed gray line in each environment marks the HER baseline at 250k for
+visual reference. As a transparency note, an earlier pre-fix variant of this
+figure (Uniform/PER/Semantic-PER-Oracle/Semantic-PER-GPT-4o, 500k each) used
+a known-buggy all-variant prompt without the teleport gate that silently
+admitted $\sim$67\% degenerate counterfactuals as relabels; the corrected
+\emph{vlm\_cf} and \emph{verified\_cf} bars shown here replace those numbers
+(see Sections~\ref{sec:exp:prompt}--\ref{sec:exp:real} for the bug and fix).}
 \label{fig:headline}
 \end{figure}
 
