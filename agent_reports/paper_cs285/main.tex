@@ -67,8 +67,9 @@ buffer (confidence~1.0, zero modeling error).
 500k SAC+HER+verified-CF updates the verified-CF agent reaches mean
 success $0.606$ across the three Fetch envs ($0.85 / 0.35 / 0.617$ on
 Push / PickAndPlace / Slide), tying VLM-CF ($0.622$ mean, $\Delta\!=\!-0.016$)
-and \emph{exceeding} it on FetchSlide ($0.617$ vs.\ $0.55$;
-$+0.45$ over PER@3M, $+0.43$ over HER@250k); Fig.~\ref{fig:headline}.
+and \emph{exceeding} it on FetchSlide ($0.617$ vs.\ $0.55$, where
+\emph{vlm\_cf} gains $+0.45$ over PER@3M and \emph{verified\_cf} gains
+$+0.43$ over HER@250k); Fig.~\ref{fig:headline}.
 (ii) \textbf{Pre-registered kill verdict, honored.} The Phase-1 Oracle-CF
 study violated the $+0.10$ kill threshold on FetchPickAndPlace at the
 250k decision horizon ($\Delta\!=\!-0.05$); we honored the kill and
@@ -358,16 +359,17 @@ cross-horizon comparisons should be read as efficiency claims.}
 \label{sec:exp:headline}
 
 \textbf{FetchPush (500k).} \emph{vlm\_cf} reaches $0.95\!\pm\!0.03$ and
-\emph{verified\_cf} reaches $0.85\!\pm\!0.14$, both substantially above
+\emph{verified\_cf} reaches $0.85\!\pm\!0.10$, both substantially above
 HER@250k ($0.617$) and matching the PER@3M asymptote
 ($\sim\!0.95$,~\citealp{plappert2018multigoal}).
 \textbf{FetchPickAndPlace (500k).} \emph{vlm\_cf} reaches
-$0.367\!\pm\!0.08$ and \emph{verified\_cf} reaches $0.35\!\pm\!0.10$
-(tied within noise), both above HER@250k ($0.167$).
+$0.367\!\pm\!0.08$ and \emph{verified\_cf} reaches $0.35\!\pm\!0.076$
+(tied within noise), both above HER@250k ($0.183$).
 \textbf{FetchSlide (500k).} \emph{verified\_cf} reaches
-$0.617\!\pm\!0.03$ and \emph{vlm\_cf} reaches $0.55\!\pm\!0.13$---a
-$+0.45$ gain over PER@3M ($0.10$) and $+0.43$ over HER@250k ($0.183$),
-on the task where prior baselines cluster near zero.
+$0.617\!\pm\!0.017$ and \emph{vlm\_cf} reaches $0.55\!\pm\!0.15$---on the
+task where prior baselines cluster near zero, \emph{vlm\_cf} gains
+$+0.45$ over PER@3M ($0.10$) and \emph{verified\_cf} gains $+0.43$ over
+HER@250k ($0.183$).
 
 \textbf{Interpretation.} Aggregating across the three envs, verified-CF
 reaches mean $0.606$ and vlm\_cf reaches $0.622$ ($\Delta\!=\!-0.016$);
@@ -394,8 +396,8 @@ is achieved by literal goal-copying---a degenerate ``win''). Critically,
 GPT-4o still teleport-collapses in $4/6$ \textsc{all} episodes: the failure
 is \emph{prompt-architectural}, not model-specific. The load-bearing
 $0/6$ vs.\ $4/4$ contrast is judge-independent (decided by Euclidean
-predicate) and the Clopper--Pearson intervals on the two cells are
-disjoint at $\alpha\!=\!0.05$. \S\ref{sec:exp:real} extends the grid to
+predicate) and Fisher's exact test rejects equal-proportions at
+$p\!<\!0.005$. \S\ref{sec:exp:real} extends the grid to
 Sonnet~4.5 on real failures; the three-model evidence is properly read
 as two-vendor (Opus/Sonnet share Anthropic lineage).
 
@@ -434,7 +436,9 @@ Push/PickAndPlace/Slide; tolerant keyframe agreement is $9/12$
 (Slide $4/4$, Push $3/4$, PickAndPlace $2/4$). A second sweep on
 $n\!=\!10$ \emph{real} SAC-failure eval episodes confirms the
 prompt-architectural fix transfers to a third VLM family
-(Sonnet~4.5: 75\%~$\to$~0\% teleport on PickAndPlace) and that the 5\,cm
+(Sonnet~4.5 teleports on $0/6$ PickAndPlace episodes under
+\textsc{achieved\_goal}, vs.\ Opus~4.7's $4/4$ on the same variant) and
+that the 5\,cm
 reject-teleport gate fires on $12/20$ position-emitting generations
 across both vendors (Appendix~\ref{app:results}).
 
@@ -445,10 +449,10 @@ across both vendors (Appendix~\ref{app:results}).
 steps) executed overnight. The pre-registered decision rule was: if
 Oracle-CF exceeds HER by $\ge\!+0.10$ on FetchPickAndPlace, Path~C
 proceeds; otherwise we pivot. Final eval success: on PickAndPlace, HER
-$0.167\!\pm\!0.117$ vs.\ Oracle-CF $0.117\!\pm\!0.044$ ($\Delta\!=\!-0.05$,
+$0.183\!\pm\!0.117$ vs.\ Oracle-CF $0.117\!\pm\!0.044$ ($\Delta\!=\!-0.066$,
 \emph{below threshold}). On Push (post bug-fix, commit \texttt{ccb63d4}),
-HER $0.550$ vs.\ Oracle-CF $0.383\!\pm\!0.109$. On Slide, HER $0.100$ vs.\
-Oracle-CF $0.183$ ($\Delta\!=\!+0.083$, below threshold).
+HER $0.617$ vs.\ Oracle-CF $0.383\!\pm\!0.109$. On Slide, HER $0.183$ vs.\
+Oracle-CF $0.183$ ($\Delta\!=\!0.00$, below threshold).
 \textbf{Path~C is killed at the 250k horizon}; the headline pivoted to
 the IS-posterior framing (\S\ref{sec:method}) and the verifier
 (\S\ref{sec:method:verified}). Post-hoc 1M runs on PickAndPlace:
