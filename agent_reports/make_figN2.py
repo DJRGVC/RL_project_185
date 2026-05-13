@@ -129,13 +129,9 @@ ax.grid(False)
 ax.yaxis.grid(True, color="#dddddd", linewidth=0.5)
 ax.set_axisbelow(True)
 
-ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.4), ncol=3, frameon=False)
-
-# Annotate sample size below the x-axis label.
-n_per_env = [sum(1 for r in d["episodes"] if r["env_name"] == env) for env in ENV_ORDER]
-ax.text(0.5, -0.2, f"n = {n_per_env[0]} episodes per env",
-        transform=ax.transAxes, ha="center", va="top",
-        fontsize=8, color="#555555")
+ax.legend(loc="lower center", bbox_to_anchor=(0.5, -0.22), ncol=3, frameon=False)
+# Sample size (n=4 per env) is reported in the figure caption, not on the axes,
+# per NeurIPS convention (no verbose text annotations on plots).
 
 out_dir = REPO / "agent_reports" / "figs"
 out_dir.mkdir(parents=True, exist_ok=True)
