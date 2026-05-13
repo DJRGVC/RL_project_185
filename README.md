@@ -11,14 +11,6 @@
 **VLM-Verified Counterfactual Hindsight for Sparse-Reward Manipulation**
 ([NeurIPS preprint, 44 pp.](agent_reports/paper/main.pdf)) ([CS 285 submission, 45 pp.](agent_reports/cs285_final_paper.pdf))
 
-<p align="center">
-  <img src="agent_reports/videos/project_overview.gif" alt="Project overview" width="720"/>
-</p>
-
-<p align="center">
-  <a href="agent_reports/videos/project_overview.mp4">Higher-quality MP4 (50s, 0.8MB)</a>
-</p>
-
 ---
 
 ## Overview
