@@ -42,3 +42,4 @@ runs/
 
 # Winston AI API key
 .winston_key
+.gptzero_key
