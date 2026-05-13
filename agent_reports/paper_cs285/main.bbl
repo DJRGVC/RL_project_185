@@ -1,4 +1,4 @@
-\begin{thebibliography}{22}
+\begin{thebibliography}{29}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -22,11 +22,38 @@ Caleb Chuck, Fan Feng, Carl Qi, Chang Shi, Siddhant Agarwal, Amy Zhang, and
 \newblock In \emph{International Conference on Learning Representations
   (ICLR)}, 2025.
 
+\bibitem[de~Lazcano et~al.(2024)de~Lazcano, Kallinteris, Tai, Lee, and
+  Terry]{delazcano2024gymrobotics}
+Rodrigo de~Lazcano, Andreas Kallinteris, Jet Tai, Seungjae~Ryan Lee, and Jordan
+  Terry.
+\newblock Gymnasium-robotics: A standard interface for robot learning
+  environments.
+\newblock \url{https://robotics.farama.org/}, 2024.
+\newblock Farama Foundation.
+
 \bibitem[Ding(2026)]{ding2026agentHER}
 Liang Ding.
 \newblock {AgentHER}: Hindsight experience replay for {LLM} agent trajectory
   relabeling.
 \newblock \emph{arXiv preprint arXiv:2603.21357}, 2026.
+
+\bibitem[Duan et~al.(2025)Duan, Pumacay, Kumar, Wang, Tian, Yuan, Krishna, Fox,
+  Mandlekar, and Guo]{duan2025aha}
+Jiafei Duan, Wilbert Pumacay, Nishanth Kumar, Yi~Ru Wang, Shulin Tian, Wentao
+  Yuan, Ranjay Krishna, Dieter Fox, Ajay Mandlekar, and Yijie Guo.
+\newblock {AHA}: A vision-language-model for detecting and reasoning over
+  failures in robotic manipulation.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2025.
+
+\bibitem[Espeholt et~al.(2018)Espeholt, Soyer, Munos, Simonyan, Mnih, Ward,
+  Doron, Firoiu, Harley, Dunning, Legg, and Kavukcuoglu]{espeholt2018impala}
+Lasse Espeholt, Hubert Soyer, R{\'e}mi Munos, Karen Simonyan, Volodymyr Mnih,
+  Tom Ward, Yotam Doron, Vlad Firoiu, Tim Harley, Iain Dunning, Shane Legg, and
+  Koray Kavukcuoglu.
+\newblock {IMPALA}: Scalable distributed deep-{RL} with importance weighted
+  actor-learner architectures.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2018.
 
 \bibitem[Haarnoja et~al.(2018)Haarnoja, Zhou, Abbeel, and
   Levine]{haarnoja2018sac}
@@ -59,6 +86,22 @@ Xing Lei, Wenyan Yang, Kaiqiang Ke, Shentao Yang, Xuetao Zhang, Joni Pajarinen,
 \newblock {GCHR}: Goal-conditioned hindsight regularization for
   sample-efficient reinforcement learning.
 \newblock \emph{arXiv preprint arXiv:2508.06108}, 2025.
+
+\bibitem[Mesnard et~al.(2021)Mesnard, Weber, Viola, Thakoor, Saade,
+  Harutyunyan, Dabney, Stepleton, Heess, Guez, et~al.]{mesnard2021cca}
+Thomas Mesnard, Th{\'e}ophane Weber, Fabio Viola, Shantanu Thakoor, Alaa Saade,
+  Anna Harutyunyan, Will Dabney, Tom Stepleton, Nicolas Heess, Arthur Guez,
+  et~al.
+\newblock Counterfactual credit assignment in model-free reinforcement
+  learning.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2021.
+
+\bibitem[Munos et~al.(2016)Munos, Stepleton, Harutyunyan, and
+  Bellemare]{munos2016retrace}
+R{\'e}mi Munos, Tom Stepleton, Anna Harutyunyan, and Marc~G. Bellemare.
+\newblock Safe and efficient off-policy reinforcement learning.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2016.
 
 \bibitem[{\"O}zg{\"u}r et~al.(2025){\"O}zg{\"u}r, Zurbr{\"u}gg, and
   Kumar]{ozgur2025nextfuture}
@@ -126,6 +169,12 @@ Elad Sharony, Tom Jurgenson, Orr Krupnik, Dotan Di~Castro, and Shie Mannor.
 \newblock {VLM}-guided experience replay.
 \newblock \emph{arXiv preprint arXiv:2602.01915}, 2026.
 
+\bibitem[Todorov et~al.(2012)Todorov, Erez, and Tassa]{todorov2012mujoco}
+Emanuel Todorov, Tom Erez, and Yuval Tassa.
+\newblock {MuJoCo}: A physics engine for model-based control.
+\newblock In \emph{IEEE/RSJ International Conference on Intelligent Robots and
+  Systems (IROS)}, 2012.
+
 \bibitem[Urp{\'i} et~al.(2024)Urp{\'i}, Bagatella, Vlastelica, and
   Martius]{urpi2024caiac}
 N{\'u}ria~Armengol Urp{\'i}, Marco Bagatella, Marin Vlastelica, and Georg
@@ -159,5 +208,10 @@ Kaiwen Zha et~al.
   reasoning.
 \newblock In \emph{Advances in Neural Information Processing Systems
   (NeurIPS)}, 2025.
+
+\bibitem[Zhao and Tresp(2018)]{zhao2018energy}
+Rui Zhao and Volker Tresp.
+\newblock Energy-based hindsight experience prioritization.
+\newblock In \emph{Conference on Robot Learning (CoRL)}, 2018.
 
 \end{thebibliography}

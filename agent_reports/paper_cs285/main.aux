@@ -2,21 +2,24 @@
 \providecommand\hyper@newdestlabel[2]{}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{delazcano2024gymrobotics}
 \citation{sharony2026vlmrb}
+\citation{schaul2016per}
+\citation{andrychowicz2017her}
 \newlabel{sec:extended-abstract}{{}{1}{Extended Abstract}{section*.1}{}}
 \@writefile{toc}{\contentsline {paragraph}{Problem.}{1}{section*.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Methodological contributions.}{1}{section*.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Headline findings.}{1}{section*.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Honest negative and roadmap.}{1}{section*.5}\protected@file@percent }
-\citation{schaul2016per}
-\citation{andrychowicz2017her}
+\@writefile{toc}{\contentsline {paragraph}{Honest negative.}{1}{section*.5}\protected@file@percent }
 \citation{rocamonde2024vlmreward,lee2025kagi}
 \citation{sharony2026vlmrb}
+\citation{duan2025aha}
 \citation{sharony2026vlmrb}
+\citation{todorov2012mujoco}
 \citation{zha2025tango}
 \citation{andrychowicz2017her}
-\citation{ozgur2025nextfuture,sayar2023cebp}
-\citation{urpi2024caiac,hu2026echo,ding2026agentHER}
+\citation{ozgur2025nextfuture,sayar2023cebp,zhao2018energy}
+\citation{urpi2024caiac,hu2026echo,ding2026agentHER,mesnard2021cca}
 \citation{chuck2025hint,lei2025gchr}
 \citation{schaul2016per}
 \citation{pleiss2025reaper,yamani2025rpeper,wang2025prioritizedgenerative,krutsylo2025nonuniform}
@@ -26,11 +29,12 @@
 \@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{2}{section.2}\protected@file@percent }
 \newlabel{sec:related}{{2}{2}{Related Work}{section.2}{}}
 \@writefile{toc}{\contentsline {paragraph}{HER, PER, and counterfactual augmentation.}{2}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Differentiation from VLM-RB \citep  {sharony2026vlmrb}.}{2}{section*.7}\protected@file@percent }
 \citation{pignatelli2024calm}
 \citation{rocamonde2024vlmreward,wu2026largerewardmodels,patel2025iker}
 \citation{schaul2016per}
+\citation{espeholt2018impala,munos2016retrace}
 \citation{sharony2026vlmrb}
-\@writefile{toc}{\contentsline {paragraph}{Differentiation from VLM-RB \citep  {sharony2026vlmrb}.}{3}{section*.7}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Foundation-model credit assignment.}{3}{section*.8}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {3}Method}{3}{section.3}\protected@file@percent }
 \newlabel{sec:method}{{3}{3}{Method}{section.3}{}}
@@ -40,9 +44,7 @@
 \@writefile{toc}{\contentsline {paragraph}{Why multiplicative?}{3}{section*.9}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Counterfactual Prompting and the Teleport-Collapse Failure Mode}{3}{subsection.3.2}\protected@file@percent }
 \newlabel{sec:method:prompt}{{3.2}{3}{Counterfactual Prompting and the Teleport-Collapse Failure Mode}{subsection.3.2}{}}
-\citation{zha2025tango}
 \citation{haarnoja2018sac}
-\citation{plappert2018multigoal}
 \citation{plappert2018multigoal}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3}VLM-Verified Counterfactual Hindsight}{4}{subsection.3.3}\protected@file@percent }
 \newlabel{sec:method:verified}{{3.3}{4}{VLM-Verified Counterfactual Hindsight}{subsection.3.3}{}}
@@ -53,15 +55,15 @@
 \@writefile{toc}{\contentsline {paragraph}{Horizon caveat.}{4}{section*.12}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Headline: Verified-CF matches VLM-CF, wins on Slide}{4}{subsection.4.1}\protected@file@percent }
 \newlabel{sec:exp:headline}{{4.1}{4}{Headline: Verified-CF matches VLM-CF, wins on Slide}{subsection.4.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textbf  {Final evaluation success rate across the three Fetch tasks (mean $\pm $ SE, $n\!=\!3$ seeds; individual seeds overlaid).} \emph  {Methods are reported at heterogeneous training horizons}---the italic gray stamp under each bar gives the training budget: Uniform/PER at 3M, HER at 250k, \emph  {vlm\_cf} and \emph  {verified\_cf} (ours) at 500k, Oracle-CF at 250k (Push/Slide) or 1M (PickAndPlace). Within-horizon comparisons (same stamp) are statistically meaningful; cross-horizon comparisons should be read as efficiency claims.}}{5}{figure.1}\protected@file@percent }
-\newlabel{fig:headline}{{1}{5}{\textbf {Final evaluation success rate across the three Fetch tasks (mean $\pm $ SE, $n\!=\!3$ seeds; individual seeds overlaid).} \emph {Methods are reported at heterogeneous training horizons}---the italic gray stamp under each bar gives the training budget: Uniform/PER at 3M, HER at 250k, \emph {vlm\_cf} and \emph {verified\_cf} (ours) at 500k, Oracle-CF at 250k (Push/Slide) or 1M (PickAndPlace). Within-horizon comparisons (same stamp) are statistically meaningful; cross-horizon comparisons should be read as efficiency claims}{figure.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Prompt-variant analysis: mean~$\pm $~SE judge plausibility, goal-progress, and teleport-collapse rate (the fraction of \texttt  {corrective\_position} outputs within 5\,cm of \texttt  {desired\_goal}). Six bit-identical synthetic Fetch failures; the judge is Claude Opus 4.7 throughout. \textbf  {Bold}: best per column.}}{5}{table.1}\protected@file@percent }
-\newlabel{tab:prompt-variants}{{1}{5}{Prompt-variant analysis: mean~$\pm $~SE judge plausibility, goal-progress, and teleport-collapse rate (the fraction of \texttt {corrective\_position} outputs within 5\,cm of \texttt {desired\_goal}). Six bit-identical synthetic Fetch failures; the judge is Claude Opus 4.7 throughout. \textbf {Bold}: best per column}{table.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textbf  {Final evaluation success rate across the three Fetch tasks (mean $\pm $ SE, $n\!=\!3$ seeds; individual seeds overlaid).} \emph  {Methods are reported at heterogeneous training horizons}---the italic gray stamp under each bar gives the training budget: Uniform/PER at 3M, HER at 250k, \emph  {vlm\_cf} and \emph  {verified\_cf} (ours) at 500k, Oracle-CF at 250k (Push/Slide) or 1M (PickAndPlace). Within-horizon comparisons (same stamp) are seed-level comparable at $n\!=\!3$; cross-horizon comparisons should be read as efficiency claims.}}{5}{figure.1}\protected@file@percent }
+\newlabel{fig:headline}{{1}{5}{\textbf {Final evaluation success rate across the three Fetch tasks (mean $\pm $ SE, $n\!=\!3$ seeds; individual seeds overlaid).} \emph {Methods are reported at heterogeneous training horizons}---the italic gray stamp under each bar gives the training budget: Uniform/PER at 3M, HER at 250k, \emph {vlm\_cf} and \emph {verified\_cf} (ours) at 500k, Oracle-CF at 250k (Push/Slide) or 1M (PickAndPlace). Within-horizon comparisons (same stamp) are seed-level comparable at $n\!=\!3$; cross-horizon comparisons should be read as efficiency claims}{figure.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Prompt-variant analysis: mean~$\pm $~SE judge plausibility, goal-progress, and teleport-collapse rate (the fraction of \texttt  {corrective\_position} outputs within 5\,cm of \texttt  {desired\_goal}). Six bit-identical synthetic Fetch failures; the judge is Claude Opus~4.7 throughout. \textbf  {Bold}: best per column.}}{5}{table.1}\protected@file@percent }
+\newlabel{tab:prompt-variants}{{1}{5}{Prompt-variant analysis: mean~$\pm $~SE judge plausibility, goal-progress, and teleport-collapse rate (the fraction of \texttt {corrective\_position} outputs within 5\,cm of \texttt {desired\_goal}). Six bit-identical synthetic Fetch failures; the judge is Claude Opus~4.7 throughout. \textbf {Bold}: best per column}{table.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Prompt design (head-to-head)}{5}{subsection.4.2}\protected@file@percent }
 \newlabel{sec:exp:prompt}{{4.2}{5}{Prompt design (head-to-head)}{subsection.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Cross-task transfer and real-data validation}{5}{subsection.4.3}\protected@file@percent }
+\newlabel{sec:exp:real}{{4.3}{5}{Cross-task transfer and real-data validation}{subsection.4.3}{}}
 \citation{sharony2026vlmrb}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Cross-task transfer and real-data validation}{6}{subsection.4.3}\protected@file@percent }
-\newlabel{sec:exp:real}{{4.3}{6}{Cross-task transfer and real-data validation}{subsection.4.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Pre-registered Oracle-CF kill experiment}{6}{subsection.4.4}\protected@file@percent }
 \newlabel{sec:exp:kill}{{4.4}{6}{Pre-registered Oracle-CF kill experiment}{subsection.4.4}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {5}Discussion and Limitations}{6}{section.5}\protected@file@percent }
@@ -74,52 +76,61 @@
 \bibdata{refs}
 \bibcite{andrychowicz2017her}{{1}{2017}{{Andrychowicz et~al.}}{{Andrychowicz, Wolski, Ray, Schneider, Fong, Welinder, McGrew, Tobin, Abbeel, and Zaremba}}}
 \bibcite{chuck2025hint}{{2}{2025}{{Chuck et~al.}}{{Chuck, Feng, Qi, Shi, Agarwal, Zhang, and Niekum}}}
-\bibcite{ding2026agentHER}{{3}{2026}{{Ding}}{{}}}
-\bibcite{haarnoja2018sac}{{4}{2018}{{Haarnoja et~al.}}{{Haarnoja, Zhou, Abbeel, and Levine}}}
-\bibcite{hu2026echo}{{5}{2026}{{Hu et~al.}}{{Hu, Van~Durme, Andreas, and Jhamtani}}}
-\bibcite{krutsylo2025nonuniform}{{6}{2025}{{Krutsylo}}{{}}}
-\bibcite{lee2025kagi}{{7}{2025}{{Lee et~al.}}{{Lee, Xie, Fang, Pertsch, and Finn}}}
-\bibcite{lei2025gchr}{{8}{2025}{{Lei et~al.}}{{Lei, Yang, Ke, Yang, Zhang, Pajarinen, and Wang}}}
-\bibcite{ozgur2025nextfuture}{{9}{2025}{{{\"O}zg{\"u}r et~al.}}{{{\"O}zg{\"u}r, Zurbr{\"u}gg, and Kumar}}}
-\bibcite{patel2025iker}{{10}{2025}{{Patel et~al.}}{{Patel, Yin, Huang, Garg, Nayyeri, Fei-Fei, Lazebnik, and Li}}}
-\bibcite{pignatelli2024calm}{{11}{2024}{{Pignatelli et~al.}}{{Pignatelli, Ferret, Rockt{\"a}schel, Grefenstette, Paglieri, Coward, and Toni}}}
+\bibcite{delazcano2024gymrobotics}{{3}{2024}{{de~Lazcano et~al.}}{{de~Lazcano, Kallinteris, Tai, Lee, and Terry}}}
+\bibcite{ding2026agentHER}{{4}{2026}{{Ding}}{{}}}
+\bibcite{duan2025aha}{{5}{2025}{{Duan et~al.}}{{Duan, Pumacay, Kumar, Wang, Tian, Yuan, Krishna, Fox, Mandlekar, and Guo}}}
+\bibcite{espeholt2018impala}{{6}{2018}{{Espeholt et~al.}}{{Espeholt, Soyer, Munos, Simonyan, Mnih, Ward, Doron, Firoiu, Harley, Dunning, Legg, and Kavukcuoglu}}}
+\bibcite{haarnoja2018sac}{{7}{2018}{{Haarnoja et~al.}}{{Haarnoja, Zhou, Abbeel, and Levine}}}
+\bibcite{hu2026echo}{{8}{2026}{{Hu et~al.}}{{Hu, Van~Durme, Andreas, and Jhamtani}}}
+\bibcite{krutsylo2025nonuniform}{{9}{2025}{{Krutsylo}}{{}}}
+\bibcite{lee2025kagi}{{10}{2025}{{Lee et~al.}}{{Lee, Xie, Fang, Pertsch, and Finn}}}
+\bibcite{lei2025gchr}{{11}{2025}{{Lei et~al.}}{{Lei, Yang, Ke, Yang, Zhang, Pajarinen, and Wang}}}
+\bibcite{mesnard2021cca}{{12}{2021}{{Mesnard et~al.}}{{Mesnard, Weber, Viola, Thakoor, Saade, Harutyunyan, Dabney, Stepleton, Heess, Guez, et~al.}}}
 \newlabel{sec:contributions}{{5}{7}{Contributions}{section*.17}{}}
-\bibcite{plappert2018multigoal}{{12}{2018}{{Plappert et~al.}}{{Plappert, Andrychowicz, Ray, McGrew, Baker, Powell, Schneider, Tobin, Chociej, Welinder, Kumar, and Zaremba}}}
-\bibcite{pleiss2025reaper}{{13}{2025}{{Pleiss et~al.}}{{Pleiss, Sutter, and Schiffer}}}
-\bibcite{rocamonde2024vlmreward}{{14}{2024}{{Rocamonde et~al.}}{{Rocamonde, Montesinos, Nava, Perez, and Lindner}}}
-\bibcite{sayar2023cebp}{{15}{2023}{{Sayar et~al.}}{{Sayar, Bing, D'Eramo, Oguz, and Knoll}}}
-\bibcite{schaul2016per}{{16}{2016}{{Schaul et~al.}}{{Schaul, Quan, Antonoglou, and Silver}}}
-\bibcite{sharony2026vlmrb}{{17}{2026}{{Sharony et~al.}}{{Sharony, Jurgenson, Krupnik, Di~Castro, and Mannor}}}
-\bibcite{urpi2024caiac}{{18}{2024}{{Urp{\'i} et~al.}}{{Urp{\'i}, Bagatella, Vlastelica, and Martius}}}
-\bibcite{wang2025prioritizedgenerative}{{19}{2025}{{Wang et~al.}}{{Wang, Frans, Abbeel, Levine, and Efros}}}
-\bibcite{wu2026largerewardmodels}{{20}{2026}{{Wu et~al.}}{{Wu, Yuan, Qi, Guizilini, Mao, and Wang}}}
-\bibcite{yamani2025rpeper}{{21}{2025}{{Yamani et~al.}}{{}}}
-\bibcite{zha2025tango}{{22}{2025}{{Zha et~al.}}{{}}}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Method Details and Environments}{8}{appendix.A}\protected@file@percent }
-\newlabel{app:methods}{{A}{8}{Method Details and Environments}{appendix.A}{}}
-\@writefile{toc}{\contentsline {paragraph}{Cross-task VLM prompt template.}{8}{section*.19}\protected@file@percent }
+\bibcite{munos2016retrace}{{13}{2016}{{Munos et~al.}}{{Munos, Stepleton, Harutyunyan, and Bellemare}}}
+\bibcite{ozgur2025nextfuture}{{14}{2025}{{{\"O}zg{\"u}r et~al.}}{{{\"O}zg{\"u}r, Zurbr{\"u}gg, and Kumar}}}
+\bibcite{patel2025iker}{{15}{2025}{{Patel et~al.}}{{Patel, Yin, Huang, Garg, Nayyeri, Fei-Fei, Lazebnik, and Li}}}
+\bibcite{pignatelli2024calm}{{16}{2024}{{Pignatelli et~al.}}{{Pignatelli, Ferret, Rockt{\"a}schel, Grefenstette, Paglieri, Coward, and Toni}}}
+\bibcite{plappert2018multigoal}{{17}{2018}{{Plappert et~al.}}{{Plappert, Andrychowicz, Ray, McGrew, Baker, Powell, Schneider, Tobin, Chociej, Welinder, Kumar, and Zaremba}}}
+\bibcite{pleiss2025reaper}{{18}{2025}{{Pleiss et~al.}}{{Pleiss, Sutter, and Schiffer}}}
+\bibcite{rocamonde2024vlmreward}{{19}{2024}{{Rocamonde et~al.}}{{Rocamonde, Montesinos, Nava, Perez, and Lindner}}}
+\bibcite{sayar2023cebp}{{20}{2023}{{Sayar et~al.}}{{Sayar, Bing, D'Eramo, Oguz, and Knoll}}}
+\bibcite{schaul2016per}{{21}{2016}{{Schaul et~al.}}{{Schaul, Quan, Antonoglou, and Silver}}}
+\bibcite{sharony2026vlmrb}{{22}{2026}{{Sharony et~al.}}{{Sharony, Jurgenson, Krupnik, Di~Castro, and Mannor}}}
+\bibcite{todorov2012mujoco}{{23}{2012}{{Todorov et~al.}}{{Todorov, Erez, and Tassa}}}
+\bibcite{urpi2024caiac}{{24}{2024}{{Urp{\'i} et~al.}}{{Urp{\'i}, Bagatella, Vlastelica, and Martius}}}
+\bibcite{wang2025prioritizedgenerative}{{25}{2025}{{Wang et~al.}}{{Wang, Frans, Abbeel, Levine, and Efros}}}
+\bibcite{wu2026largerewardmodels}{{26}{2026}{{Wu et~al.}}{{Wu, Yuan, Qi, Guizilini, Mao, and Wang}}}
+\bibcite{yamani2025rpeper}{{27}{2025}{{Yamani et~al.}}{{}}}
+\bibcite{zha2025tango}{{28}{2025}{{Zha et~al.}}{{}}}
+\bibcite{zhao2018energy}{{29}{2018}{{Zhao and Tresp}}{{}}}
 \citation{schaul2016per}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces The three Gymnasium-Robotics Fetch tasks used in our experiments (columns: \texttt  {FetchPush}, \texttt  {FetchPickAndPlace}, \texttt  {FetchSlide}), rendered at $t\!=\!0/24/49$ of a deterministic scripted rollout (seed~42). Each task: 50-step horizon, 4-dim continuous action (end-effector $\Delta xyz$ + gripper), sparse reward (binary, success threshold 5\,cm to the green target).}}{9}{figure.2}\protected@file@percent }
-\newlabel{fig:envs}{{2}{9}{The three Gymnasium-Robotics Fetch tasks used in our experiments (columns: \texttt {FetchPush}, \texttt {FetchPickAndPlace}, \texttt {FetchSlide}), rendered at $t\!=\!0/24/49$ of a deterministic scripted rollout (seed~42). Each task: 50-step horizon, 4-dim continuous action (end-effector $\Delta xyz$ + gripper), sparse reward (binary, success threshold 5\,cm to the green target)}{figure.2}{}}
+\citation{espeholt2018impala}
+\citation{munos2016retrace}
+\citation{haarnoja2018sac}
+\citation{andrychowicz2017her}
+\citation{schaul2016per}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Method Details and Environments}{9}{appendix.A}\protected@file@percent }
+\newlabel{app:methods}{{A}{9}{Method Details and Environments}{appendix.A}{}}
+\@writefile{toc}{\contentsline {paragraph}{Cross-task VLM prompt template.}{9}{section*.19}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Heuristic localizer (Oracle v3).}{9}{section*.20}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {B}Bias-Bound Proof Sketch}{9}{appendix.B}\protected@file@percent }
 \newlabel{app:bias-bound}{{B}{9}{Bias-Bound Proof Sketch}{appendix.B}{}}
 \newlabel{eq:bias-bound}{{2}{9}{Bias-Bound Proof Sketch}{equation.B.2}{}}
-\citation{haarnoja2018sac}
-\citation{andrychowicz2017her}
-\citation{schaul2016per}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Headline hyperparameters. Full per-table breakdowns (SAC architecture, HER strategy, PER schedule, Semantic-PER, Verified-CF, VLM call) at the GitHub repo (\texttt  {configs/}).}}{10}{table.2}\protected@file@percent }
-\newlabel{tab:hparams-headline}{{2}{10}{Headline hyperparameters. Full per-table breakdowns (SAC architecture, HER strategy, PER schedule, Semantic-PER, Verified-CF, VLM call) at the GitHub repo (\texttt {configs/})}{table.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C}Hyperparameters and Compute}{10}{appendix.C}\protected@file@percent }
-\newlabel{app:hparams}{{C}{10}{Hyperparameters and Compute}{appendix.C}{}}
-\@writefile{toc}{\contentsline {paragraph}{Compute.}{10}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {C}Hyperparameters and Compute}{9}{appendix.C}\protected@file@percent }
+\newlabel{app:hparams}{{C}{9}{Hyperparameters and Compute}{appendix.C}{}}
+\@writefile{toc}{\contentsline {paragraph}{Compute.}{9}{section*.21}\protected@file@percent }
+\citation{sayar2023cebp}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces The three Gymnasium-Robotics Fetch tasks used in our experiments (columns: \texttt  {FetchPush}, \texttt  {FetchPickAndPlace}, \texttt  {FetchSlide}), rendered at $t\!=\!0/24/49$ of a deterministic scripted rollout (seed~42). Each task: 50-step horizon, 4-dim continuous action (end-effector $\Delta xyz$ + gripper), sparse reward (binary, success threshold 5\,cm to the green target).}}{10}{figure.2}\protected@file@percent }
+\newlabel{fig:envs}{{2}{10}{The three Gymnasium-Robotics Fetch tasks used in our experiments (columns: \texttt {FetchPush}, \texttt {FetchPickAndPlace}, \texttt {FetchSlide}), rendered at $t\!=\!0/24/49$ of a deterministic scripted rollout (seed~42). Each task: 50-step horizon, 4-dim continuous action (end-effector $\Delta xyz$ + gripper), sparse reward (binary, success threshold 5\,cm to the green target)}{figure.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {D}Additional Experimental Detail}{10}{appendix.D}\protected@file@percent }
 \newlabel{app:results}{{D}{10}{Additional Experimental Detail}{appendix.D}{}}
 \@writefile{toc}{\contentsline {paragraph}{Real-data validation (extended).}{10}{section*.22}\protected@file@percent }
-\citation{sayar2023cebp}
+\@writefile{toc}{\contentsline {paragraph}{Statistical methodology.}{10}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Cross-task transfer (per-episode notes).}{10}{section*.24}\protected@file@percent }
 \citation{sharony2026vlmrb}
-\@writefile{toc}{\contentsline {paragraph}{Statistical methodology.}{11}{section*.23}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Cross-task transfer (per-episode notes).}{11}{section*.24}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Headline hyperparameters. Full per-table breakdowns (SAC architecture, HER strategy, PER schedule, Semantic-PER, Verified-CF, VLM call) at the GitHub repo (\texttt  {configs/}).}}{11}{table.2}\protected@file@percent }
+\newlabel{tab:hparams-headline}{{2}{11}{Headline hyperparameters. Full per-table breakdowns (SAC architecture, HER strategy, PER schedule, Semantic-PER, Verified-CF, VLM call) at the GitHub repo (\texttt {configs/})}{table.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {E}Broader Impacts and Reproducibility}{11}{appendix.E}\protected@file@percent }
 \newlabel{app:impact}{{E}{11}{Broader Impacts and Reproducibility}{appendix.E}{}}
 \@writefile{toc}{\contentsline {paragraph}{Broader impact.}{11}{section*.25}\protected@file@percent }

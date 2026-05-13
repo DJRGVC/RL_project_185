@@ -10,40 +10,36 @@
 The single format-string prompt template used across the three Fetch envs is:
 
 \begin{quote}
-\small
-\texttt{You are an expert robotics analyst. The robot is attempting the
+\small\ttfamily
+You are an expert robotics analyst. The robot is attempting the
 following task: \{task\_description\}. Examine the \{K\} keyframes of a
-failed episode shown below. Identify the single keyframe index
-$\in\{0,\dots,K\!-\!1\}$ at which the failure became inevitable, and a
-1--2 sentence reasoning. Return strict JSON:
-\{``failure\_frame\_index'': $i$, ``reasoning'': $s$\}.}
+failed episode shown below. Identify the single keyframe index in
+\{0,...,K-1\} at which the failure became inevitable, and a 1--2
+sentence reasoning. Return strict JSON: \{``failure\_frame\_index'':
+i, ``reasoning'': s\}.
 \end{quote}
 
 \noindent
 Per-env task-description substitutions:
-\textbf{FetchPush:} ``the robot should push the red cube to the green target on the table'';
-\textbf{FetchPickAndPlace:} ``the robot should pick up the red cube and place it at the floating green target'';
-\textbf{FetchSlide:} ``the robot should strike the red puck so that it slides to the green target''.
+\textbf{Push:} ``push the red cube to the green target on the table'';
+\textbf{PickAndPlace:} ``pick up the red cube and place it at the floating green target'';
+\textbf{Slide:} ``strike the red puck so it slides to the green target''.
 The verified-CF mechanism uses an \textsc{action} variant of this
-template that elicits a corrective 4-vector action sequence; full prompt
-texts (four variants $\times$ task substitutions) and the
-GoalDistanceLocalizer heuristic implementation are released at
-\url{https://github.com/DJRGVC/RL_project_185}
-(\texttt{src/vlm/prompts.py}; \texttt{src/vlm/verified\_counterfactual.py};
-\texttt{src/vlm/oracle\_v3.py}).
+template eliciting a 4-vector action sequence; full prompt texts and
+the localizer code are at
+\url{https://github.com/DJRGVC/RL_project_185}.
 
 \paragraph{Heuristic localizer (Oracle v3).}
-The \texttt{GoalDistanceLocalizer} reads privileged sim state and selects
-the failure timestep via three phases in precedence order:
+\texttt{GoalDistanceLocalizer} reads privileged sim state and selects
+the failure timestep in three phases (in precedence order):
 \textbf{(a) ballistic}: latest contiguous run of $\ge\!3$ steps with
-post-peak object velocity $>\!0.05$\,m/step (catches Slide free-flight);
-\textbf{(b) contact-loss}: latest transition
-$\text{in\_contact}_t\!\to\!\neg\text{in\_contact}_{t+1}$ with contact-run
-length $\ge\!2$ and object-goal distance $>\!0.10$\,m
-(catches Push/PnP drop-offs);
-\textbf{(c) argmin}: closest-approach timestep as fallback. This serves
-both as the supervised target for transfer evaluation and as the
-privileged-state upper-envelope curve for Semantic PER.
+post-peak object velocity $>\!0.05$\,m/step (Slide free-flight);
+\textbf{(b) contact-loss}: latest
+$\text{in\_contact}_t\!\to\!\neg\text{in\_contact}_{t+1}$ with run
+length $\ge\!2$ and object-goal distance $>\!0.10$\,m (Push/PnP
+drop-offs); \textbf{(c) argmin}: closest-approach timestep as fallback.
+Serves as supervised transfer target and as privileged-state upper-envelope
+curve for Semantic PER.
 
 \begin{figure}[t]
 \centering
@@ -70,7 +66,8 @@ $1\!\le\!w_{\text{sem}}\!\le\!w_{\max}$.
 The strictly-correct IS weight is
 $w_{\text{IS},\text{Sem}}(i)\!=\!(|\mathcal{D}_B|\mu_{\text{Sem}}(i))^{-\beta_t}$.
 Our implementation under-corrects with $w_{\text{IS},P}$ (a V-trace-style
-variance-reduction choice). The per-slot ratio is
+\citep{espeholt2018impala} variance-reduction choice, akin to truncated
+importance ratios in Retrace, \citealp{munos2016retrace}). The per-slot ratio is
 $w_{\text{IS},P}/w_{\text{IS},\text{Sem}}\!=\!w_{\text{sem}}^{\beta_t}/Z^{\beta_t}$
 where $Z$ is the $\mu_{\text{Sem}}$ normalizer. The window-kernel
 structure of $w_{\text{sem}}$ confines the support of $w_{\text{sem}}\!>\!1$
@@ -107,12 +104,12 @@ proof and the V-trace specialization derivation are at the GitHub URL above
 architecture, HER strategy, PER schedule, Semantic-PER, Verified-CF, VLM
 call) at the GitHub repo (\texttt{configs/}).}
 \label{tab:hparams-headline}
-\begin{tabular}{l l l}
+\begin{tabular}{@{}l l l@{}}
 \toprule
 Parameter & Value & Notes \\
 \midrule
 \multicolumn{3}{l}{\textit{SAC} \citep{haarnoja2018sac}} \\
-Hidden layers $\times$ width & $2 \times 256$, ReLU & Twin-Q critic; tanh-squashed Gaussian actor \\
+Hidden layers $\times$ width & $2 \times 256$, ReLU & Twin-Q; tanh-Gaussian actor \\
 LR (actor/critic/$\alpha$) & $3\!\times\!10^{-4}$ & Adam, default $(\beta_1,\beta_2,\varepsilon)$ \\
 Discount $\gamma$ / Polyak $\tau$ & $0.98 / 0.005$ & Fetch-standard \\
 Target entropy $\bar H$ & $-d_a\!=\!-4$ & Auto-tuned \\
@@ -158,92 +155,63 @@ per-seed eval traces are at
 \label{app:results}
 
 \paragraph{Real-data validation (extended).}
-The $n\!=\!10$ real-failure dataset consists of failed eval episodes from
+The $n\!=\!10$ real-failure set is failed eval episodes from
 partially-trained SAC+HER checkpoints (\texttt{FetchPickAndPlace} at
-50k steps, \texttt{FetchPush} at 30k steps, both at $\sim\!5\%$ eval
-success). Real failures are near-misses with final-distance
-$\in\!\![0.06,0.34]$\,m on Push and median $0.27$\,m on PickAndPlace
-(contact-task failures, not the block-flies-off-table synthetic mode).
-Three findings transfer to production:
+50k steps, \texttt{FetchPush} at 30k steps, both at $\sim\!5\%$
+success). These are near-misses with final-distance $\in\![0.06,0.34]$\,m
+on Push and median $0.27$\,m on PickAndPlace. Three findings carry
+over from the synthetic set:
 \textbf{(i) Teleport-collapse persists and is task-conditioned.} On Push
 (planar target), Opus and Sonnet teleport on \textsc{achieved\_goal} at
 $100\%$ and $75\%$; on PickAndPlace (mid-air target), Opus teleports at
 $75\%$ but Sonnet drops to $0\%$, proposing a mid-air waypoint
-$\sim\!8$\,cm above the floating goal. Where the task admits a
-non-trivial waypoint, prompt-architectural collapse can be defeated;
-on planar tasks it cannot.
-\textbf{(ii) The 5\,cm reject-teleport gate is structurally necessary.}
-Aggregated across both VLMs and both position-emitting variants on $20$
-generations, the gate fires on $12$ ($60\%$); the cross-vendor floor on
-Push is $75\%$. The action-emitting verifier sidesteps this entirely.
-\textbf{(iii) Plausibility shifts only $\pm 0.07$ synthetic-to-real, but
-the \textsc{action} sign-flip rate worsens} (Opus $0.50\!\to\!0.55$,
-Sonnet $0.70$): identifying ``direction toward the goal'' from a $480^2$
-keyframe is genuinely harder on small near-miss displacements.
+$\sim\!8$\,cm above the floating goal.
+\textbf{(ii) The 5\,cm reject-teleport gate is necessary.}
+Aggregated across both VLMs and position-emitting variants on $20$
+generations, the gate fires on $12$ ($60\%$); cross-vendor floor on
+Push is $75\%$. The action-emitting verifier sidesteps this.
+\textbf{(iii) Plausibility shifts only $\pm 0.07$ synthetic-to-real,
+but the \textsc{action} sign-flip rate worsens} (Opus
+$0.50\!\to\!0.55$, Sonnet $0.70$).
 
 \paragraph{Statistical methodology.}
-Each (method, env) cell uses $n\!=\!3$ seeds (42, 123, 999); reported
-metrics are mean~$\pm$~SE computed across seeds using the
-$t$-distribution with $n\!-\!1\!=\!2$ d.f. Statistical comparison
-statements use non-overlapping SE intervals as the threshold (a
-conservative two-sample criterion at this sample size).
-The load-bearing $0/6$ vs.\ $4/4$ contrast in Table~\ref{tab:prompt-variants}
-is decided by Euclidean predicate (judge-independent) and Fisher's
-exact test rejects equal-proportions at $p\!<\!0.005$.
+Each (method, env) cell uses $n\!=\!3$ seeds (42, 123, 999); metrics are
+mean~$\pm$~SE with the $t$-distribution at $n\!-\!1\!=\!2$ d.f.
+Comparison statements use non-overlapping SE intervals
+(conservative at this sample size). The load-bearing $0/6$ vs.\ $4/4$
+contrast in Table~\ref{tab:prompt-variants} is judge-independent
+(Euclidean predicate); Fisher's exact test rejects equal proportions
+at $p\!<\!0.005$.
 
 \paragraph{Cross-task transfer (per-episode notes).}
-A 12-episode pilot ($4$ per env). The VLM's reasoning strings
-identify task-specific modes correctly in every case---Push:
-\emph{``gripper passes over block without making contact''};
-PickAndPlace: \emph{``gripper at block location but fails to close''};
-Slide: \emph{``strike direction off-axis''}. The $2/4$ PickAndPlace
-keyframe-agreement reflects heuristic under-localization (closed-loop
-grip timing is the hardest mode for geometry-only oracles
-\citep{sayar2023cebp}) rather than VLM error: the VLM assigns the failure
-frame one step earlier at the decisive grip sequence, a different but
-arguably more physically-correct localization.
+A 12-episode pilot ($4$ per env). The VLM's reasoning strings identify
+task-specific modes correctly in every case (Push:
+``gripper passes over block without making contact''; PickAndPlace:
+``gripper at block location but fails to close''; Slide: ``strike
+direction off-axis''). The $2/4$ PickAndPlace keyframe-agreement
+reflects heuristic under-localization (closed-loop grip timing is the
+hardest mode for geometry-only oracles \citep{sayar2023cebp}) rather
+than VLM error: the VLM assigns the failure frame one step earlier at
+the decisive grip sequence.
 
 \section{Broader Impacts and Reproducibility}
 \label{app:impact}
 
 \paragraph{Broader impact.}
-This work is methodological and simulation-only; we make no claims about
-real-robot performance, sim-to-real transfer, or any specific deployment
-scenario.
-\emph{Positive aspects.}
-(i)~Reduced sample requirements lower the energy footprint of
-robot-learning research: fewer environment steps means fewer GPU-hours.
-(ii)~The IS-posterior framing provides a principled lens for the
-emerging class of VLM-in-replay methods.
-(iii)~The verified-CF acceptance gate is a general-purpose
-``language prior $+$ physics test'' pattern that may transfer to
-program-synthesis verification or constraint-satisfaction guidance.
-\emph{Negative aspects and mitigations.}
-(i)~Foundation-model API use carries non-trivial energy and dollar cost
-per training run; we mitigate by reporting per-run API spend (this
-appendix) and providing the heuristic Oracle fallback that requires no
-API calls.
-(ii)~The VLM may hallucinate physically implausible corrective actions;
-the simulator-verification gate is our primary mitigation---a
-hallucinated action that does not satisfy the env's sparse reward is
-rejected before entering the buffer.
-(iii)~No robot-deployment safety risks are introduced beyond standard
-simulation-trained policy deployment caveats.
+Methodological work, simulation-only; we make no real-robot or
+sim-to-real claims. \emph{Positive:} fewer environment steps lowers
+GPU-hours; the IS-posterior framing is a principled lens on
+VLM-in-replay; the verified-CF gate is a transferable
+``language prior $+$ physics test'' pattern. \emph{Negative +
+mitigations:} VLM-API energy/dollar cost is non-trivial (per-run spend
+reported; heuristic Oracle fallback available); the simulator gate
+rejects hallucinated actions that fail the sparse reward; no
+robot-deployment risks beyond standard sim-trained-policy caveats.
 
 \paragraph{Reproducibility.}
-All training scripts, configurations, analysis notebooks, the full
-appendix material (algorithm pseudocode for Semantic PER and
-Verified-CF; full prompt-variant texts; V-trace/Retrace specialization;
-two-regime $q_\phi$ degeneracy proof; reproducibility checklist;
-extended limitations) are released at
-\url{https://github.com/DJRGVC/RL_project_185}
-(commit \texttt{0fa36fc}). The verified-CF prototype lives at
-\texttt{src/vlm/verified\_counterfactual.py}; the Semantic-PER buffer at
-\texttt{src/buffers/semantic\_per.py}; reproduction commands at
-\texttt{REPRODUCE.md}; W\&B run IDs (
-\texttt{path\_c\_overnight}) and per-seed eval traces are linked from
-the README. The Sharony VLM-RB \citep{sharony2026vlmrb} reproduction
-(faithful to their priority formula, $\lambda$-schedule, and clip length,
-substituting Claude Sonnet~4.5 for the API-inaccessible PerceptionLM-1B)
-is pre-staged at \texttt{src/buffers/vlm\_rb\_buffer.py} for
-camera-ready head-to-head evaluation.
+Code, configs, pseudocode, prompt texts, V-trace/Retrace specialization,
+two-regime $q_\phi$ proof, checklist, W\&B IDs, and pre-staged
+Sharony VLM-RB \citep{sharony2026vlmrb} reproduction
+(\texttt{src/buffers/vlm\_rb\_buffer.py}, head-to-head deferred to
+camera-ready) at \url{https://github.com/DJRGVC/RL_project_185}
+(\texttt{0fa36fc}).
