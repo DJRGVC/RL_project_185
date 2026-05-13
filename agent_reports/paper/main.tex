@@ -102,24 +102,33 @@ V-trace \citep{espeholt2018impala}, and Sharony~et~al.'s VLM-RB \citep{sharony20
 inside a non-uniform-replay taxonomy, locating our scheme as
 \emph{proposal-shaping} with a frozen foundation-model credit-assignment
 oracle---the vision-modality, prioritized-replay instantiation of
-\citet{pignatelli2024calm}'s exogenous-FM-credit-oracle program in robot RL. We choose the multiplicative form because it admits a clean
-IS-correction analysis (the standard PER weight remains trajectory-conditionally
-well-defined); the additive mixture used by VLM-RB \citep{sharony2026vlmrb}
-implicitly retargets the loss to a $\lambda$-weighted objective.
+\citet{pignatelli2024calm}'s exogenous-FM-credit-oracle program in robot RL.
+The load-bearing structural principle is the \emph{IS-pairing requirement}: a
+non-uniform replay proposal $\mu$ and its IS correction weight must be paired;
+changing the proposal without adjusting the weight implicitly retargets the
+gradient to a different objective~\citep[Sec.~3.4]{schaul2016per}.
+We choose the multiplicative form $\mu_{\text{Sem}}\!\propto\!\mu_P\!\cdot\!w_{\text{sem}}$
+because it keeps the standard PER weight trajectory-conditionally well-defined
+under the IS-pairing requirement; the additive mixture
+$\lambda\mu_{\text{VLM}}\!+\!(1\!-\!\lambda)\mu_U$ of VLM-RB
+\citep{sharony2026vlmrb} violates this requirement, retargeting the gradient
+to a $\lambda$-weighted objective that VLM-RB does not correct for.
 
 \textbf{(2) Semantic PER with a failure-direction signal}
 (Section~\ref{sec:method:sper}). Sharony~et~al.\ score 32-frame clips for
-goal-satisfaction; we ask the VLM the strictly more informative
+goal-satisfaction; we ask the VLM the more failure-directional
 question---\emph{which single timestep made this trajectory fail?}---and
 multiply the standard PER priority by a bounded boost over a window around
-that timestep. The scheme degenerates gracefully to PER when the VLM is
+that timestep, preserving the IS-pairing established in~(1).
+The scheme degenerates gracefully to PER when the VLM is
 uncommitted ($w_{\max}\!=\!1$), adds no VLM-specific schedule on top of
 PER's standard $\beta$~anneal (in contrast to VLM-RB's
 $\lambda_t\!:\!0\!\to\!0.5$ mixture warm-up), and supports a
 strictly-corrected IS estimator (Appendix~\ref{app:is-derivation},
 Eq.~\eqref{eq:sem-corrected}); our running implementation uses PER's IS weight
-as a controlled under-correction (V-trace-analogous), deferring the
-strictly-correct ablation to future work. Crucially, unlike VLM-as-reward
+as a controlled under-correction (V-trace-analogous) whose bias is bounded by
+Eq.~\eqref{eq:bias-bound}, deferring the strictly-correct ablation to future work.
+Crucially, unlike VLM-as-reward
 approaches \citep{rocamonde2024vlmreward,wu2026largerewardmodels,patel2025iker}
 that splice the VLM signal into the TD target, our scheme leaves the target
 untouched: the env's true sparse reward is recomputed on every sampled
