@@ -39,6 +39,14 @@
 \citation{krutsylo2025nonuniform}
 \citation{ma2026freshness}
 \citation{sharony2026vlmrb}
+\citation{vecerik2017ddpgfd}
+\citation{hester2018dqfd}
+\citation{rajeswaran2017dapg}
+\citation{nair2018overcomingexploration}
+\citation{yu2019metaworld}
+\citation{schaul2016per}
+\@writefile{toc}{\contentsline {paragraph}{Prioritized replay and off-policy correction.}{4}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Demonstration-augmented replay.}{4}{section*.3}\protected@file@percent }
 \citation{wu2026largerewardmodels,patel2025iker}
 \citation{lee2025kagi}
 \citation{rocamonde2024vlmreward,venuto2024car,wang2024rlvlmf}
@@ -48,8 +56,6 @@
 \citation{feng2025coso}
 \citation{ding2026agentHER}
 \citation{chen2024promptable}
-\@writefile{toc}{\contentsline {paragraph}{Prioritized replay and off-policy correction.}{4}{section*.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Foundation models in RL.}{4}{section*.3}\protected@file@percent }
 \citation{khandoga2026causalcredit}
 \citation{mesnard2021cca}
 \citation{pignatelli2023survey}
@@ -57,31 +63,30 @@
 \citation{sharony2026vlmrb}
 \citation{zha2025tango}
 \citation{wu2025rlvrworld}
+\@writefile{toc}{\contentsline {paragraph}{Foundation models in RL.}{5}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Generator--verifier and verified counterfactual reasoning.}{5}{section*.5}\protected@file@percent }
 \citation{urpi2024caiac,chuck2025hint,glossop2025cast}
 \citation{urpi2024caiac}
 \citation{chuck2025hint}
 \citation{glossop2025cast}
 \citation{chuck2025hint,wu2025rlvrworld}
-\@writefile{toc}{\contentsline {paragraph}{Generator--verifier and verified counterfactual reasoning.}{5}{section*.4}\protected@file@percent }
 \citation{sharony2026vlmrb}
 \citation{sharony2026vlmrb}
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces VLM-Guided Experience Replay (Sharony~et~al.~2026) vs.\ this paper.}}{6}{table.1}\protected@file@percent }
-\newlabel{tab:differentiation}{{1}{6}{VLM-Guided Experience Replay (Sharony~et~al.~2026) vs.\ this paper}{table.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{Differentiation from VLM-RB.}{6}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Differentiation from VLM-RB.}{6}{section*.6}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {3}Theoretical Motivation: VLM-Guided PER as Posterior Reweighting}{6}{section.3}\protected@file@percent }
 \newlabel{sec:theory}{{3}{6}{Theoretical Motivation: VLM-Guided PER as Posterior Reweighting}{section.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{Setup: what this section formalizes.}{6}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Setup: what this section formalizes.}{6}{section*.7}\protected@file@percent }
 \citation{schaul2016per}
 \citation{schaul2016per}
-\citation{sharony2026vlmrb}
-\citation{wu2026largerewardmodels,patel2025iker,rocamonde2024vlmreward}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces VLM-Guided Experience Replay (Sharony~et~al.~2026) vs.\ this paper.}}{7}{table.1}\protected@file@percent }
+\newlabel{tab:differentiation}{{1}{7}{VLM-Guided Experience Replay (Sharony~et~al.~2026) vs.\ this paper}{table.1}{}}
 \newlabel{eq:loss}{{1}{7}{Setup: what this section formalizes}{equation.3.1}{}}
 \newlabel{eq:per-is}{{2}{7}{Setup: what this section formalizes}{equation.3.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{The VLM as a posterior.}{7}{section*.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The VLM as a posterior.}{7}{section*.8}\protected@file@percent }
 \newlabel{eq:wsem}{{3}{7}{The VLM as a posterior}{equation.3.3}{}}
 \newlabel{eq:headline}{{4}{7}{The VLM as a posterior}{equation.3.4}{}}
-\@writefile{toc}{\contentsline {paragraph}{Non-uniform replay taxonomy.}{7}{section*.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Why multiplicative? IS-correction analysis, additive mixtures, and what this buys us.}{7}{section*.9}\protected@file@percent }
+\citation{sharony2026vlmrb}
+\citation{wu2026largerewardmodels,patel2025iker,rocamonde2024vlmreward}
 \citation{munos2016retrace}
 \citation{espeholt2018impala}
 \citation{schaul2016per}
@@ -92,10 +97,20 @@
 \citation{mesnard2021cca}
 \citation{pignatelli2024calm}
 \citation{khandoga2026causalcredit}
-\citation{schaul2016per}
 \@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Non-uniform replay and off-policy correction methods. Top two rows (Retrace, V-trace) correct for \emph  {policy mismatch} in multi-step returns; bottom three rows (PER, VLM-RB, Sem.\ PER) are \emph  {replay-distribution} schemes over a fixed buffer. The shared IS-ratio form is the structural connection; the correction targets differ (see Appendix~\ref {app:vtrace}). Semantic PER (this paper) is the only replay scheme whose modifier is exogenous and trajectory-level.}}{8}{table.2}\protected@file@percent }
 \newlabel{tab:taxonomy}{{2}{8}{Non-uniform replay and off-policy correction methods. Top two rows (Retrace, V-trace) correct for \emph {policy mismatch} in multi-step returns; bottom three rows (PER, VLM-RB, Sem.\ PER) are \emph {replay-distribution} schemes over a fixed buffer. The shared IS-ratio form is the structural connection; the correction targets differ (see Appendix~\ref {app:vtrace}). Semantic PER (this paper) is the only replay scheme whose modifier is exogenous and trajectory-level}{table.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{Connection to causal credit assignment.}{8}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Non-uniform replay taxonomy.}{8}{section*.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Why multiplicative? IS-correction analysis, additive mixtures, and what this buys us.}{8}{section*.10}\protected@file@percent }
+\citation{schaul2016per}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces The semantic kernel is a one-step box function centered on the VLM-localized failure timestep. The two hyperparameters $(w_{\max },W)$ control the strength and spatial reach of the boost; defaults induce an $11$-step ($2W\!+\!1$) window with a $10\!\times $ multiplier.}}{9}{figure.1}\protected@file@percent }
+\newlabel{fig:kernel}{{1}{9}{The semantic kernel is a one-step box function centered on the VLM-localized failure timestep. The two hyperparameters $(w_{\max },W)$ control the strength and spatial reach of the boost; defaults induce an $11$-step ($2W\!+\!1$) window with a $10\!\times $ multiplier}{figure.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Connection to causal credit assignment.}{9}{section*.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Method}{9}{section.4}\protected@file@percent }
+\newlabel{sec:method}{{4}{9}{Method}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Semantic PER with the Failure-Direction Signal}{9}{subsection.4.1}\protected@file@percent }
+\newlabel{sec:method:sper}{{4.1}{9}{Semantic PER with the Failure-Direction Signal}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Pipeline.}{9}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Exact re-blending.}{9}{section*.13}\protected@file@percent }
 \citation{pleiss2025reaper}
 \citation{yamani2025rpeper}
 \citation{wang2025prioritizedgenerative}
@@ -104,116 +119,113 @@
 \citation{schaul2016per}
 \citation{ma2026freshness}
 \citation{sharony2026vlmrb}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces The semantic kernel is a one-step box function centered on the VLM-localized failure timestep. The two hyperparameters $(w_{\max },W)$ control the strength and spatial reach of the boost; defaults induce an $11$-step ($2W\!+\!1$) window with a $10\!\times $ multiplier.}}{9}{figure.1}\protected@file@percent }
-\newlabel{fig:kernel}{{1}{9}{The semantic kernel is a one-step box function centered on the VLM-localized failure timestep. The two hyperparameters $(w_{\max },W)$ control the strength and spatial reach of the boost; defaults induce an $11$-step ($2W\!+\!1$) window with a $10\!\times $ multiplier}{figure.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Method}{9}{section.4}\protected@file@percent }
-\newlabel{sec:method}{{4}{9}{Method}{section.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Semantic PER with the Failure-Direction Signal}{9}{subsection.4.1}\protected@file@percent }
-\newlabel{sec:method:sper}{{4.1}{9}{Semantic PER with the Failure-Direction Signal}{subsection.4.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{Pipeline.}{9}{section*.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Exact re-blending.}{9}{section*.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Why this proposal-shaping family?}{9}{section*.13}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{The bidirectional variant.}{9}{section*.14}\protected@file@percent }
 \citation{sayar2023cebp}
 \citation{urpi2024caiac}
-\citation{duan2025aha}
-\citation{andrychowicz2017her}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Conditions under which our IS-correction extends from PER to Semantic PER. Our running implementation under-corrects (uses $w_{\text  {IS},P}$ rather than $w_{\text  {IS},\text  {Sem}}$) for the V-trace-analogous variance-reduction reason laid out in Section~\ref {sec:theory}; Limitation~(i) flags the strictly-correct ablation.}}{10}{figure.2}\protected@file@percent }
 \newlabel{fig:assumption}{{2}{10}{Conditions under which our IS-correction extends from PER to Semantic PER. Our running implementation under-corrects (uses $w_{\text {IS},P}$ rather than $w_{\text {IS},\text {Sem}}$) for the V-trace-analogous variance-reduction reason laid out in Section~\ref {sec:theory}; Limitation~(i) flags the strictly-correct ablation}{figure.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{Heuristic-Oracle upper envelope.}{10}{section*.15}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Counterfactual Prompting and the Teleport-Collapse Failure Mode}{10}{subsection.4.2}\protected@file@percent }
-\newlabel{sec:method:prompt}{{4.2}{10}{Counterfactual Prompting and the Teleport-Collapse Failure Mode}{subsection.4.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{Output-type design space.}{10}{section*.16}\protected@file@percent }
-\citation{zha2025tango}
+\@writefile{toc}{\contentsline {paragraph}{Why this proposal-shaping family?}{10}{section*.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The bidirectional variant.}{10}{section*.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Heuristic-Oracle upper envelope.}{10}{section*.16}\protected@file@percent }
+\citation{duan2025aha}
+\citation{andrychowicz2017her}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces The teleport-collapse failure mode formalized. The detectability note motivates the post-hoc rejection gate used as a fallback in Section~\ref {sec:exp:real}; that gate is empirically necessary on every model and variant we tested. Removing the underlying cause---the prompt's exposure of \texttt  {desired\_goal} as an in-context number---is the mechanism-level fix delivered in §\ref {sec:method:verified}.}}{11}{figure.3}\protected@file@percent }
 \newlabel{fig:teleport-def}{{3}{11}{The teleport-collapse failure mode formalized. The detectability note motivates the post-hoc rejection gate used as a fallback in Section~\ref {sec:exp:real}; that gate is empirically necessary on every model and variant we tested. Removing the underlying cause---the prompt's exposure of \texttt {desired\_goal} as an in-context number---is the mechanism-level fix delivered in §\ref {sec:method:verified}}{figure.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{Why output type matters: a mechanistic account.}{11}{section*.17}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Mapping variants to $q_\phi $-degeneracy regimes.}{11}{section*.18}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Why this matters for the verifier-as-gate.}{11}{section*.19}\protected@file@percent }
-\citation{andrychowicz2017her}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Counterfactual Prompting and the Teleport-Collapse Failure Mode}{11}{subsection.4.2}\protected@file@percent }
+\newlabel{sec:method:prompt}{{4.2}{11}{Counterfactual Prompting and the Teleport-Collapse Failure Mode}{subsection.4.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Output-type design space.}{11}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Why output type matters: a mechanistic account.}{11}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Mapping variants to $q_\phi $-degeneracy regimes.}{11}{section*.19}\protected@file@percent }
+\citation{zha2025tango}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces The Verified Counterfactual mechanism: a VLM proposes a corrective 4-vector, the simulator decides whether to admit it. Teleport-style answers are structurally inexpressible as actions.}}{12}{figure.4}\protected@file@percent }
 \newlabel{fig:protocol}{{4}{12}{The Verified Counterfactual mechanism: a VLM proposes a corrective 4-vector, the simulator decides whether to admit it. Teleport-style answers are structurally inexpressible as actions}{figure.4}{}}
-\@writefile{toc}{\contentsline {paragraph}{Production configuration and the role of the rejection gate.}{12}{section*.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Why this matters for the verifier-as-gate.}{12}{section*.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Production configuration and the role of the rejection gate.}{12}{section*.21}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3}VLM-Verified Counterfactual Hindsight}{12}{subsection.4.3}\protected@file@percent }
 \newlabel{sec:method:verified}{{4.3}{12}{VLM-Verified Counterfactual Hindsight}{subsection.4.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{Why plain CF-HER is mechanistically insufficient under sparse reward.}{12}{section*.21}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Calibrated posterior under the verifier gate.}{12}{section*.22}\protected@file@percent }
+\citation{andrychowicz2017her}
 \citation{zha2025tango}
 \citation{wu2025rlvrworld}
 \citation{chuck2025hint}
 \citation{haarnoja2018sac}
 \citation{andrychowicz2017her}
+\@writefile{toc}{\contentsline {paragraph}{Why plain CF-HER is mechanistically insufficient under sparse reward.}{13}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Calibrated posterior under the verifier gate.}{13}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{A generator--verifier framing.}{13}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{13}{section.5}\protected@file@percent }
+\newlabel{sec:exp}{{5}{13}{Experiments}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Setup}{13}{subsection.5.1}\protected@file@percent }
+\newlabel{sec:exp:setup}{{5.1}{13}{Setup}{subsection.5.1}{}}
 \citation{plappert2018multigoal}
 \citation{andrychowicz2017her}
 \citation{plappert2018multigoal}
 \citation{zhao2018energy}
 \citation{plappert2018multigoal}
-\@writefile{toc}{\contentsline {paragraph}{A generator--verifier framing.}{13}{section*.23}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{13}{section.5}\protected@file@percent }
-\newlabel{sec:exp}{{5}{13}{Experiments}{section.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Setup}{13}{subsection.5.1}\protected@file@percent }
-\newlabel{sec:exp:setup}{{5.1}{13}{Setup}{subsection.5.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{SAC configuration.}{13}{section*.24}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Evaluation protocol.}{13}{section*.25}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Horizon caveat and baselines calibration.}{13}{section*.26}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces The three Gymnasium-Robotics Fetch tasks used in our experiments (columns: \texttt  {FetchPush}, \texttt  {FetchPickAndPlace}, \texttt  {FetchSlide}), rendered at three timesteps of a deterministic scripted rollout (rows: $t\!=\!0$ / $t\!=\!24$ / $t\!=\!49$) from seed 42. Each task has a 50-step horizon, 4-dimensional continuous action (end-effector $\Delta x,\Delta y,\Delta z$ plus gripper open/close), and sparse reward (binary, success threshold 5\,cm to the red target marker). FetchPush requires pushing a block to a target on the table; FetchPickAndPlace adds grasping and 3D placement (target may be in the air); FetchSlide tests ballistic release on a frictionless surface, with the target outside arm reach.}}{14}{figure.5}\protected@file@percent }
 \newlabel{fig:envs}{{5}{14}{The three Gymnasium-Robotics Fetch tasks used in our experiments (columns: \texttt {FetchPush}, \texttt {FetchPickAndPlace}, \texttt {FetchSlide}), rendered at three timesteps of a deterministic scripted rollout (rows: $t\!=\!0$ / $t\!=\!24$ / $t\!=\!49$) from seed 42. Each task has a 50-step horizon, 4-dimensional continuous action (end-effector $\Delta x,\Delta y,\Delta z$ plus gripper open/close), and sparse reward (binary, success threshold 5\,cm to the red target marker). FetchPush requires pushing a block to a target on the table; FetchPickAndPlace adds grasping and 3D placement (target may be in the air); FetchSlide tests ballistic release on a frictionless surface, with the target outside arm reach}{figure.5}{}}
-\@writefile{toc}{\contentsline {paragraph}{VLM API and cost.}{14}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{SAC configuration.}{14}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Evaluation protocol.}{14}{section*.26}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces \textbf  {Final evaluation success rate across the three Fetch tasks (mean $\pm $ SE, $n\!=\!3$ seeds; individual seeds overlaid as dots).} \emph  {Methods are reported at heterogeneous training horizons} --- the italic gray stamp under each bar gives the training budget for that cell: Uniform and PER at 3M steps; HER at 250k steps; \emph  {vlm\_cf} and \emph  {verified\_cf} (ours) at 500k steps; Oracle-CF at 250k steps for FetchPush and FetchSlide and 1M steps for FetchPickAndPlace. \textbf  {Within-horizon comparisons (same stamp value) are statistically meaningful}; \textbf  {cross-horizon comparisons should be read as efficiency claims (more learning per training step) rather than asymptotic dominance.} The dashed gray line in each environment marks the HER baseline at 250k for visual reference. As a transparency note, an earlier pre-fix variant of this figure (Uniform/PER/Semantic-PER-Oracle/Semantic-PER-GPT-4o, 500k each) used a known-buggy all-variant prompt without the teleport gate that silently admitted $\sim $67\% degenerate counterfactuals as relabels; the corrected \emph  {vlm\_cf} and \emph  {verified\_cf} bars shown here replace those numbers (see Sections~\ref {sec:exp:prompt}--\ref {sec:exp:real} for the bug and fix).}}{15}{figure.6}\protected@file@percent }
 \newlabel{fig:headline}{{6}{15}{\textbf {Final evaluation success rate across the three Fetch tasks (mean $\pm $ SE, $n\!=\!3$ seeds; individual seeds overlaid as dots).} \emph {Methods are reported at heterogeneous training horizons} --- the italic gray stamp under each bar gives the training budget for that cell: Uniform and PER at 3M steps; HER at 250k steps; \emph {vlm\_cf} and \emph {verified\_cf} (ours) at 500k steps; Oracle-CF at 250k steps for FetchPush and FetchSlide and 1M steps for FetchPickAndPlace. \textbf {Within-horizon comparisons (same stamp value) are statistically meaningful}; \textbf {cross-horizon comparisons should be read as efficiency claims (more learning per training step) rather than asymptotic dominance.} The dashed gray line in each environment marks the HER baseline at 250k for visual reference. As a transparency note, an earlier pre-fix variant of this figure (Uniform/PER/Semantic-PER-Oracle/Semantic-PER-GPT-4o, 500k each) used a known-buggy all-variant prompt without the teleport gate that silently admitted $\sim $67\% degenerate counterfactuals as relabels; the corrected \emph {vlm\_cf} and \emph {verified\_cf} bars shown here replace those numbers (see Sections~\ref {sec:exp:prompt}--\ref {sec:exp:real} for the bug and fix)}{figure.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Headline Ablation: PER vs.\ Semantic PER on Fetch}{15}{subsection.5.2}\protected@file@percent }
-\newlabel{sec:exp:headline}{{5.2}{15}{Headline Ablation: PER vs.\ Semantic PER on Fetch}{subsection.5.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{FetchPickAndPlace.}{15}{section*.28}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{FetchPush.}{15}{section*.29}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Counterfactual prompt design head-to-head. Left: judge plausibility per variant. Right: judge specificity per variant. Claude Opus 4.7 (C1 baseline; partial grid: $n\!=\!4$ on \textsc  {narrative}/\textsc  {action}/\textsc  {achieved\_goal}, $n\!=\!2$ on \textsc  {all}) vs.\ GPT-4o (this work, full $n\!=\!6$ grid). Error bars: mean~$\pm $~SE.}}{16}{figure.7}\protected@file@percent }
-\newlabel{fig:prompt}{{7}{16}{Counterfactual prompt design head-to-head. Left: judge plausibility per variant. Right: judge specificity per variant. Claude Opus 4.7 (C1 baseline; partial grid: $n\!=\!4$ on \textsc {narrative}/\textsc {action}/\textsc {achieved\_goal}, $n\!=\!2$ on \textsc {all}) vs.\ GPT-4o (this work, full $n\!=\!6$ grid). Error bars: mean~$\pm $~SE}{figure.7}{}}
-\@writefile{toc}{\contentsline {paragraph}{FetchSlide.}{16}{section*.30}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Interpreting the Oracle headroom.}{16}{section*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Horizon caveat and baselines calibration.}{15}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{VLM API and cost.}{15}{section*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Headline Ablation: PER vs.\ Semantic PER on Fetch}{16}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:exp:headline}{{5.2}{16}{Headline Ablation: PER vs.\ Semantic PER on Fetch}{subsection.5.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{FetchPickAndPlace.}{16}{section*.29}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{FetchPush.}{16}{section*.30}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{FetchSlide.}{16}{section*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Interpreting the Oracle headroom.}{16}{section*.32}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Counterfactual Prompt Design}{16}{subsection.5.3}\protected@file@percent }
 \newlabel{sec:exp:prompt}{{5.3}{16}{Counterfactual Prompt Design}{subsection.5.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Counterfactual prompt design head-to-head. Left: judge plausibility per variant. Right: judge specificity per variant. Claude Opus 4.7 (C1 baseline; partial grid: $n\!=\!4$ on \textsc  {narrative}/\textsc  {action}/\textsc  {achieved\_goal}, $n\!=\!2$ on \textsc  {all}) vs.\ GPT-4o (this work, full $n\!=\!6$ grid). Error bars: mean~$\pm $~SE.}}{17}{figure.7}\protected@file@percent }
+\newlabel{fig:prompt}{{7}{17}{Counterfactual prompt design head-to-head. Left: judge plausibility per variant. Right: judge specificity per variant. Claude Opus 4.7 (C1 baseline; partial grid: $n\!=\!4$ on \textsc {narrative}/\textsc {action}/\textsc {achieved\_goal}, $n\!=\!2$ on \textsc {all}) vs.\ GPT-4o (this work, full $n\!=\!6$ grid). Error bars: mean~$\pm $~SE}{figure.7}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Prompt-variant analysis: mean~$\pm $~SE judge plausibility, goal-progress, and teleport-collapse rate (the fraction of \texttt  {corrective\_position} outputs landing within 5\,cm of \texttt  {desired\_goal}). Six bit-identical synthetic Fetch failures; the judge is Claude Opus 4.7 throughout. \textbf  {Bold}: best per column.}}{17}{table.3}\protected@file@percent }
 \newlabel{tab:prompt-variants}{{3}{17}{Prompt-variant analysis: mean~$\pm $~SE judge plausibility, goal-progress, and teleport-collapse rate (the fraction of \texttt {corrective\_position} outputs landing within 5\,cm of \texttt {desired\_goal}). Six bit-identical synthetic Fetch failures; the judge is Claude Opus 4.7 throughout. \textbf {Bold}: best per column}{table.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{Mechanism of the position-copy attractor.}{17}{section*.32}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Judge-bias and inter-rater reliability.}{17}{section*.33}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Statistical-power and pre-registration framing.}{17}{section*.34}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Mechanism of the position-copy attractor.}{17}{section*.33}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Judge-bias and inter-rater reliability.}{17}{section*.34}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Statistical-power and pre-registration framing.}{18}{section*.35}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Connection to the IS-posterior framing.}{18}{section*.36}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{From a one-axis screen to a $2\!\times \!2$ structural grid.}{18}{section*.37}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{A second empirical test: the $p_{\text  {CF}}$ sweep.}{18}{section*.38}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Cross-task transferability. Same prompt template, three Fetch environments. \emph  {Parse rate}, \emph  {judge task-relevance}, and \emph  {judge physical-plausibility} are all 12/12 (100\%) across environments. \emph  {Tolerant keyframe agreement} (VLM vs.\ heuristic Oracle within $\pm 1$ keyframe) improves monotonically with failure visual-distinctiveness: FetchSlide (4/4) $>$ FetchPush (3/4) $>$ FetchPickAndPlace (2/4). This gradient reflects the heuristic Oracle's harder-to-segment task rather than VLM error (see text).}}{19}{figure.8}\protected@file@percent }
+\newlabel{fig:transfer}{{8}{19}{Cross-task transferability. Same prompt template, three Fetch environments. \emph {Parse rate}, \emph {judge task-relevance}, and \emph {judge physical-plausibility} are all 12/12 (100\%) across environments. \emph {Tolerant keyframe agreement} (VLM vs.\ heuristic Oracle within $\pm 1$ keyframe) improves monotonically with failure visual-distinctiveness: FetchSlide (4/4) $>$ FetchPush (3/4) $>$ FetchPickAndPlace (2/4). This gradient reflects the heuristic Oracle's harder-to-segment task rather than VLM error (see text)}{figure.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Cross-Task Transferability}{19}{subsection.5.4}\protected@file@percent }
+\newlabel{sec:exp:transfer}{{5.4}{19}{Cross-Task Transferability}{subsection.5.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{What ``transfer'' requires.}{19}{section*.39}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Pilot results.}{19}{section*.40}\protected@file@percent }
 \citation{sayar2023cebp}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Cross-task transferability. Same prompt template, three Fetch environments. \emph  {Parse rate}, \emph  {judge task-relevance}, and \emph  {judge physical-plausibility} are all 12/12 (100\%) across environments. \emph  {Tolerant keyframe agreement} (VLM vs.\ heuristic Oracle within $\pm 1$ keyframe) improves monotonically with failure visual-distinctiveness: FetchSlide (4/4) $>$ FetchPush (3/4) $>$ FetchPickAndPlace (2/4). This gradient reflects the heuristic Oracle's harder-to-segment task rather than VLM error (see text).}}{18}{figure.8}\protected@file@percent }
-\newlabel{fig:transfer}{{8}{18}{Cross-task transferability. Same prompt template, three Fetch environments. \emph {Parse rate}, \emph {judge task-relevance}, and \emph {judge physical-plausibility} are all 12/12 (100\%) across environments. \emph {Tolerant keyframe agreement} (VLM vs.\ heuristic Oracle within $\pm 1$ keyframe) improves monotonically with failure visual-distinctiveness: FetchSlide (4/4) $>$ FetchPush (3/4) $>$ FetchPickAndPlace (2/4). This gradient reflects the heuristic Oracle's harder-to-segment task rather than VLM error (see text)}{figure.8}{}}
-\@writefile{toc}{\contentsline {paragraph}{Connection to the IS-posterior framing.}{18}{section*.35}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Cross-Task Transferability}{18}{subsection.5.4}\protected@file@percent }
-\newlabel{sec:exp:transfer}{{5.4}{18}{Cross-Task Transferability}{subsection.5.4}{}}
-\@writefile{toc}{\contentsline {paragraph}{What ``transfer'' requires.}{18}{section*.36}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Pilot results.}{18}{section*.37}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Real-vs-synthetic generalization. Ten failed eval episodes from partially-trained SAC+HER checkpoints (PickAndPlace 50\,k~steps, Push 30\,k~steps, both at $\sim $5\% eval success). Left: plausibility per variant. Middle: specificity per variant. Right: teleport-collapse rate. The \textsc  {achieved\_goal} teleport rate is task-conditioned: it survives on Push (planar target) but is rescued on PickAndPlace (mid-air target) when switching Opus 4.7 $\to $ Sonnet 4.5 (75\% $\to $ 0\%) or \textsc  {achieved\_goal} $\to $ \textsc  {all} (75\% $\to $ 17\%). The 5\,cm reject-teleport gate is empirically \emph  {necessary} regardless of model.}}{19}{figure.9}\protected@file@percent }
-\newlabel{fig:real}{{9}{19}{Real-vs-synthetic generalization. Ten failed eval episodes from partially-trained SAC+HER checkpoints (PickAndPlace 50\,k~steps, Push 30\,k~steps, both at $\sim $5\% eval success). Left: plausibility per variant. Middle: specificity per variant. Right: teleport-collapse rate. The \textsc {achieved\_goal} teleport rate is task-conditioned: it survives on Push (planar target) but is rescued on PickAndPlace (mid-air target) when switching Opus 4.7 $\to $ Sonnet 4.5 (75\% $\to $ 0\%) or \textsc {achieved\_goal} $\to $ \textsc {all} (75\% $\to $ 17\%). The 5\,cm reject-teleport gate is empirically \emph {necessary} regardless of model}{figure.9}{}}
-\@writefile{toc}{\contentsline {paragraph}{Interpreting the keyframe-agreement gradient.}{19}{section*.38}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Implications for the IS-posterior framing.}{19}{section*.39}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Real-Data Validation}{19}{subsection.5.5}\protected@file@percent }
-\newlabel{sec:exp:real}{{5.5}{19}{Real-Data Validation}{subsection.5.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Real-vs-synthetic generalization. Ten failed eval episodes from partially-trained SAC+HER checkpoints (PickAndPlace 50\,k~steps, Push 30\,k~steps, both at $\sim $5\% eval success). Left: plausibility per variant. Middle: specificity per variant. Right: teleport-collapse rate. The \textsc  {achieved\_goal} teleport rate is task-conditioned: it survives on Push (planar target) but is rescued on PickAndPlace (mid-air target) when switching Opus 4.7 $\to $ Sonnet 4.5 (75\% $\to $ 0\%) or \textsc  {achieved\_goal} $\to $ \textsc  {all} (75\% $\to $ 17\%). The 5\,cm reject-teleport gate is empirically \emph  {necessary} regardless of model.}}{20}{figure.9}\protected@file@percent }
+\newlabel{fig:real}{{9}{20}{Real-vs-synthetic generalization. Ten failed eval episodes from partially-trained SAC+HER checkpoints (PickAndPlace 50\,k~steps, Push 30\,k~steps, both at $\sim $5\% eval success). Left: plausibility per variant. Middle: specificity per variant. Right: teleport-collapse rate. The \textsc {achieved\_goal} teleport rate is task-conditioned: it survives on Push (planar target) but is rescued on PickAndPlace (mid-air target) when switching Opus 4.7 $\to $ Sonnet 4.5 (75\% $\to $ 0\%) or \textsc {achieved\_goal} $\to $ \textsc {all} (75\% $\to $ 17\%). The 5\,cm reject-teleport gate is empirically \emph {necessary} regardless of model}{figure.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{Interpreting the keyframe-agreement gradient.}{20}{section*.41}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Implications for the IS-posterior framing.}{20}{section*.42}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Real-Data Validation}{20}{subsection.5.5}\protected@file@percent }
+\newlabel{sec:exp:real}{{5.5}{20}{Real-Data Validation}{subsection.5.5}{}}
 \citation{chen2024promptable}
-\@writefile{toc}{\contentsline {paragraph}{Episode collection.}{20}{section*.40}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{An honest reframe: two vendors, three families.}{20}{section*.41}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Three findings carry to the production pipeline}{20}{section*.42}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Policy-precision dependence and the bridge to the verifier.}{21}{section*.43}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Caveats.}{21}{section*.44}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Pre-Registered Kill Experiment: Result}{21}{subsection.5.6}\protected@file@percent }
-\newlabel{sec:exp:inflight}{{5.6}{21}{Pre-Registered Kill Experiment: Result}{subsection.5.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Episode collection.}{21}{section*.43}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{An honest reframe: two vendors, three families.}{21}{section*.44}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Three findings carry to the production pipeline}{21}{section*.45}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Policy-precision dependence and the bridge to the verifier.}{22}{section*.46}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Caveats.}{22}{section*.47}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Pre-Registered Kill Experiment: Result}{22}{subsection.5.6}\protected@file@percent }
+\newlabel{sec:exp:inflight}{{5.6}{22}{Pre-Registered Kill Experiment: Result}{subsection.5.6}{}}
 \citation{sharony2026vlmrb}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion and Limitations}{23}{section.6}\protected@file@percent }
-\newlabel{sec:discussion}{{6}{23}{Discussion and Limitations}{section.6}{}}
-\@writefile{toc}{\contentsline {paragraph}{The GPT-4o pipeline-bug discovery.}{23}{section*.45}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion and Limitations}{24}{section.6}\protected@file@percent }
+\newlabel{sec:discussion}{{6}{24}{Discussion and Limitations}{section.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{The GPT-4o pipeline-bug discovery.}{24}{section*.48}\protected@file@percent }
+\citation{yu2019metaworld}
+\@writefile{toc}{\contentsline {paragraph}{Small-$n$ caveats.}{25}{section*.49}\protected@file@percent }
+\newlabel{sec:disc:metaworld}{{6}{25}{Cross-benchmark corroboration on MetaWorld}{section*.50}{}}
+\@writefile{toc}{\contentsline {paragraph}{Cross-benchmark corroboration on MetaWorld.}{25}{section*.50}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The oracle-CF kill experiment: result.}{25}{section*.51}\protected@file@percent }
 \citation{ma2026freshness}
 \citation{sharony2026vlmrb}
-\@writefile{toc}{\contentsline {paragraph}{Small-$n$ caveats.}{24}{section*.46}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{The oracle-CF kill experiment: result.}{24}{section*.47}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Broader impact.}{24}{section*.48}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Limitations.}{24}{section*.49}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Broader impact.}{26}{section*.52}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Limitations.}{26}{section*.53}\protected@file@percent }
 \citation{sharony2026vlmrb}
-\@writefile{toc}{\contentsline {paragraph}{Conclusion.}{25}{section*.50}\protected@file@percent }
 \bibstyle{plainnat}
 \bibdata{refs}
 \bibcite{andrychowicz2017her}{{1}{2017}{{Andrychowicz et~al.}}{{Andrychowicz, Wolski, Ray, Schneider, Fong, Welinder, McGrew, Tobin, Abbeel, and Zaremba}}}
 \bibcite{arjonamedina2019rudder}{{2}{2019}{{Arjona-Medina et~al.}}{{Arjona-Medina, Gillhofer, Widrich, Unterthiner, Brandstetter, and Hochreiter}}}
+\@writefile{toc}{\contentsline {paragraph}{Conclusion.}{27}{section*.54}\protected@file@percent }
 \bibcite{chen2024promptable}{{3}{2024}{{Chen et~al.}}{{Chen, Mees, Kumar, and Levine}}}
 \bibcite{chuck2025hint}{{4}{2025}{{Chuck et~al.}}{{Chuck, Feng, Qi, Shi, Agarwal, Zhang, and Niekum}}}
 \bibcite{ding2026agentHER}{{5}{2026}{{Ding}}{{}}}
@@ -223,181 +235,214 @@
 \bibcite{glossop2025cast}{{9}{2025}{{Glossop et~al.}}{{Glossop, Chen, Bhorkar, Shah, and Levine}}}
 \bibcite{haarnoja2018sac}{{10}{2018}{{Haarnoja et~al.}}{{Haarnoja, Zhou, Abbeel, and Levine}}}
 \bibcite{harutyunyan2019hca}{{11}{2019}{{Harutyunyan et~al.}}{{Harutyunyan, Dabney, Mesnard, Azar, Piot, Heess, van Hasselt, Wayne, Singh, Precup, and Munos}}}
-\bibcite{hu2026echo}{{12}{2026}{{Hu et~al.}}{{Hu, Van~Durme, Andreas, and Jhamtani}}}
-\bibcite{khandoga2026causalcredit}{{13}{2026}{{Khandoga et~al.}}{{Khandoga, Yuan, and Sankarapu}}}
-\bibcite{krutsylo2025nonuniform}{{14}{2025}{{Krutsylo}}{{}}}
-\bibcite{lee2025kagi}{{15}{2025}{{Lee et~al.}}{{Lee, Xie, Fang, Pertsch, and Finn}}}
-\bibcite{lei2025gchr}{{16}{2025}{{Lei et~al.}}{{Lei, Yang, Ke, Yang, Zhang, Pajarinen, and Wang}}}
-\bibcite{ma2026freshness}{{17}{2026}{{Ma et~al.}}{{Ma, Zeng, Song, Cui, Zhao, Liu, and Elhoseiny}}}
-\bibcite{mesnard2021cca}{{18}{2021}{{Mesnard et~al.}}{{Mesnard, Weber, Viola, Thakoor, Saade, Harutyunyan, Dabney, Stepleton, Heess, Guez, et~al.}}}
-\bibcite{munos2016retrace}{{19}{2016}{{Munos et~al.}}{{Munos, Stepleton, Harutyunyan, and Bellemare}}}
-\bibcite{ozgur2025nextfuture}{{20}{2025}{{{\"O}zg{\"u}r et~al.}}{{{\"O}zg{\"u}r, Zurbr{\"u}gg, and Kumar}}}
-\bibcite{patel2025iker}{{21}{2025}{{Patel et~al.}}{{Patel, Yin, Huang, Garg, Nayyeri, Fei-Fei, Lazebnik, and Li}}}
-\bibcite{pignatelli2023survey}{{22}{2023}{{Pignatelli et~al.}}{{Pignatelli, Ferret, Geist, Mesnard, van Hasselt, Pietquin, and Toni}}}
-\bibcite{pignatelli2024calm}{{23}{2024}{{Pignatelli et~al.}}{{Pignatelli, Ferret, Rockt{\"a}schel, Grefenstette, Paglieri, Coward, and Toni}}}
-\bibcite{plappert2018multigoal}{{24}{2018}{{Plappert et~al.}}{{Plappert, Andrychowicz, Ray, McGrew, Baker, Powell, Schneider, Tobin, Chociej, Welinder, Kumar, and Zaremba}}}
-\bibcite{pleiss2025reaper}{{25}{2025}{{Pleiss et~al.}}{{Pleiss, Sutter, and Schiffer}}}
-\bibcite{rocamonde2024vlmreward}{{26}{2024}{{Rocamonde et~al.}}{{Rocamonde, Montesinos, Nava, Perez, and Lindner}}}
-\bibcite{sayar2023cebp}{{27}{2023}{{Sayar et~al.}}{{Sayar, Bing, D'Eramo, Oguz, and Knoll}}}
-\bibcite{schaul2016per}{{28}{2016}{{Schaul et~al.}}{{Schaul, Quan, Antonoglou, and Silver}}}
-\bibcite{sharony2026vlmrb}{{29}{2026}{{Sharony et~al.}}{{Sharony, Jurgenson, Krupnik, Di~Castro, and Mannor}}}
-\bibcite{urpi2024caiac}{{30}{2024}{{Urp{\'i} et~al.}}{{Urp{\'i}, Bagatella, Vlastelica, and Martius}}}
-\bibcite{venuto2024car}{{31}{2024}{{Venuto et~al.}}{{Venuto, Islam, Klissarov, Precup, Yang, and Anand}}}
-\bibcite{wang2025prioritizedgenerative}{{32}{2025}{{Wang et~al.}}{{Wang, Frans, Abbeel, Levine, and Efros}}}
-\bibcite{wang2024rlvlmf}{{33}{2024}{{Wang et~al.}}{{Wang, Sun, Zhang, Xian, Biyik, Held, and Erickson}}}
-\bibcite{wu2025rlvrworld}{{34}{2025}{{Wu et~al.}}{{Wu, Yin, Feng, and Long}}}
-\bibcite{wu2026largerewardmodels}{{35}{2026}{{Wu et~al.}}{{Wu, Yuan, Qi, Guizilini, Mao, and Wang}}}
-\bibcite{yamani2025rpeper}{{36}{2025}{{Yamani et~al.}}{{}}}
-\bibcite{zha2025tango}{{37}{2025}{{Zha et~al.}}{{}}}
-\bibcite{zhao2018energy}{{38}{2018}{{Zhao and Tresp}}{{}}}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Prompt Template and Implementation Details}{28}{appendix.A}\protected@file@percent }
-\newlabel{app:prompts}{{A}{28}{Prompt Template and Implementation Details}{appendix.A}{}}
-\@writefile{toc}{\contentsline {paragraph}{Prompt template.}{28}{section*.52}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Heuristic localizer (Oracle v3).}{28}{section*.53}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Complete notation glossary.}}{29}{table.4}\protected@file@percent }
-\newlabel{tab:notation}{{4}{29}{Complete notation glossary}{table.4}{}}
-\@writefile{toc}{\contentsline {paragraph}{Codebase and reproduction.}{29}{section*.54}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {B}Extended Method Details}{29}{appendix.B}\protected@file@percent }
-\newlabel{app:methods}{{B}{29}{Extended Method Details}{appendix.B}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.1}Algorithm pseudocode}{29}{subsection.B.1}\protected@file@percent }
-\newlabel{app:algorithms}{{B.1}{29}{Algorithm pseudocode}{subsection.B.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Notation glossary}{29}{subsection.B.2}\protected@file@percent }
-\newlabel{app:notation}{{B.2}{29}{Notation glossary}{subsection.B.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Semantic PER with the failure-direction signal. The semantic weight $w_i$ is set once per slot at line~9 and persists until the slot is overwritten by the ring buffer. Line~13's IS weights use the PER proposal $\mu _P$ (i.e., the sum-tree's $\mu (i_j)$), \emph  {not} the strictly-correct $\mu _{\text  {Sem}}$ that includes $w_{\text  {sem}}$ in the denominator; see Section~\ref {sec:theory} and Appendix~\ref {app:is-derivation} for the under-correction analysis and the bias bound of Eq.~\eqref  {eq:bias-bound}. The two-pass priority update (lines~10 and 17) is necessary because line~17 refreshes only the slots seen in the current minibatch, whereas line~10 must touch every slot whose semantic weight changed. The frame-to-step formula at line~7 is a linear interpolation $\hat  k/(K\!-\!1)\times (T\!-\!1)$; with $K\!=\!5$ keyframes and $T\!=\!50$ steps, keyframe~0 maps to step~0 and keyframe~4 maps to step~49.}}{30}{figure.10}\protected@file@percent }
-\newlabel{alg:sem-per}{{1}{30}{Semantic PER with the failure-direction signal. The semantic weight $w_i$ is set once per slot at line~9 and persists until the slot is overwritten by the ring buffer. Line~13's IS weights use the PER proposal $\mu _P$ (i.e., the sum-tree's $\mu (i_j)$), \emph {not} the strictly-correct $\mu _{\text {Sem}}$ that includes $w_{\text {sem}}$ in the denominator; see Section~\ref {sec:theory} and Appendix~\ref {app:is-derivation} for the under-correction analysis and the bias bound of Eq.~\eqref {eq:bias-bound}. The two-pass priority update (lines~10 and 17) is necessary because line~17 refreshes only the slots seen in the current minibatch, whereas line~10 must touch every slot whose semantic weight changed. The frame-to-step formula at line~7 is a linear interpolation $\hat k/(K\!-\!1)\times (T\!-\!1)$; with $K\!=\!5$ keyframes and $T\!=\!50$ steps, keyframe~0 maps to step~0 and keyframe~4 maps to step~49}{figure.10}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.3}Heuristic localizer (``Oracle v3'') --- extended geometric reasoning}{30}{subsection.B.3}\protected@file@percent }
-\newlabel{app:oracle-v3}{{B.3}{30}{Heuristic localizer (``Oracle v3'') --- extended geometric reasoning}{subsection.B.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{FetchPush --- contact-loss detection.}{30}{section*.55}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces VLM-Verified Counterfactual Hindsight (Verify-CF). The teleport gate (line~5) is empirically necessary on planar tasks (FetchPush, 67\% teleport rate pre-gate on GPT-4o) but structurally redundant on the \textsc  {action} variant, which emits no position field --- a structural design choice we make explicit in line~5's variant check. Lines~3 and 8 implement the ``simulator-fork'' that gives the verifier zero modeling error: the verifier env's transition is the ground-truth env's transition by construction. Per-call CPU cost is 17.6\,ms (lines~3 + 8 + 9 together); the dominant cost is the VLM call at line~4 ($\approx \!4$\,s for GPT-4o, $\approx \!11$\,s for Opus~4.7). The procedure is invoked at the HER relabel step of any SAC+HER trainer once per failed episode.}}{31}{figure.11}\protected@file@percent }
-\newlabel{alg:verified-cf}{{2}{31}{VLM-Verified Counterfactual Hindsight (Verify-CF). The teleport gate (line~5) is empirically necessary on planar tasks (FetchPush, 67\% teleport rate pre-gate on GPT-4o) but structurally redundant on the \textsc {action} variant, which emits no position field --- a structural design choice we make explicit in line~5's variant check. Lines~3 and 8 implement the ``simulator-fork'' that gives the verifier zero modeling error: the verifier env's transition is the ground-truth env's transition by construction. Per-call CPU cost is 17.6\,ms (lines~3 + 8 + 9 together); the dominant cost is the VLM call at line~4 ($\approx \!4$\,s for GPT-4o, $\approx \!11$\,s for Opus~4.7). The procedure is invoked at the HER relabel step of any SAC+HER trainer once per failed episode}{figure.11}{}}
-\@writefile{toc}{\contentsline {paragraph}{FetchPickAndPlace --- ballistic vs.\ argmin precedence.}{31}{section*.56}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{FetchSlide --- release-point detection.}{31}{section*.57}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Argmin fallback.}{31}{section*.58}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {B.4}Counterfactual prompt templates --- full text}{32}{subsection.B.4}\protected@file@percent }
-\newlabel{app:cf-prompts}{{B.4}{32}{Counterfactual prompt templates --- full text}{subsection.B.4}{}}
-\@writefile{toc}{\contentsline {paragraph}{Common preamble.}{32}{section*.59}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Variant 1: \textsc  {narrative}.}{32}{section*.60}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Variant 2: \textsc  {action}.}{32}{section*.61}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Variant 3: \textsc  {achieved\_goal}.}{32}{section*.62}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Variant 4: \textsc  {all} (unified).}{33}{section*.63}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Task description substitutions.}{33}{section*.64}\protected@file@percent }
+\bibcite{hester2018dqfd}{{12}{2018}{{Hester et~al.}}{{Hester, Vecerik, Pietquin, Lanctot, Schaul, Piot, Horgan, Quan, Sendonaris, Osband, Dulac-Arnold, Agapiou, Leibo, and Gruslys}}}
+\bibcite{hu2026echo}{{13}{2026}{{Hu et~al.}}{{Hu, Van~Durme, Andreas, and Jhamtani}}}
+\bibcite{khandoga2026causalcredit}{{14}{2026}{{Khandoga et~al.}}{{Khandoga, Yuan, and Sankarapu}}}
+\bibcite{krutsylo2025nonuniform}{{15}{2025}{{Krutsylo}}{{}}}
+\bibcite{lee2025kagi}{{16}{2025}{{Lee et~al.}}{{Lee, Xie, Fang, Pertsch, and Finn}}}
+\bibcite{lei2025gchr}{{17}{2025}{{Lei et~al.}}{{Lei, Yang, Ke, Yang, Zhang, Pajarinen, and Wang}}}
+\bibcite{ma2026freshness}{{18}{2026}{{Ma et~al.}}{{Ma, Zeng, Song, Cui, Zhao, Liu, and Elhoseiny}}}
+\bibcite{mesnard2021cca}{{19}{2021}{{Mesnard et~al.}}{{Mesnard, Weber, Viola, Thakoor, Saade, Harutyunyan, Dabney, Stepleton, Heess, Guez, et~al.}}}
+\bibcite{munos2016retrace}{{20}{2016}{{Munos et~al.}}{{Munos, Stepleton, Harutyunyan, and Bellemare}}}
+\bibcite{nair2018overcomingexploration}{{21}{2018}{{Nair et~al.}}{{Nair, McGrew, Andrychowicz, Zaremba, and Abbeel}}}
+\bibcite{ozgur2025nextfuture}{{22}{2025}{{{\"O}zg{\"u}r et~al.}}{{{\"O}zg{\"u}r, Zurbr{\"u}gg, and Kumar}}}
+\bibcite{patel2025iker}{{23}{2025}{{Patel et~al.}}{{Patel, Yin, Huang, Garg, Nayyeri, Fei-Fei, Lazebnik, and Li}}}
+\bibcite{pignatelli2023survey}{{24}{2023}{{Pignatelli et~al.}}{{Pignatelli, Ferret, Geist, Mesnard, van Hasselt, Pietquin, and Toni}}}
+\bibcite{pignatelli2024calm}{{25}{2024}{{Pignatelli et~al.}}{{Pignatelli, Ferret, Rockt{\"a}schel, Grefenstette, Paglieri, Coward, and Toni}}}
+\bibcite{plappert2018multigoal}{{26}{2018}{{Plappert et~al.}}{{Plappert, Andrychowicz, Ray, McGrew, Baker, Powell, Schneider, Tobin, Chociej, Welinder, Kumar, and Zaremba}}}
+\bibcite{pleiss2025reaper}{{27}{2025}{{Pleiss et~al.}}{{Pleiss, Sutter, and Schiffer}}}
+\bibcite{rajeswaran2017dapg}{{28}{2018}{{Rajeswaran et~al.}}{{Rajeswaran, Kumar, Gupta, Vezzani, Schulman, Todorov, and Levine}}}
+\bibcite{rocamonde2024vlmreward}{{29}{2024}{{Rocamonde et~al.}}{{Rocamonde, Montesinos, Nava, Perez, and Lindner}}}
+\bibcite{sayar2023cebp}{{30}{2023}{{Sayar et~al.}}{{Sayar, Bing, D'Eramo, Oguz, and Knoll}}}
+\bibcite{schaul2016per}{{31}{2016}{{Schaul et~al.}}{{Schaul, Quan, Antonoglou, and Silver}}}
+\bibcite{sharony2026vlmrb}{{32}{2026}{{Sharony et~al.}}{{Sharony, Jurgenson, Krupnik, Di~Castro, and Mannor}}}
+\bibcite{urpi2024caiac}{{33}{2024}{{Urp{\'i} et~al.}}{{Urp{\'i}, Bagatella, Vlastelica, and Martius}}}
+\bibcite{vecerik2017ddpgfd}{{34}{2017}{{Vecerik et~al.}}{{Vecerik, Hester, Scholz, Wang, Pietquin, Piot, Heess, Roth{\"o}rl, Lampe, and Riedmiller}}}
+\bibcite{venuto2024car}{{35}{2024}{{Venuto et~al.}}{{Venuto, Islam, Klissarov, Precup, Yang, and Anand}}}
+\bibcite{wang2025prioritizedgenerative}{{36}{2025}{{Wang et~al.}}{{Wang, Frans, Abbeel, Levine, and Efros}}}
+\bibcite{wang2024rlvlmf}{{37}{2024}{{Wang et~al.}}{{Wang, Sun, Zhang, Xian, Biyik, Held, and Erickson}}}
+\bibcite{wu2025rlvrworld}{{38}{2025}{{Wu et~al.}}{{Wu, Yin, Feng, and Long}}}
+\bibcite{wu2026largerewardmodels}{{39}{2026}{{Wu et~al.}}{{Wu, Yuan, Qi, Guizilini, Mao, and Wang}}}
+\bibcite{yamani2025rpeper}{{40}{2025}{{Yamani et~al.}}{{}}}
+\bibcite{yu2019metaworld}{{41}{2019}{{Yu et~al.}}{{Yu, Quillen, He, Julian, Hausman, Finn, and Levine}}}
+\bibcite{zha2025tango}{{42}{2025}{{Zha et~al.}}{{}}}
+\bibcite{zhao2018energy}{{43}{2018}{{Zhao and Tresp}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Prompt Template and Implementation Details}{30}{appendix.A}\protected@file@percent }
+\newlabel{app:prompts}{{A}{30}{Prompt Template and Implementation Details}{appendix.A}{}}
+\@writefile{toc}{\contentsline {paragraph}{Prompt template.}{30}{section*.56}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Heuristic localizer (Oracle v3).}{30}{section*.57}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Complete notation glossary.}}{31}{table.4}\protected@file@percent }
+\newlabel{tab:notation}{{4}{31}{Complete notation glossary}{table.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Codebase and reproduction.}{31}{section*.58}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B}Extended Method Details}{31}{appendix.B}\protected@file@percent }
+\newlabel{app:methods}{{B}{31}{Extended Method Details}{appendix.B}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.1}Algorithm pseudocode}{31}{subsection.B.1}\protected@file@percent }
+\newlabel{app:algorithms}{{B.1}{31}{Algorithm pseudocode}{subsection.B.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Notation glossary}{31}{subsection.B.2}\protected@file@percent }
+\newlabel{app:notation}{{B.2}{31}{Notation glossary}{subsection.B.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Semantic PER with the failure-direction signal. The semantic weight $w_i$ is set once per slot at line~9 and persists until the slot is overwritten by the ring buffer. Line~13's IS weights use the PER proposal $\mu _P$ (i.e., the sum-tree's $\mu (i_j)$), \emph  {not} the strictly-correct $\mu _{\text  {Sem}}$ that includes $w_{\text  {sem}}$ in the denominator; see Section~\ref {sec:theory} and Appendix~\ref {app:is-derivation} for the under-correction analysis and the bias bound of Eq.~\eqref  {eq:bias-bound}. The two-pass priority update (lines~10 and 17) is necessary because line~17 refreshes only the slots seen in the current minibatch, whereas line~10 must touch every slot whose semantic weight changed. The frame-to-step formula at line~7 is a linear interpolation $\hat  k/(K\!-\!1)\times (T\!-\!1)$; with $K\!=\!5$ keyframes and $T\!=\!50$ steps, keyframe~0 maps to step~0 and keyframe~4 maps to step~49.}}{32}{figure.10}\protected@file@percent }
+\newlabel{alg:sem-per}{{1}{32}{Semantic PER with the failure-direction signal. The semantic weight $w_i$ is set once per slot at line~9 and persists until the slot is overwritten by the ring buffer. Line~13's IS weights use the PER proposal $\mu _P$ (i.e., the sum-tree's $\mu (i_j)$), \emph {not} the strictly-correct $\mu _{\text {Sem}}$ that includes $w_{\text {sem}}$ in the denominator; see Section~\ref {sec:theory} and Appendix~\ref {app:is-derivation} for the under-correction analysis and the bias bound of Eq.~\eqref {eq:bias-bound}. The two-pass priority update (lines~10 and 17) is necessary because line~17 refreshes only the slots seen in the current minibatch, whereas line~10 must touch every slot whose semantic weight changed. The frame-to-step formula at line~7 is a linear interpolation $\hat k/(K\!-\!1)\times (T\!-\!1)$; with $K\!=\!5$ keyframes and $T\!=\!50$ steps, keyframe~0 maps to step~0 and keyframe~4 maps to step~49}{figure.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3}Heuristic localizer (``Oracle v3'') --- extended geometric reasoning}{32}{subsection.B.3}\protected@file@percent }
+\newlabel{app:oracle-v3}{{B.3}{32}{Heuristic localizer (``Oracle v3'') --- extended geometric reasoning}{subsection.B.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{FetchPush --- contact-loss detection.}{32}{section*.59}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces VLM-Verified Counterfactual Hindsight (Verify-CF). The teleport gate (line~5) is empirically necessary on planar tasks (FetchPush, 67\% teleport rate pre-gate on GPT-4o) but structurally redundant on the \textsc  {action} variant, which emits no position field --- a structural design choice we make explicit in line~5's variant check. Lines~3 and 8 implement the ``simulator-fork'' that gives the verifier zero modeling error: the verifier env's transition is the ground-truth env's transition by construction. Per-call CPU cost is 17.6\,ms (lines~3 + 8 + 9 together); the dominant cost is the VLM call at line~4 ($\approx \!4$\,s for GPT-4o, $\approx \!11$\,s for Opus~4.7). The procedure is invoked at the HER relabel step of any SAC+HER trainer once per failed episode.}}{33}{figure.11}\protected@file@percent }
+\newlabel{alg:verified-cf}{{2}{33}{VLM-Verified Counterfactual Hindsight (Verify-CF). The teleport gate (line~5) is empirically necessary on planar tasks (FetchPush, 67\% teleport rate pre-gate on GPT-4o) but structurally redundant on the \textsc {action} variant, which emits no position field --- a structural design choice we make explicit in line~5's variant check. Lines~3 and 8 implement the ``simulator-fork'' that gives the verifier zero modeling error: the verifier env's transition is the ground-truth env's transition by construction. Per-call CPU cost is 17.6\,ms (lines~3 + 8 + 9 together); the dominant cost is the VLM call at line~4 ($\approx \!4$\,s for GPT-4o, $\approx \!11$\,s for Opus~4.7). The procedure is invoked at the HER relabel step of any SAC+HER trainer once per failed episode}{figure.11}{}}
+\@writefile{toc}{\contentsline {paragraph}{FetchPickAndPlace --- ballistic vs.\ argmin precedence.}{33}{section*.60}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{FetchSlide --- release-point detection.}{33}{section*.61}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Argmin fallback.}{33}{section*.62}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.4}Counterfactual prompt templates --- full text}{34}{subsection.B.4}\protected@file@percent }
+\newlabel{app:cf-prompts}{{B.4}{34}{Counterfactual prompt templates --- full text}{subsection.B.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Common preamble.}{34}{section*.63}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Variant 1: \textsc  {narrative}.}{34}{section*.64}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Variant 2: \textsc  {action}.}{34}{section*.65}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Variant 3: \textsc  {achieved\_goal}.}{34}{section*.66}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Variant 4: \textsc  {all} (unified).}{35}{section*.67}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Task description substitutions.}{35}{section*.68}\protected@file@percent }
 \citation{schaul2016per}
-\@writefile{toc}{\contentsline {section}{\numberline {C}Theoretical Derivations}{34}{appendix.C}\protected@file@percent }
-\newlabel{app:theory}{{C}{34}{Theoretical Derivations}{appendix.C}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.1}Importance-sampled posterior reweighting --- full derivation}{34}{subsection.C.1}\protected@file@percent }
-\newlabel{app:is-derivation}{{C.1}{34}{Importance-sampled posterior reweighting --- full derivation}{subsection.C.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{Step 1: the target objective.}{34}{section*.65}\protected@file@percent }
-\newlabel{eq:target}{{5}{34}{Step 1: the target objective}{equation.C.5}{}}
-\@writefile{toc}{\contentsline {paragraph}{Step 2: importance-sampled estimator with a non-uniform proposal.}{34}{section*.66}\protected@file@percent }
-\newlabel{eq:is-identity}{{6}{34}{Step 2: importance-sampled estimator with a non-uniform proposal}{equation.C.6}{}}
-\@writefile{toc}{\contentsline {paragraph}{Step 3: PER as a special case and the annealing knob.}{34}{section*.67}\protected@file@percent }
-\newlabel{eq:per-anneal}{{7}{34}{Step 3: PER as a special case and the annealing knob}{equation.C.7}{}}
-\@writefile{toc}{\contentsline {paragraph}{Step 4: Semantic PER as IS with a product proposal.}{34}{section*.68}\protected@file@percent }
-\newlabel{eq:sem-prop}{{8}{34}{Step 4: Semantic PER as IS with a product proposal}{equation.C.8}{}}
-\newlabel{eq:sem-corrected}{{9}{34}{Step 4: Semantic PER as IS with a product proposal}{equation.C.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Theoretical Derivations}{36}{appendix.C}\protected@file@percent }
+\newlabel{app:theory}{{C}{36}{Theoretical Derivations}{appendix.C}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.1}Importance-sampled posterior reweighting --- full derivation}{36}{subsection.C.1}\protected@file@percent }
+\newlabel{app:is-derivation}{{C.1}{36}{Importance-sampled posterior reweighting --- full derivation}{subsection.C.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Step 1: the target objective.}{36}{section*.69}\protected@file@percent }
+\newlabel{eq:target}{{5}{36}{Step 1: the target objective}{equation.C.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Step 2: importance-sampled estimator with a non-uniform proposal.}{36}{section*.70}\protected@file@percent }
+\newlabel{eq:is-identity}{{6}{36}{Step 2: importance-sampled estimator with a non-uniform proposal}{equation.C.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Step 3: PER as a special case and the annealing knob.}{36}{section*.71}\protected@file@percent }
+\newlabel{eq:per-anneal}{{7}{36}{Step 3: PER as a special case and the annealing knob}{equation.C.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{Step 4: Semantic PER as IS with a product proposal.}{36}{section*.72}\protected@file@percent }
+\newlabel{eq:sem-prop}{{8}{36}{Step 4: Semantic PER as IS with a product proposal}{equation.C.8}{}}
+\newlabel{eq:sem-corrected}{{9}{36}{Step 4: Semantic PER as IS with a product proposal}{equation.C.9}{}}
 \citation{espeholt2018impala}
 \citation{munos2016retrace}
-\@writefile{toc}{\contentsline {paragraph}{Step 5: the under-correction we actually run.}{35}{section*.69}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Scope of the derivation.}{35}{section*.70}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.2}Connection to V-trace and Retrace}{35}{subsection.C.2}\protected@file@percent }
-\newlabel{app:vtrace}{{C.2}{35}{Connection to V-trace and Retrace}{subsection.C.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{Specialization of V-trace.}{35}{section*.71}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Specialization of Retrace.}{35}{section*.72}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Step 5: the under-correction we actually run.}{37}{section*.73}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Scope of the derivation.}{37}{section*.74}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.2}Connection to V-trace and Retrace}{37}{subsection.C.2}\protected@file@percent }
+\newlabel{app:vtrace}{{C.2}{37}{Connection to V-trace and Retrace}{subsection.C.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Specialization of V-trace.}{37}{section*.75}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Specialization of Retrace.}{37}{section*.76}\protected@file@percent }
 \citation{schaul2016per}
-\@writefile{toc}{\contentsline {paragraph}{Why the analogy is loose.}{36}{section*.73}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {C.3}Conditions for unbiasedness}{36}{subsection.C.3}\protected@file@percent }
-\newlabel{app:unbiased}{{C.3}{36}{Conditions for unbiasedness}{subsection.C.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{Bias of the implemented under-corrected estimator.}{36}{section*.74}\protected@file@percent }
-\newlabel{eq:bias-bound}{{10}{37}{Bias of the implemented under-corrected estimator}{equation.C.10}{}}
-\@writefile{toc}{\contentsline {paragraph}{Two regimes of $q_\phi $-degeneracy: variance amplification vs.\ signal extinction.}{37}{section*.75}\protected@file@percent }
-\newlabel{eq:verifier-mass}{{11}{37}{Two regimes of $q_\phi $-degeneracy: variance amplification vs.\ signal extinction}{equation.C.11}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces SAC hyperparameters (constant across envs).}}{38}{table.5}\protected@file@percent }
-\newlabel{tab:hparams-sac}{{5}{38}{SAC hyperparameters (constant across envs)}{table.5}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces HER hyperparameters.}}{38}{table.6}\protected@file@percent }
-\newlabel{tab:hparams-her}{{6}{38}{HER hyperparameters}{table.6}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {D}Experimental Details}{38}{appendix.D}\protected@file@percent }
-\newlabel{app:experiments}{{D}{38}{Experimental Details}{appendix.D}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.1}Hyperparameter tables}{38}{subsection.D.1}\protected@file@percent }
-\newlabel{app:hparams}{{D.1}{38}{Hyperparameter tables}{subsection.D.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Prioritized Replay (PER) hyperparameters.}}{39}{table.7}\protected@file@percent }
-\newlabel{tab:hparams-per}{{7}{39}{Prioritized Replay (PER) hyperparameters}{table.7}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Semantic PER and Verified-CF hyperparameters.}}{39}{table.8}\protected@file@percent }
-\newlabel{tab:hparams-semper}{{8}{39}{Semantic PER and Verified-CF hyperparameters}{table.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.2}Compute used}{39}{subsection.D.2}\protected@file@percent }
-\newlabel{app:compute}{{D.2}{39}{Compute used}{subsection.D.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{Hardware.}{39}{section*.76}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Wall-clock budget.}{39}{section*.77}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Total compute used (paper-grade).}{39}{section*.78}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces VLM call parameters.}}{40}{table.9}\protected@file@percent }
-\newlabel{tab:hparams-vlm}{{9}{40}{VLM call parameters}{table.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.3}Random seeds and statistical methodology}{40}{subsection.D.3}\protected@file@percent }
-\newlabel{app:stats}{{D.3}{40}{Random seeds and statistical methodology}{subsection.D.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{What counts as a ``seed''.}{40}{section*.79}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Confidence intervals.}{40}{section*.80}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Bootstrap protocol (when used).}{40}{section*.81}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {D.4}Evaluation protocol}{40}{subsection.D.4}\protected@file@percent }
-\newlabel{app:eval}{{D.4}{40}{Evaluation protocol}{subsection.D.4}{}}
-\@writefile{toc}{\contentsline {paragraph}{Eval schedule.}{40}{section*.82}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Success criterion.}{40}{section*.83}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Checkpoint frequency.}{40}{section*.84}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Final reporting metric.}{40}{section*.85}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Per-seed final eval-time success rates (\%). Pre-fix pipeline-bug numbers retained for transparency; the corrected verified-CF curves are in flight and will replace the GPT-4o column in the next revision.}}{41}{table.10}\protected@file@percent }
-\newlabel{tab:final-success}{{10}{41}{Per-seed final eval-time success rates (\%). Pre-fix pipeline-bug numbers retained for transparency; the corrected verified-CF curves are in flight and will replace the GPT-4o column in the next revision}{table.10}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {E}Additional Results}{41}{appendix.E}\protected@file@percent }
-\newlabel{app:results}{{E}{41}{Additional Results}{appendix.E}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {E.1}Learning curves over training}{41}{subsection.E.1}\protected@file@percent }
-\newlabel{app:learning-curves}{{E.1}{41}{Learning curves over training}{subsection.E.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{Per-env final success rates.}{41}{section*.86}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Phase~2 VLM-CF status and revised projection.}{41}{section*.87}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {E.2}Cross-task transfer details}{41}{subsection.E.2}\protected@file@percent }
-\newlabel{app:transfer}{{E.2}{41}{Cross-task transfer details}{subsection.E.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {F}Reproducibility Checklist}{42}{appendix.F}\protected@file@percent }
-\newlabel{app:repro}{{F}{42}{Reproducibility Checklist}{appendix.F}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {F.1}NeurIPS 2024 reproducibility checklist}{42}{subsection.F.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Models, datasets, and benchmarks.}{42}{section*.88}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Algorithmic claims.}{42}{section*.89}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Code and data.}{42}{section*.90}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Compute.}{43}{section*.91}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Statistical reporting.}{43}{section*.92}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Ethics.}{43}{section*.93}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {F.2}Broader Impacts}{43}{subsection.F.2}\protected@file@percent }
-\newlabel{app:impact}{{F.2}{43}{Broader Impacts}{subsection.F.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Why the analogy is loose.}{38}{section*.77}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.3}Conditions for unbiasedness}{38}{subsection.C.3}\protected@file@percent }
+\newlabel{app:unbiased}{{C.3}{38}{Conditions for unbiasedness}{subsection.C.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Bias of the implemented under-corrected estimator.}{38}{section*.78}\protected@file@percent }
+\newlabel{eq:bias-bound}{{10}{39}{Bias of the implemented under-corrected estimator}{equation.C.10}{}}
+\@writefile{toc}{\contentsline {paragraph}{Two regimes of $q_\phi $-degeneracy: variance amplification vs.\ signal extinction.}{39}{section*.79}\protected@file@percent }
+\newlabel{eq:verifier-mass}{{11}{39}{Two regimes of $q_\phi $-degeneracy: variance amplification vs.\ signal extinction}{equation.C.11}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces SAC hyperparameters (constant across envs).}}{40}{table.5}\protected@file@percent }
+\newlabel{tab:hparams-sac}{{5}{40}{SAC hyperparameters (constant across envs)}{table.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces HER hyperparameters.}}{40}{table.6}\protected@file@percent }
+\newlabel{tab:hparams-her}{{6}{40}{HER hyperparameters}{table.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Experimental Details}{40}{appendix.D}\protected@file@percent }
+\newlabel{app:experiments}{{D}{40}{Experimental Details}{appendix.D}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.1}Hyperparameter tables}{40}{subsection.D.1}\protected@file@percent }
+\newlabel{app:hparams}{{D.1}{40}{Hyperparameter tables}{subsection.D.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Prioritized Replay (PER) hyperparameters.}}{41}{table.7}\protected@file@percent }
+\newlabel{tab:hparams-per}{{7}{41}{Prioritized Replay (PER) hyperparameters}{table.7}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Semantic PER and Verified-CF hyperparameters.}}{41}{table.8}\protected@file@percent }
+\newlabel{tab:hparams-semper}{{8}{41}{Semantic PER and Verified-CF hyperparameters}{table.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.2}Compute used}{41}{subsection.D.2}\protected@file@percent }
+\newlabel{app:compute}{{D.2}{41}{Compute used}{subsection.D.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Hardware.}{41}{section*.80}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Wall-clock budget.}{41}{section*.81}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Total compute used (paper-grade).}{41}{section*.82}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces VLM call parameters.}}{42}{table.9}\protected@file@percent }
+\newlabel{tab:hparams-vlm}{{9}{42}{VLM call parameters}{table.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.3}Random seeds and statistical methodology}{42}{subsection.D.3}\protected@file@percent }
+\newlabel{app:stats}{{D.3}{42}{Random seeds and statistical methodology}{subsection.D.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{What counts as a ``seed''.}{42}{section*.83}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Confidence intervals.}{42}{section*.84}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Bootstrap protocol (when used).}{42}{section*.85}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.4}Evaluation protocol}{42}{subsection.D.4}\protected@file@percent }
+\newlabel{app:eval}{{D.4}{42}{Evaluation protocol}{subsection.D.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Eval schedule.}{42}{section*.86}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Success criterion.}{42}{section*.87}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Checkpoint frequency.}{42}{section*.88}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Final reporting metric.}{42}{section*.89}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Per-seed final eval-time success rates (\%). Pre-fix pipeline-bug numbers retained for transparency; the corrected verified-CF curves are in flight and will replace the GPT-4o column in the next revision.}}{43}{table.10}\protected@file@percent }
+\newlabel{tab:final-success}{{10}{43}{Per-seed final eval-time success rates (\%). Pre-fix pipeline-bug numbers retained for transparency; the corrected verified-CF curves are in flight and will replace the GPT-4o column in the next revision}{table.10}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {E}Additional Results}{43}{appendix.E}\protected@file@percent }
+\newlabel{app:results}{{E}{43}{Additional Results}{appendix.E}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {E.1}Learning curves over training}{43}{subsection.E.1}\protected@file@percent }
+\newlabel{app:learning-curves}{{E.1}{43}{Learning curves over training}{subsection.E.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Per-env final success rates.}{43}{section*.90}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Phase~2 VLM-CF status and revised projection.}{43}{section*.91}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {E.2}Cross-task transfer details}{43}{subsection.E.2}\protected@file@percent }
+\newlabel{app:transfer}{{E.2}{43}{Cross-task transfer details}{subsection.E.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {F}Reproducibility Checklist}{44}{appendix.F}\protected@file@percent }
+\newlabel{app:repro}{{F}{44}{Reproducibility Checklist}{appendix.F}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {F.1}NeurIPS 2024 reproducibility checklist}{44}{subsection.F.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Models, datasets, and benchmarks.}{44}{section*.92}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Algorithmic claims.}{44}{section*.93}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Code and data.}{44}{section*.94}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Compute.}{45}{section*.95}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Statistical reporting.}{45}{section*.96}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Ethics.}{45}{section*.97}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {F.2}Broader Impacts}{45}{subsection.F.2}\protected@file@percent }
+\newlabel{app:impact}{{F.2}{45}{Broader Impacts}{subsection.F.2}{}}
 \citation{zha2025tango}
 \citation{rocamonde2024vlmreward,wu2026largerewardmodels}
-\@writefile{toc}{\contentsline {paragraph}{Reproducibility-equity and foundation-model access asymmetry.}{44}{section*.94}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Net carbon accounting: env steps traded for VLM calls.}{44}{section*.95}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Dual-use surface of the generator--verifier pattern.}{44}{section*.96}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Safety properties of training-time-only foundation-model use.}{44}{section*.97}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{What this work is not.}{45}{section*.98}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Personal data, consent, and content moderation.}{45}{section*.99}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {F.3}Compute infrastructure details}{45}{subsection.F.3}\protected@file@percent }
-\newlabel{app:infra}{{F.3}{45}{Compute infrastructure details}{subsection.F.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {G}Failure Mode Analysis}{45}{appendix.G}\protected@file@percent }
-\newlabel{app:failures}{{G}{45}{Failure Mode Analysis}{appendix.G}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {G.1}The teleport-collapse failure mode (C1v2-A)}{45}{subsection.G.1}\protected@file@percent }
-\newlabel{app:teleport}{{G.1}{45}{The teleport-collapse failure mode (C1v2-A)}{subsection.G.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{Formal characterization.}{45}{section*.100}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Why it happens.}{46}{section*.101}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Mitigations evaluated.}{46}{section*.102}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Adopted production configuration.}{46}{section*.103}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {G.2}Action sign-flip in real-data evaluation (C1v2-B)}{46}{subsection.G.2}\protected@file@percent }
-\newlabel{app:sign-flip}{{G.2}{46}{Action sign-flip in real-data evaluation (C1v2-B)}{subsection.G.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{Phenomenon.}{46}{section*.104}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{When it occurs.}{46}{section*.105}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Hypothesized cause.}{46}{section*.106}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Recommended sign-check gate.}{47}{section*.107}\protected@file@percent }
-\newlabel{eq:sign-gate}{{12}{47}{Recommended sign-check gate}{equation.G.12}{}}
-\@writefile{toc}{\contentsline {paragraph}{Why the verified-CF mechanism subsumes this.}{47}{section*.108}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {G.3}VLM API rate-limit at high parallelism (C1v2-C)}{47}{subsection.G.3}\protected@file@percent }
-\newlabel{app:ratelimit}{{G.3}{47}{VLM API rate-limit at high parallelism (C1v2-C)}{subsection.G.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{Phenomenon.}{47}{section*.109}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Why this is structural, not method-specific.}{47}{section*.110}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Mitigations for practitioners.}{47}{section*.111}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Implications for reported experiments.}{47}{section*.112}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {H}Reproducibility commands}{47}{appendix.H}\protected@file@percent }
-\newlabel{app:commands}{{H}{47}{Reproducibility commands}{appendix.H}{}}
-\@writefile{toc}{\contentsline {paragraph}{Headline ablation (Figure~\ref {fig:headline}).}{48}{section*.113}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Counterfactual prompt evaluation (Tables~\ref {tab:prompt-variants}).}{48}{section*.114}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Cross-task transfer (Figure~\ref {fig:transfer}).}{48}{section*.115}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Verified-CF smoke (Figure~\ref {fig:protocol}).}{48}{section*.116}\protected@file@percent }
-\gdef \@abspage@last{48}
+\@writefile{toc}{\contentsline {paragraph}{Reproducibility-equity and foundation-model access asymmetry.}{46}{section*.98}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Net carbon accounting: env steps traded for VLM calls.}{46}{section*.99}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Dual-use surface of the generator--verifier pattern.}{46}{section*.100}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Safety properties of training-time-only foundation-model use.}{46}{section*.101}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What this work is not.}{47}{section*.102}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Personal data, consent, and content moderation.}{47}{section*.103}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {F.3}Compute infrastructure details}{47}{subsection.F.3}\protected@file@percent }
+\newlabel{app:infra}{{F.3}{47}{Compute infrastructure details}{subsection.F.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {G}Failure Mode Analysis}{47}{appendix.G}\protected@file@percent }
+\newlabel{app:failures}{{G}{47}{Failure Mode Analysis}{appendix.G}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.1}The teleport-collapse failure mode (C1v2-A)}{47}{subsection.G.1}\protected@file@percent }
+\newlabel{app:teleport}{{G.1}{47}{The teleport-collapse failure mode (C1v2-A)}{subsection.G.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Formal characterization.}{47}{section*.104}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Why it happens.}{48}{section*.105}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Mitigations evaluated.}{48}{section*.106}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Adopted production configuration.}{48}{section*.107}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.2}Action sign-flip in real-data evaluation (C1v2-B)}{48}{subsection.G.2}\protected@file@percent }
+\newlabel{app:sign-flip}{{G.2}{48}{Action sign-flip in real-data evaluation (C1v2-B)}{subsection.G.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Phenomenon.}{48}{section*.108}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{When it occurs.}{48}{section*.109}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Hypothesized cause.}{48}{section*.110}\protected@file@percent }
+\citation{yu2019metaworld}
+\@writefile{toc}{\contentsline {paragraph}{Recommended sign-check gate.}{49}{section*.111}\protected@file@percent }
+\newlabel{eq:sign-gate}{{12}{49}{Recommended sign-check gate}{equation.G.12}{}}
+\@writefile{toc}{\contentsline {paragraph}{Why the verified-CF mechanism subsumes this.}{49}{section*.112}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.3}VLM API rate-limit at high parallelism (C1v2-C)}{49}{subsection.G.3}\protected@file@percent }
+\newlabel{app:ratelimit}{{G.3}{49}{VLM API rate-limit at high parallelism (C1v2-C)}{subsection.G.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Phenomenon.}{49}{section*.113}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Why this is structural, not method-specific.}{49}{section*.114}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Mitigations for practitioners.}{49}{section*.115}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Implications for reported experiments.}{49}{section*.116}\protected@file@percent }
+\citation{haarnoja2018sac}
+\citation{schaul2016per}
+\citation{schaul2016per}
+\@writefile{toc}{\contentsline {section}{\numberline {H}Auxiliary Study: Replay-Mechanism Ablation on MetaWorld}{50}{appendix.H}\protected@file@percent }
+\newlabel{app:metaworld}{{H}{50}{Auxiliary Study: Replay-Mechanism Ablation on MetaWorld}{appendix.H}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {H.1}Setup}{50}{subsection.H.1}\protected@file@percent }
+\newlabel{app:mw:setup}{{H.1}{50}{Setup}{subsection.H.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Algorithm and tasks.}{50}{section*.117}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Replay-buffer variants.}{50}{section*.118}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Sweep.}{50}{section*.119}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {H.2}Results}{50}{subsection.H.2}\protected@file@percent }
+\newlabel{app:mw:results}{{H.2}{50}{Results}{subsection.H.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {H.3}The demo-replay $\equiv $ demo-priority implementation collapse}{50}{subsection.H.3}\protected@file@percent }
+\newlabel{app:mw:equiv}{{H.3}{50}{The demo-replay $\equiv $ demo-priority implementation collapse}{subsection.H.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces MetaWorld replay-mechanism ablation. Final success rate at $500$k env steps (mean across $n\!=\!5$ seeds; $95$\% bootstrap CI in brackets), and env-steps-to-first-$0.8$-success threshold (mean over seeds that reach the threshold; ``$n/5$'' is the number of seeds that reach it within $500$k steps). Lower steps-to-$0.8$ is better.}}{51}{table.11}\protected@file@percent }
+\newlabel{tab:mw:results}{{11}{51}{MetaWorld replay-mechanism ablation. Final success rate at $500$k env steps (mean across $n\!=\!5$ seeds; $95$\% bootstrap CI in brackets), and env-steps-to-first-$0.8$-success threshold (mean over seeds that reach the threshold; ``$n/5$'' is the number of seeds that reach it within $500$k steps). Lower steps-to-$0.8$ is better}{table.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Final success rate at $500$k env steps on each MetaWorld task, grouped by replay-buffer variant. Bars are seed means; error bars are $\pm 1$ standard deviation across the $5$ seeds. Demo variants (green, red) saturate \texttt  {drawer-open-v3} and \texttt  {button-press-v3}. On \texttt  {sweep-into-v3} the demo variants help but do not saturate (per-seed: 2/5 succeed, 3/5 collapse). PER (orange) cleanly dominates uniform (blue) on all three tasks.}}{51}{figure.12}\protected@file@percent }
+\newlabel{fig:mw:final}{{12}{51}{Final success rate at $500$k env steps on each MetaWorld task, grouped by replay-buffer variant. Bars are seed means; error bars are $\pm 1$ standard deviation across the $5$ seeds. Demo variants (green, red) saturate \texttt {drawer-open-v3} and \texttt {button-press-v3}. On \texttt {sweep-into-v3} the demo variants help but do not saturate (per-seed: 2/5 succeed, 3/5 collapse). PER (orange) cleanly dominates uniform (blue) on all three tasks}{figure.12}{}}
+\citation{nair2018overcomingexploration}
+\citation{vecerik2017ddpgfd,rajeswaran2017dapg}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Env-steps to first $0.8$ success-rate crossing on each MetaWorld task, by replay-buffer variant. Bars show the mean over seeds that reached $0.8$ within the $500$k step budget; the ``$n/5$'' annotation indicates how many seeds reached the threshold. Both demo variants reach $0.8$ in all five seeds on every task, including \texttt  {sweep-into-v3} where the policies later collapse---demos solve the first-touch exploration problem but not the stability problem on harder tasks.}}{52}{figure.13}\protected@file@percent }
+\newlabel{fig:mw:stepsto08}{{13}{52}{Env-steps to first $0.8$ success-rate crossing on each MetaWorld task, by replay-buffer variant. Bars show the mean over seeds that reached $0.8$ within the $500$k step budget; the ``$n/5$'' annotation indicates how many seeds reached the threshold. Both demo variants reach $0.8$ in all five seeds on every task, including \texttt {sweep-into-v3} where the policies later collapse---demos solve the first-touch exploration problem but not the stability problem on harder tasks}{figure.13}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Evaluation success-rate curves over training, by replay variant and task. Solid line is the seed mean, shaded band is the $95$\% bootstrap CI across the $5$ seeds. The demo-replay and demo-priority curves are visually indistinguishable on every panel---they are in fact bit-identical (\S  \ref {app:mw:equiv}). PER consistently outruns uniform across all three tasks.}}{52}{figure.14}\protected@file@percent }
+\newlabel{fig:mw:curves}{{14}{52}{Evaluation success-rate curves over training, by replay variant and task. Solid line is the seed mean, shaded band is the $95$\% bootstrap CI across the $5$ seeds. The demo-replay and demo-priority curves are visually indistinguishable on every panel---they are in fact bit-identical (\S \ref {app:mw:equiv}). PER consistently outruns uniform across all three tasks}{figure.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {H.4}Limitations and pre-registered follow-ons}{52}{subsection.H.4}\protected@file@percent }
+\newlabel{app:mw:limitations}{{H.4}{52}{Limitations and pre-registered follow-ons}{subsection.H.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Reproducibility commands}{53}{appendix.I}\protected@file@percent }
+\newlabel{app:commands}{{I}{53}{Reproducibility commands}{appendix.I}{}}
+\@writefile{toc}{\contentsline {paragraph}{Headline ablation (Figure~\ref {fig:headline}).}{53}{section*.120}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Counterfactual prompt evaluation (Tables~\ref {tab:prompt-variants}).}{53}{section*.121}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Cross-task transfer (Figure~\ref {fig:transfer}).}{53}{section*.122}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Verified-CF smoke (Figure~\ref {fig:protocol}).}{53}{section*.123}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Auxiliary MetaWorld sweep (Appendix~\ref {app:metaworld}, Figures~\ref {fig:mw:final}--\ref {fig:mw:curves}, Table~\ref {tab:mw:results}).}{53}{section*.124}\protected@file@percent }
+\gdef \@abspage@last{53}

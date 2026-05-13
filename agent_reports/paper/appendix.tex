@@ -1667,6 +1667,240 @@ throughout and was not affected; the Semantic-PER results reported there
 use GPT-4o as provider and were collected before the claude-sonnet-4-5
 switch, so no runs in Figure~\ref{fig:headline} are contaminated.
 
+\section{Auxiliary Study: Replay-Mechanism Ablation on MetaWorld}
+\label{app:metaworld}
+
+This appendix supports the cross-benchmark corroboration discussed in
+\S\ref{sec:disc:metaworld} and the methodological note on
+demonstration-priority pinning in \S\ref{sec:related}
+(``Demonstration-augmented replay''). The study is auxiliary to the
+main paper: it does not run Semantic~PER or verified-counterfactual
+hindsight, and is reported here only insofar as it (a)~independently
+corroborates that the replay sampler is load-bearing in
+sparse-reward continuous control, on a benchmark family
+(MetaWorld~v3, \citep{yu2019metaworld}) that does not admit HER, and
+(b)~documents the implementation-detail collapse between two
+demo-augmented variants that motivates the methodological
+recommendation in \S\ref{sec:related}.
+
+\subsection{Setup}
+\label{app:mw:setup}
+
+\paragraph{Algorithm and tasks.}
+The base agent is SAC~\citep{haarnoja2018sac} with twin critics,
+automatic temperature tuning, two-layer 256-unit MLP actor and
+critics, replay capacity $10^6$, batch size $256$, $\gamma=0.99$,
+target-network rate $\tau=0.005$. Three MetaWorld~v3 manipulation
+tasks were used: \texttt{drawer-open-v3}, \texttt{sweep-into-v3},
+\texttt{button-press-v3}. The reward is sparse: the dense MetaWorld
+shaping is discarded and the per-step reward is
+$r_t = \texttt{float(info[``success''])}$, so all variants face the
+same hard-exploration problem.
+
+\paragraph{Replay-buffer variants.}
+The four variants differ only in the buffer:
+\begin{itemize}\itemsep0pt
+  \item \textbf{uniform}: standard replay, every transition has
+        equal sample probability.
+  \item \textbf{per}: PER~\citep{schaul2016per} with $\alpha=0.6$,
+        $\beta$ annealed $0.4\!\to\!1.0$ over training, priorities
+        updated by $|\delta|$ after each gradient step.
+  \item \textbf{demo-replay}: buffer pre-loaded with $K\!=\!10$
+        expert episodes per task (5000 transitions) collected from
+        MetaWorld's scripted policies (\texttt{ENV\_POLICY\_MAP}, pure
+        expert, action noise $0.0$), sampled uniform thereafter.
+  \item \textbf{demo-priority}: same pre-load, but every
+        demonstration transition is inserted at a fixed priority of
+        $10.0$ (vs.\ the $1.0$ default), with
+        \texttt{update\_priorities} skipping demo indices so the
+        priority floor never decays.
+\end{itemize}
+Comparing \textbf{demo-replay} against \textbf{uniform} isolates the
+contribution of demonstration content; comparing
+\textbf{demo-priority} against \textbf{demo-replay} was intended to
+isolate the contribution of priority pinning at matched demonstration
+content. \S\ref{app:mw:equiv} explains why the latter contrast turned
+out to be empirically vacuous in our implementation.
+
+\paragraph{Sweep.}
+$3$ tasks $\times$ $4$ variants $\times$ $5$ seeds $= 60$ SAC runs at
+$5{\times}10^5$ env steps each, on Modal L4 GPUs. Total compute:
+$130.5$ L4-GPU-hours, $\$104.37$ at list rate. Evaluation every $10$k
+env steps over $10$ episodes with greedy actions.
+
+\subsection{Results}
+\label{app:mw:results}
+
+\begin{table}[t]
+  \centering
+  \footnotesize
+  \caption{MetaWorld replay-mechanism ablation. Final success rate at
+  $500$k env steps (mean across $n\!=\!5$ seeds; $95$\% bootstrap CI in
+  brackets), and env-steps-to-first-$0.8$-success threshold (mean over
+  seeds that reach the threshold; ``$n/5$'' is the number of seeds that
+  reach it within $500$k steps). Lower steps-to-$0.8$ is better.}
+  \label{tab:mw:results}
+  \begin{tabular}{ll cc}
+    \toprule
+    Task & Variant & Final success ($\pm$ 95\% CI) & Steps to 0.8 (mean, $n_{\text{reach}}/5$) \\
+    \midrule
+    \multirow{4}{*}{\texttt{drawer-open-v3}}
+      & uniform        & $0.38\ [0.00, 0.78]$ & $455$k\ (2/5) \\
+      & per            & $0.82\ [0.58, 1.00]$ & $375$k\ (4/5) \\
+      & demo-replay    & $\mathbf{1.00\ [1.00, 1.00]}$ & $\mathbf{176}$k\ (5/5) \\
+      & demo-priority  & $\mathbf{1.00\ [1.00, 1.00]}$ & $\mathbf{176}$k\ (5/5) \\
+    \midrule
+    \multirow{4}{*}{\texttt{sweep-into-v3}}
+      & uniform        & $0.18\ [0.00, 0.54]$ & $220$k\ (1/5) \\
+      & per            & $0.30\ [0.04, 0.56]$ & $300$k\ (1/5) \\
+      & demo-replay    & $\mathbf{0.32\ [0.00, 0.64]}$ & $\mathbf{192}$k\ (5/5) \\
+      & demo-priority  & $\mathbf{0.32\ [0.00, 0.64]}$ & $\mathbf{192}$k\ (5/5) \\
+    \midrule
+    \multirow{4}{*}{\texttt{button-press-v3}}
+      & uniform        & $0.20\ [0.00, 0.60]$ & $80$k\ (1/5) \\
+      & per            & $0.60\ [0.20, 1.00]$ & $213$k\ (3/5) \\
+      & demo-replay    & $\mathbf{1.00\ [1.00, 1.00]}$ & $\mathbf{32}$k\ (5/5) \\
+      & demo-priority  & $\mathbf{1.00\ [1.00, 1.00]}$ & $\mathbf{32}$k\ (5/5) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.95\linewidth]{fig_mw_final_success.png}
+  \caption{Final success rate at $500$k env steps on each MetaWorld task,
+  grouped by replay-buffer variant. Bars are seed means; error bars are
+  $\pm 1$ standard deviation across the $5$ seeds. Demo variants (green,
+  red) saturate \texttt{drawer-open-v3} and \texttt{button-press-v3}.
+  On \texttt{sweep-into-v3} the demo variants help but do not saturate
+  (per-seed: 2/5 succeed, 3/5 collapse). PER (orange) cleanly dominates
+  uniform (blue) on all three tasks.}
+  \label{fig:mw:final}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.95\linewidth]{fig_mw_steps_to_08.png}
+  \caption{Env-steps to first $0.8$ success-rate crossing on each
+  MetaWorld task, by replay-buffer variant. Bars show the mean over
+  seeds that reached $0.8$ within the $500$k step budget; the
+  ``$n/5$'' annotation indicates how many seeds reached the threshold.
+  Both demo variants reach $0.8$ in all five seeds on every task,
+  including \texttt{sweep-into-v3} where the policies later
+  collapse---demos solve the first-touch exploration problem but not
+  the stability problem on harder tasks.}
+  \label{fig:mw:stepsto08}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.95\linewidth]{fig_mw_curves.png}
+  \caption{Evaluation success-rate curves over training, by replay
+  variant and task. Solid line is the seed mean, shaded band is the
+  $95$\% bootstrap CI across the $5$ seeds. The demo-replay and
+  demo-priority curves are visually indistinguishable on every
+  panel---they are in fact bit-identical (\S\ref{app:mw:equiv}). PER
+  consistently outruns uniform across all three tasks.}
+  \label{fig:mw:curves}
+\end{figure}
+
+The headline numbers are summarized in Table~\ref{tab:mw:results}.
+PER beats uniform on final success across all three tasks
+($+0.44$, $+0.12$, $+0.40$) and on steps-to-$0.8$ ($-80$k, $+80$k,
+$+133$k for the seeds that reach the threshold; PER's steps-to-$0.8$
+mean is larger than uniform's on \texttt{sweep-into} and
+\texttt{button-press}, but only because uniform reaches the threshold
+on a single lucky seed in each case; PER reaches it on more seeds, so
+the means are not directly comparable beyond the ``does it reach''
+column $n_{\text{reach}}/5$). Demo variants saturate
+\texttt{drawer-open-v3} and \texttt{button-press-v3} and reach the
+threshold in all $5$ seeds on every task, but only the easier two
+tasks retain $1.00$ success at $500$k steps.
+
+\subsection{The demo-replay $\equiv$ demo-priority implementation collapse}
+\label{app:mw:equiv}
+
+For every $(\text{task}, \text{seed})$ pair the two demo variants
+produced \emph{bit-identical} eval curves
+($0/15$ pairs differ; Figure~\ref{fig:mw:curves}). The cause is in
+the buffer's insertion code
+(\texttt{experiments/metaworld\_replay\_ablation/src/replay.py:71}):
+{\small
+\begin{verbatim}
+p = priority if priority is not None else max(self._max_priority,
+                                              self.default_priority)
+\end{verbatim}}
+\noindent which implements the Schaul~\citep{schaul2016per} ``insert
+new transitions at the running $\max$-priority'' convention. Trace:
+
+\begin{itemize}\itemsep0pt
+  \item \textbf{demo-replay.} $5000$ demos are inserted with
+        \texttt{priority=None}, so each receives
+        $\max(1.0, 1.0) = 1.0$. All online transitions also receive
+        $1.0$. The buffer's priorities are uniformly $1.0$; sampling
+        reduces to uniform.
+  \item \textbf{demo-priority.} $5000$ demos are inserted with
+        $\texttt{priority}=10.0$, setting
+        $\texttt{self.\_max\_priority}=10.0$. All subsequent online
+        transitions enter at $\max(10.0, 1.0) = 10.0$. The buffer's
+        priorities are uniformly $10.0$; sampling again reduces to
+        uniform.
+\end{itemize}
+
+Because the sampling probabilities are
+$p_i \!\propto\! p_i^\alpha / \sum_j p_j^\alpha$, a multiplicative
+constant applied to every entry cancels in the denominator. The two
+variants therefore execute identical sampling sequences under
+identical random seeds, producing identical trajectories. This is
+not a bug in the PER implementation---the Schaul convention is the
+correct default for plain PER, where it ensures every transition is
+seen at least once before its priority decays. It is an
+\emph{interaction} between that convention and the demo-pinning
+mechanism, and it erases the priority signal that the
+\textbf{demo-priority} variant was meant to test.
+
+A clean test of demonstration-priority pinning requires one of:
+\begin{enumerate}\itemsep0pt
+  \item Inserting online transitions at $\texttt{default\_priority}$
+        (e.g., $1.0$) rather than at the running $\max$-priority, so
+        demos retain their $10\times$ floor.
+  \item Capping online priorities at a per-transition ceiling below
+        the demo priority.
+  \item Maintaining demo and online entries in two separate sample
+        pools and mixing them with a fixed sampling
+        ratio---the approach taken by
+        \citet{nair2018overcomingexploration} and the DDPGfD/DAPG
+        family~\citep{vecerik2017ddpgfd,rajeswaran2017dapg}.
+\end{enumerate}
+We pre-register option~3 as the cleanest follow-on test of the
+demo-priority hypothesis, and Semantic~PER
+(\S\ref{sec:method:sper}) as the principled alternative that does
+not collapse under this convention: $w_{\text{sem}}$ varies
+continuously across transitions, so the
+constant-scale-invariance argument above does not apply.
+
+\subsection{Limitations and pre-registered follow-ons}
+\label{app:mw:limitations}
+
+The study is small and auxiliary; we flag four limitations.
+\textbf{(i)~Five seeds per cell} is below the $n\!\ge\!30$ standard
+the main paper's headline numbers are pre-registered for. The
+\texttt{sweep-into-v3} variance is high (some seeds saturate, others
+fail completely); the CIs reflect this.
+\textbf{(ii)~Three tasks only}: generalizing the
+``demos saturate easy tasks but not hard ones'' pattern would
+require a broader task set (MetaWorld MT10/MT50, or harder tasks
+such as \texttt{pick-place} and \texttt{peg-insert-side}).
+\textbf{(iii)~Pure scripted-expert demos}: noisy-demo ablations
+(e.g.\ the DDPGfD setting where imperfect demos cover failure
+recovery) were not run.
+\textbf{(iv)~No Semantic-PER baseline}: a head-to-head comparison of
+Semantic~PER against \texttt{uniform}, \texttt{per}, and the
+demo-augmented variants on MetaWorld manipulation would directly
+test whether the priority signal from a frozen VLM can solve the
+harder task that demo content alone cannot (\texttt{sweep-into}),
+and is pre-registered as the principal follow-on study.
+
 \section{Reproducibility commands}
 \label{app:commands}
 
@@ -1713,4 +1947,31 @@ python scripts/n2_validate_cross_task.py \
 \begin{verbatim}
 python scripts/n1_smoke_verified_cf.py
 # 4/4 expected pass; results in agent_reports/N1_smoke_results.json
+\end{verbatim}}
+
+\paragraph{Auxiliary MetaWorld sweep
+(Appendix~\ref{app:metaworld},
+Figures~\ref{fig:mw:final}--\ref{fig:mw:curves},
+Table~\ref{tab:mw:results}).}
+The auxiliary study lives in
+\texttt{experiments/metaworld\_replay\_ablation/} because it runs
+vanilla SAC on a different benchmark family (MetaWorld~v3) than the
+main paper's Fetch experiments; it shares no code with
+\texttt{src/vlm/} and is dependency-isolated via its own
+\texttt{pyproject.toml}/\texttt{uv.lock}. The full sweep---$60$
+runs at $5{\times}10^5$ env steps each, $130.5$ L4-GPU-hours---is
+dispatched via Modal:
+{\small
+\begin{verbatim}
+cd experiments/metaworld_replay_ablation
+uv sync
+
+# Smoke check (single seed, single task, single variant)
+uv run python train.py --task drawer-open-v3 --variant uniform \
+    --seed 0 --total_steps 20000
+
+# Full sweep (3 tasks x 4 variants x 5 seeds = 60 runs)
+uv run python modal_app.py sweep
+# Per-run logs land in results/runs/; aggregate via:
+uv run python analyze.py
 \end{verbatim}}

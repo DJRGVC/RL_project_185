@@ -1,4 +1,4 @@
-\begin{thebibliography}{38}
+\begin{thebibliography}{43}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -91,6 +91,15 @@ Anna Harutyunyan, Will Dabney, Thomas Mesnard, Mohammad Azar, Bilal Piot,
 \newblock \emph{Advances in Neural Information Processing Systems (NeurIPS)},
   2019.
 
+\bibitem[Hester et~al.(2018)Hester, Vecerik, Pietquin, Lanctot, Schaul, Piot,
+  Horgan, Quan, Sendonaris, Osband, Dulac-Arnold, Agapiou, Leibo, and
+  Gruslys]{hester2018dqfd}
+Todd Hester, Matej Vecerik, Olivier Pietquin, Marc Lanctot, Tom Schaul, Bilal
+  Piot, Dan Horgan, John Quan, Andrew Sendonaris, Ian Osband, Gabriel
+  Dulac-Arnold, John Agapiou, Joel~Z. Leibo, and Audrunas Gruslys.
+\newblock Deep {Q}-learning from demonstrations.
+\newblock In \emph{AAAI Conference on Artificial Intelligence}, 2018.
+
 \bibitem[Hu et~al.(2026)Hu, Van~Durme, Andreas, and Jhamtani]{hu2026echo}
 Michael~Y. Hu, Benjamin Van~Durme, Jacob Andreas, and Harsh Jhamtani.
 \newblock Sample-efficient online learning in {LM} agents via hindsight
@@ -147,6 +156,14 @@ R{\'e}mi Munos, Tom Stepleton, Anna Harutyunyan, and Marc~G. Bellemare.
 \newblock In \emph{Advances in Neural Information Processing Systems
   (NeurIPS)}, 2016.
 
+\bibitem[Nair et~al.(2018)Nair, McGrew, Andrychowicz, Zaremba, and
+  Abbeel]{nair2018overcomingexploration}
+Ashvin Nair, Bob McGrew, Marcin Andrychowicz, Wojciech Zaremba, and Pieter
+  Abbeel.
+\newblock Overcoming exploration in reinforcement learning with demonstrations.
+\newblock In \emph{IEEE International Conference on Robotics and Automation
+  (ICRA)}, 2018.
+
 \bibitem[{\"O}zg{\"u}r et~al.(2025){\"O}zg{\"u}r, Zurbr{\"u}gg, and
   Kumar]{ozgur2025nextfuture}
 Fikrican {\"O}zg{\"u}r, Ren{\'e} Zurbr{\"u}gg, and Suryansh Kumar.
@@ -193,6 +210,14 @@ Leonard~S. Pleiss, Tobias Sutter, and Maximilian Schiffer.
 \newblock Reliability-adjusted prioritized experience replay.
 \newblock \emph{arXiv preprint arXiv:2506.18482}, 2025.
 
+\bibitem[Rajeswaran et~al.(2018)Rajeswaran, Kumar, Gupta, Vezzani, Schulman,
+  Todorov, and Levine]{rajeswaran2017dapg}
+Aravind Rajeswaran, Vikash Kumar, Abhishek Gupta, Giulia Vezzani, John
+  Schulman, Emanuel Todorov, and Sergey Levine.
+\newblock Learning complex dexterous manipulation with deep reinforcement
+  learning and demonstrations.
+\newblock \emph{Robotics: Science and Systems (RSS)}, 2018.
+
 \bibitem[Rocamonde et~al.(2024)Rocamonde, Montesinos, Nava, Perez, and
   Lindner]{rocamonde2024vlmreward}
 Juan Rocamonde, Victoriano Montesinos, Elvis Nava, Ethan Perez, and David
@@ -227,6 +252,14 @@ N{\'u}ria~Armengol Urp{\'i}, Marco Bagatella, Marin Vlastelica, and Georg
   Martius.
 \newblock Causal action influence aware counterfactual data augmentation.
 \newblock \emph{arXiv preprint arXiv:2405.18917}, 2024.
+
+\bibitem[Vecerik et~al.(2017)Vecerik, Hester, Scholz, Wang, Pietquin, Piot,
+  Heess, Roth{\"o}rl, Lampe, and Riedmiller]{vecerik2017ddpgfd}
+Mel Vecerik, Todd Hester, Jonathan Scholz, Fumin Wang, Olivier Pietquin, Bilal
+  Piot, Nicolas Heess, Thomas Roth{\"o}rl, Thomas Lampe, and Martin Riedmiller.
+\newblock Leveraging demonstrations for deep reinforcement learning on robotics
+  problems with sparse rewards.
+\newblock \emph{arXiv preprint arXiv:1707.08817}, 2017.
 
 \bibitem[Venuto et~al.(2024)Venuto, Islam, Klissarov, Precup, Yang, and
   Anand]{venuto2024car}
@@ -268,6 +301,14 @@ Hoda Yamani et~al.
 \newblock Reward prediction error prioritisation in experience replay: The
   {RPE-PER} method.
 \newblock \emph{arXiv preprint arXiv:2501.18093}, 2025.
+
+\bibitem[Yu et~al.(2019)Yu, Quillen, He, Julian, Hausman, Finn, and
+  Levine]{yu2019metaworld}
+Tianhe Yu, Deirdre Quillen, Zhanpeng He, Ryan Julian, Karol Hausman, Chelsea
+  Finn, and Sergey Levine.
+\newblock Meta-world: A benchmark and evaluation for multi-task and meta
+  reinforcement learning.
+\newblock In \emph{Conference on Robot Learning (CoRL)}, 2019.
 
 \bibitem[Zha et~al.(2025)]{zha2025tango}
 Kaiwen Zha et~al.

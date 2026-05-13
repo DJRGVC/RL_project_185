@@ -149,75 +149,119 @@ For additional information on amsmath, use the `?' option.
 s/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-dist/fonts/enc/dvips/b
 ase/8r.enc}]
 Underfull \vbox (badness 10000) has occurred while \output is active [2]
-[3] [4] [5]
-Underfull \hbox (badness 10000) in paragraph at lines 508--508
+[3]
+
+Package natbib Warning: Citation `vecerik2017ddpgfd' on page 4 undefined on inp
+ut line 330.
+
+
+Package natbib Warning: Citation `hester2018dqfd' on page 4 undefined on input 
+line 331.
+
+
+Package natbib Warning: Citation `rajeswaran2017dapg' on page 4 undefined on in
+put line 332.
+
+
+Package natbib Warning: Citation `nair2018overcomingexploration' on page 4 unde
+fined on input line 334.
+
+
+Package natbib Warning: Citation `yu2019metaworld' on page 4 undefined on input
+ line 340.
+
+
+LaTeX Warning: Reference `sec:disc:metaworld' on page 4 undefined on input line
+ 341.
+
+
+LaTeX Warning: Reference `app:metaworld' on page 4 undefined on input line 342.
+
+
+[4] [5]
+Underfull \hbox (badness 10000) in paragraph at lines 546--546
 []|\T1/ptm/m/n/9 (+20) MiniGrid, OG-Bench
 [6] [7]
-Underfull \vbox (badness 10000) has occurred while \output is active [8]
-[9]
-Underfull \hbox (badness 1019) in paragraph at lines 957--971
+Underfull \vbox (badness 6477) has occurred while \output is active [8]
+[9] [10]
+Underfull \hbox (badness 1019) in paragraph at lines 995--1009
  []\T1/ptm/b/n/10 (+20) Why out-put type mat-ters: a mech-a-nis-tic ac-count.[]
  \T1/ptm/m/n/10 (+20) The two position-emitting vari-ants
-[10]
-Underfull \vbox (badness 1590) has occurred while \output is active [11]
-[12] [13] [14 <./fig_envs.pdf>] [15 <./fig_headline_v5.pdf>] [16 <./figN_c1v2_m
-odel_comparison.pdf>] [17]
-Underfull \vbox (badness 1629) has occurred while \output is active [18 <./figN
-2_cross_task_transfer.pdf>]
-Underfull \vbox (badness 1648) has occurred while \output is active [19 <./figN
-_c1v2_real_vs_synthetic.pdf>]
-Underfull \vbox (badness 7613) has occurred while \output is active [20]
-Underfull \vbox (badness 10000) has occurred while \output is active [21]
+[11] [12] [13] [14 <./fig_envs.pdf>]
+Underfull \vbox (badness 10000) has occurred while \output is active [15 <./fig
+_headline_v5.pdf>] [16] [17 <./figN_c1v2_model_comparison.pdf>] [18] [19 <./fig
+N2_cross_task_transfer.pdf>] [20 <./figN_c1v2_real_vs_synthetic.pdf>] [21]
+[22]
 
-LaTeX Warning: Reference `tab:vlm_comparison' on page 22 undefined on input lin
-e 1828.
+LaTeX Warning: Reference `tab:vlm_comparison' on page 23 undefined on input lin
+e 1941.
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active [22]
-Underfull \hbox (badness 1590) in paragraph at lines 1875--1918
+Underfull \vbox (badness 10000) has occurred while \output is active [23]
+Underfull \hbox (badness 1590) in paragraph at lines 1988--2031
 \T1/ptm/m/n/10 (+20) (run-ning mean of $\OMS/cmsy/m/n/10 k[] ^^@ \OML/cmm/m/it/
 10 g\OMS/cmsy/m/n/10 k[]$ \T1/ptm/m/n/10 (+20) for ac-cepted CFs), in-tro-duced
  in com-mit \T1/cmtt/m/n/10 a23998b\T1/ptm/m/n/10 (+20) : un-der
 
-Underfull \vbox (badness 10000) has occurred while \output is active [23]
-[24] [25] (./main.bbl [26] [27])
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \vbox (badness 10000) has occurred while \output is active [24]
+
+Package natbib Warning: Citation `yu2019metaworld' on page 25 undefined on inpu
+t line 2068.
+
+
+LaTeX Warning: Reference `app:metaworld' on page 25 undefined on input line 207
+3.
+
+
+LaTeX Warning: Reference `tab:mw:results' on page 25 undefined on input line 20
+74.
+
+
+LaTeX Warning: Reference `fig:mw:final' on page 25 undefined on input line 2074
+.
+
+
+LaTeX Warning: Reference `fig:mw:curves' on page 25 undefined on input line 207
+4.
+
+
+Underfull \vbox (badness 1838) has occurred while \output is active [25]
+[26] (./main.bbl
+Underfull \vbox (badness 6493) has occurred while \output is active [27]
+[28] [29])
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 []\T1/cmtt/m/n/9 You are an expert robotics analyst. The robot is attempting th
 e
 
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 \T1/cmtt/m/n/9 following task: {task_description}. Examine the {K} keyframes of
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 \T1/cmtt/m/n/9 a failed episode shown below. Identify the single keyframe index
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 \OMS/cmsy/m/n/9 2 f\OT1/cmr/m/n/9 0\OML/cmm/m/it/9 ; [] ; K  \OMS/cmsy/m/n/9 ^^
 @  \OT1/cmr/m/n/9 1\OMS/cmsy/m/n/9 g$ \T1/cmtt/m/n/9 at which the failure becam
 e inevitable, and a 1-2
 
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 \T1/cmtt/m/n/9 sentence reasoning. Return strict JSON: {``failure_frame_index''
 : $\OML/cmm/m/it/9 i$\T1/cmtt/m/n/9 ,
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
-Underfull \hbox (badness 2368) in paragraph at lines 2163--2164
+Underfull \hbox (badness 2368) in paragraph at lines 2328--2329
 []\T1/ptm/m/n/10 (+20) FetchPush: \T1/cmtt/m/n/10 ``the robot should push the r
 ed cube to the green target on
 
-Underfull \hbox (badness 1502) in paragraph at lines 2164--2165
+Underfull \hbox (badness 1502) in paragraph at lines 2329--2330
 []\T1/ptm/m/n/10 (+20) FetchPickAndPlace: \T1/cmtt/m/n/10 ``the robot should pi
 ck up the red cube and place it
 
-Underfull \hbox (badness 1552) in paragraph at lines 2165--2166
+Underfull \hbox (badness 1552) in paragraph at lines 2330--2331
 []\T1/ptm/m/n/10 (+20) FetchSlide: \T1/cmtt/m/n/10 ``the robot should strike th
 e red puck so that it slides to
-[28] (./appendix.tex [29] [30]
-Underfull \vbox (badness 1571) has occurred while \output is active [31]
-[32]
-Underfull \vbox (badness 10000) has occurred while \output is active [33]
-[34]
+(./appendix.tex [30] [31] [32] [33] [34] [35] [36]
 Underfull \hbox (badness 1072) in paragraph at lines 587--611
  []\T1/ptm/b/n/10 (+20) Specialization of V-trace.[] \T1/ptm/m/n/10 (+20) V-tra
 ce de-fines per-step IS ra-tios $\OML/cmm/m/it/10 ^^Z[] \OT1/cmr/m/n/10 = \OML/
@@ -231,26 +275,28 @@ Underfull \hbox (badness 1137) in paragraph at lines 587--611
 \OT1/cmr/m/n/10 )$\T1/ptm/m/n/10 (+20) . The N-step tar-get is $\OML/cmm/m/it/1
 0 v[] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 V\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 s\O
 T1/cmr/m/n/10 ) +
-[35]
+
+Underfull \vbox (badness 2837) has occurred while \output is active [37]
 Underfull \hbox (badness 1221) in paragraph at lines 702--705
  []\T1/ptm/b/n/10 (+20) Bias of the im-ple-mented under-corrected es-ti-ma-tor.
 [] \T1/ptm/m/n/10 (+20) Our run-ning im-ple-men-ta-tion uses
-[36] [37]
+[38]
 Overfull \hbox (82.71632pt too wide) in paragraph at lines 841--875
  [][] 
 
 Overfull \hbox (68.92766pt too wide) in paragraph at lines 882--897
  [][] 
-
-Underfull \vbox (badness 2065) has occurred while \output is active [38]
+[39]
 Overfull \hbox (201.22679pt too wide) in paragraph at lines 925--951
  [][] 
-[39] [40] [41]
+
+Underfull \vbox (badness 6380) has occurred while \output is active [40]
+[41] [42]
 Underfull \hbox (badness 3375) in paragraph at lines 1167--1170
 []\T1/ptm/b/n/10 (+20) Datasets used. \T1/ptm/m/n/10 (+20) Gymnasium-Robotics \
 T1/cmtt/m/n/10 FetchPush-v4\T1/ptm/m/n/10 (+20) , \T1/cmtt/m/n/10 FetchPickAndP
 lace-v4\T1/ptm/m/n/10 (+20) ,
-
+[43]
 Underfull \hbox (badness 10000) in paragraph at lines 1225--1233
 []\T1/ptm/b/n/10 (+20) Code re-lease. \T1/ptm/m/n/10 (+20) The code-base is re-
 leased at []$\T1/cmtt/m/n/10 https : / / github . com /
@@ -272,18 +318,123 @@ n/10 (+20) (anal-y-sis ar-ti-facts). The verified-CF pro-to-
 Underfull \hbox (badness 4303) in paragraph at lines 1225--1233
 \T1/ptm/m/n/10 (+20) type is at \T1/cmtt/m/n/10 src/vlm/verified_counterfactual
 .py\T1/ptm/m/n/10 (+20) ; the smoke har-ness is at
-[42] [43] [44] [45]
+[44] [45] [46] [47]
 Underfull \hbox (badness 3271) in paragraph at lines 1545--1549
  []\T1/ptm/b/n/10 (+20) Adopted pro-duc-tion con-fig-u-ra-tion.[] \T1/cmtt/m/n/
 10 (GPT-4o, \T1/cmtt/m/sc/10 achieved_goal \T1/cmtt/m/n/10 with $\OML/cmm/m/it/
 10 ^^Z  \OT1/cmr/m/n/10 =  0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 05$ \T1/cmtt/m/n/
 10 gate,
-[46] [47]) [48] (./main.aux)
+[48]
+
+LaTeX Warning: Reference `sec:disc:metaworld' on page 49 undefined on input lin
+e 1674.
+
+
+Package natbib Warning: Citation `yu2019metaworld' on page 49 undefined on inpu
+t line 1681.
+
+[49]
+
+LaTeX Warning: Reference `app:mw:equiv' on page 50 undefined on input line 1722
+.
+
+
+LaTeX Warning: Reference `app:mw:equiv' on page 50 undefined on input line 1803
+.
+
+
+LaTeX Warning: Reference `app:mw:equiv' on page 50 undefined on input line 1803
+.
+
+
+LaTeX Warning: Reference `tab:mw:results' on page 50 undefined on input line 18
+07.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1820.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\equiv' on input line 1820.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1820.
+
+
+LaTeX Warning: Reference `fig:mw:curves' on page 50 undefined on input line 182
+5.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1823--1829
+\T1/ptm/m/n/10 (+20) For ev-ery $\OT1/cmr/m/n/10 ([]\OML/cmm/m/it/10 ; []\OT1/c
+mr/m/n/10 )$ \T1/ptm/m/n/10 (+20) pair the two demo vari-ants pro-duced \T1/ptm
+/m/it/10 (+20) bit-identical \T1/ptm/m/n/10 (+20) eval
+
+Underfull \hbox (badness 3343) in paragraph at lines 1823--1829
+\T1/ptm/m/n/10 (+20) curves ($\OT1/cmr/m/n/10 0\OML/cmm/m/it/10 =\OT1/cmr/m/n/1
+0 15$ \T1/ptm/m/n/10 (+20) pairs dif-fer; Fig-ure []). The cause is in the buff
+er's in-ser-tion code
+
+Underfull \hbox (badness 1400) in paragraph at lines 1837--1842
+[]\T1/ptm/b/n/10 (+20) demo-replay. $\OT1/cmr/m/n/10 5000$ \T1/ptm/m/n/10 (+20)
+ de-mos are in-serted with \T1/cmtt/m/n/10 priority=None\T1/ptm/m/n/10 (+20) , 
+so each re-ceives
+[50]
+Underfull \hbox (badness 4279) in paragraph at lines 1842--1848
+[]\T1/ptm/b/n/10 (+20) demo-priority. $\OT1/cmr/m/n/10 5000$ \T1/ptm/m/n/10 (+2
+0) de-mos are in-serted with $[] \OT1/cmr/m/n/10 = 10\OML/cmm/m/it/10 :\OT1/cmr
+/m/n/10 0$\T1/ptm/m/n/10 (+20) , set-ting
+
+Underfull \hbox (badness 4752) in paragraph at lines 1842--1848
+[] \OT1/cmr/m/n/10 = 10\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 0$\T1/ptm/m/n/10 (+20)
+ . All sub-se-quent on-line tran-si-tions en-ter at
+
+Package natbib Warning: Citation `nair2018overcomingexploration' on page 51 und
+efined on input line 1872.
+
+
+Package natbib Warning: Citation `vecerik2017ddpgfd' on page 51 undefined on in
+put line 1873.
+
+
+Package natbib Warning: Citation `rajeswaran2017dapg' on page 51 undefined on i
+nput line 1873.
+
+[51 <./fig_mw_final_success.png> <./fig_mw_steps_to_08.png>] [52 <./fig_mw_curv
+es.png>]
+
+LaTeX Warning: Reference `app:metaworld' on page 53 undefined on input line 195
+6.
+
+
+LaTeX Warning: Reference `fig:mw:final' on page 53 undefined on input line 1956
+.
+
+
+LaTeX Warning: Reference `fig:mw:curves' on page 53 undefined on input line 195
+6.
+
+
+LaTeX Warning: Reference `tab:mw:results' on page 53 undefined on input line 19
+56.
+
+)
+
+Package natbib Warning: There were undefined citations.
+
+[53] (./main.aux)
 
 LaTeX Warning: There were undefined references.
 
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `main.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
 
  )
 (see the transcript file for additional information) </home/daniel-grant/.texli
@@ -311,7 +462,7 @@ mf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist
 /type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/
 type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times
 /utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (48 pages, 1062535 bytes).
+Output written on main.pdf (53 pages, 1363056 bytes).
 Transcript written on main.log.
 This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
 The top-level auxiliary file: main.aux
@@ -468,75 +619,99 @@ For additional information on amsmath, use the `?' option.
 s/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-dist/fonts/enc/dvips/b
 ase/8r.enc}]
 Underfull \vbox (badness 10000) has occurred while \output is active [2]
-[3] [4] [5]
-Underfull \hbox (badness 10000) in paragraph at lines 508--508
+[3]
+
+Package natbib Warning: Citation `vecerik2017ddpgfd' on page 4 undefined on inp
+ut line 330.
+
+
+Package natbib Warning: Citation `hester2018dqfd' on page 4 undefined on input 
+line 331.
+
+
+Package natbib Warning: Citation `rajeswaran2017dapg' on page 4 undefined on in
+put line 332.
+
+
+Package natbib Warning: Citation `nair2018overcomingexploration' on page 4 unde
+fined on input line 334.
+
+
+Package natbib Warning: Citation `yu2019metaworld' on page 4 undefined on input
+ line 340.
+
+[4] [5]
+Underfull \hbox (badness 10000) in paragraph at lines 546--546
 []|\T1/ptm/m/n/9 (+20) MiniGrid, OG-Bench
 [6] [7]
-Underfull \vbox (badness 10000) has occurred while \output is active [8]
-[9]
-Underfull \hbox (badness 1019) in paragraph at lines 957--971
+Underfull \vbox (badness 6477) has occurred while \output is active [8]
+[9] [10]
+Underfull \hbox (badness 1019) in paragraph at lines 995--1009
  []\T1/ptm/b/n/10 (+20) Why out-put type mat-ters: a mech-a-nis-tic ac-count.[]
  \T1/ptm/m/n/10 (+20) The two position-emitting vari-ants
-[10]
-Underfull \vbox (badness 1590) has occurred while \output is active [11]
-[12] [13] [14 <./fig_envs.pdf>] [15 <./fig_headline_v5.pdf>] [16 <./figN_c1v2_m
-odel_comparison.pdf>] [17]
-Underfull \vbox (badness 1629) has occurred while \output is active [18 <./figN
-2_cross_task_transfer.pdf>]
-Underfull \vbox (badness 1648) has occurred while \output is active [19 <./figN
-_c1v2_real_vs_synthetic.pdf>]
-Underfull \vbox (badness 7613) has occurred while \output is active [20]
-Underfull \vbox (badness 10000) has occurred while \output is active [21]
+[11] [12] [13] [14 <./fig_envs.pdf>]
+Underfull \vbox (badness 10000) has occurred while \output is active [15 <./fig
+_headline_v5.pdf>] [16] [17 <./figN_c1v2_model_comparison.pdf>] [18] [19 <./fig
+N2_cross_task_transfer.pdf>] [20 <./figN_c1v2_real_vs_synthetic.pdf>] [21]
+[22]
 
-LaTeX Warning: Reference `tab:vlm_comparison' on page 22 undefined on input lin
-e 1828.
+LaTeX Warning: Reference `tab:vlm_comparison' on page 23 undefined on input lin
+e 1941.
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active [22]
-Underfull \hbox (badness 1590) in paragraph at lines 1875--1918
+Underfull \vbox (badness 10000) has occurred while \output is active [23]
+Underfull \hbox (badness 1590) in paragraph at lines 1988--2031
 \T1/ptm/m/n/10 (+20) (run-ning mean of $\OMS/cmsy/m/n/10 k[] ^^@ \OML/cmm/m/it/
 10 g\OMS/cmsy/m/n/10 k[]$ \T1/ptm/m/n/10 (+20) for ac-cepted CFs), in-tro-duced
  in com-mit \T1/cmtt/m/n/10 a23998b\T1/ptm/m/n/10 (+20) : un-der
 
-Underfull \vbox (badness 10000) has occurred while \output is active [23]
-[24] [25] (./main.bbl [26] [27])
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \vbox (badness 10000) has occurred while \output is active [24]
+
+Package natbib Warning: Citation `yu2019metaworld' on page 25 undefined on inpu
+t line 2068.
+
+
+Underfull \vbox (badness 1838) has occurred while \output is active [25]
+[26] (./main.bbl
+Underfull \vbox (badness 6493) has occurred while \output is active [27]
+[28] [29])
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 []\T1/cmtt/m/n/9 You are an expert robotics analyst. The robot is attempting th
 e
 
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 \T1/cmtt/m/n/9 following task: {task_description}. Examine the {K} keyframes of
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 \T1/cmtt/m/n/9 a failed episode shown below. Identify the single keyframe index
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 \OMS/cmsy/m/n/9 2 f\OT1/cmr/m/n/9 0\OML/cmm/m/it/9 ; [] ; K  \OMS/cmsy/m/n/9 ^^
 @  \OT1/cmr/m/n/9 1\OMS/cmsy/m/n/9 g$ \T1/cmtt/m/n/9 at which the failure becam
 e inevitable, and a 1-2
 
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 \T1/cmtt/m/n/9 sentence reasoning. Return strict JSON: {``failure_frame_index''
 : $\OML/cmm/m/it/9 i$\T1/cmtt/m/n/9 ,
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
-Underfull \hbox (badness 2368) in paragraph at lines 2163--2164
+Underfull \hbox (badness 2368) in paragraph at lines 2328--2329
 []\T1/ptm/m/n/10 (+20) FetchPush: \T1/cmtt/m/n/10 ``the robot should push the r
 ed cube to the green target on
 
-Underfull \hbox (badness 1502) in paragraph at lines 2164--2165
+Underfull \hbox (badness 1502) in paragraph at lines 2329--2330
 []\T1/ptm/m/n/10 (+20) FetchPickAndPlace: \T1/cmtt/m/n/10 ``the robot should pi
 ck up the red cube and place it
 
-Underfull \hbox (badness 1552) in paragraph at lines 2165--2166
+Underfull \hbox (badness 1552) in paragraph at lines 2330--2331
 []\T1/ptm/m/n/10 (+20) FetchSlide: \T1/cmtt/m/n/10 ``the robot should strike th
 e red puck so that it slides to
-[28] (./appendix.tex [29] [30]
-Underfull \vbox (badness 1571) has occurred while \output is active [31]
-[32]
-Underfull \vbox (badness 10000) has occurred while \output is active [33]
+(./appendix.tex [30] [31] [32]
+Underfull \vbox (badness 1571) has occurred while \output is active [33]
 [34]
+Underfull \vbox (badness 10000) has occurred while \output is active [35]
+[36]
 Underfull \hbox (badness 1072) in paragraph at lines 587--611
  []\T1/ptm/b/n/10 (+20) Specialization of V-trace.[] \T1/ptm/m/n/10 (+20) V-tra
 ce de-fines per-step IS ra-tios $\OML/cmm/m/it/10 ^^Z[] \OT1/cmr/m/n/10 = \OML/
@@ -550,21 +725,21 @@ Underfull \hbox (badness 1137) in paragraph at lines 587--611
 \OT1/cmr/m/n/10 )$\T1/ptm/m/n/10 (+20) . The N-step tar-get is $\OML/cmm/m/it/1
 0 v[] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 V\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 s\O
 T1/cmr/m/n/10 ) +
-[35]
+[37]
 Underfull \hbox (badness 1221) in paragraph at lines 702--705
  []\T1/ptm/b/n/10 (+20) Bias of the im-ple-mented under-corrected es-ti-ma-tor.
 [] \T1/ptm/m/n/10 (+20) Our run-ning im-ple-men-ta-tion uses
-[36] [37]
+[38] [39]
 Overfull \hbox (82.71632pt too wide) in paragraph at lines 841--875
  [][] 
 
 Overfull \hbox (68.92766pt too wide) in paragraph at lines 882--897
  [][] 
 
-Underfull \vbox (badness 2065) has occurred while \output is active [38]
+Underfull \vbox (badness 2065) has occurred while \output is active [40]
 Overfull \hbox (201.22679pt too wide) in paragraph at lines 925--951
  [][] 
-[39] [40] [41]
+[41] [42] [43]
 Underfull \hbox (badness 3375) in paragraph at lines 1167--1170
 []\T1/ptm/b/n/10 (+20) Datasets used. \T1/ptm/m/n/10 (+20) Gymnasium-Robotics \
 T1/cmtt/m/n/10 FetchPush-v4\T1/ptm/m/n/10 (+20) , \T1/cmtt/m/n/10 FetchPickAndP
@@ -591,15 +766,84 @@ n/10 (+20) (anal-y-sis ar-ti-facts). The verified-CF pro-to-
 Underfull \hbox (badness 4303) in paragraph at lines 1225--1233
 \T1/ptm/m/n/10 (+20) type is at \T1/cmtt/m/n/10 src/vlm/verified_counterfactual
 .py\T1/ptm/m/n/10 (+20) ; the smoke har-ness is at
-[42] [43] [44] [45]
+[44] [45] [46] [47]
 Underfull \hbox (badness 3271) in paragraph at lines 1545--1549
  []\T1/ptm/b/n/10 (+20) Adopted pro-duc-tion con-fig-u-ra-tion.[] \T1/cmtt/m/n/
 10 (GPT-4o, \T1/cmtt/m/sc/10 achieved_goal \T1/cmtt/m/n/10 with $\OML/cmm/m/it/
 10 ^^Z  \OT1/cmr/m/n/10 =  0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 05$ \T1/cmtt/m/n/
 10 gate,
-[46] [47]) [48] (./main.aux)
+[48]
+
+Package natbib Warning: Citation `yu2019metaworld' on page 49 undefined on inpu
+t line 1681.
+
+[49]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1820.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\equiv' on input line 1820.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1820.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1823--1829
+\T1/ptm/m/n/10 (+20) For ev-ery $\OT1/cmr/m/n/10 ([]\OML/cmm/m/it/10 ; []\OT1/c
+mr/m/n/10 )$ \T1/ptm/m/n/10 (+20) pair the two demo vari-ants pro-duced \T1/ptm
+/m/it/10 (+20) bit-identical \T1/ptm/m/n/10 (+20) eval
+
+Underfull \hbox (badness 3312) in paragraph at lines 1823--1829
+\T1/ptm/m/n/10 (+20) curves ($\OT1/cmr/m/n/10 0\OML/cmm/m/it/10 =\OT1/cmr/m/n/1
+0 15$ \T1/ptm/m/n/10 (+20) pairs dif-fer; Fig-ure []14[]). The cause is in the 
+buffer's in-ser-tion code
+[50]
+Underfull \hbox (badness 1400) in paragraph at lines 1837--1842
+[]\T1/ptm/b/n/10 (+20) demo-replay. $\OT1/cmr/m/n/10 5000$ \T1/ptm/m/n/10 (+20)
+ de-mos are in-serted with \T1/cmtt/m/n/10 priority=None\T1/ptm/m/n/10 (+20) , 
+so each re-ceives
+
+Underfull \hbox (badness 4279) in paragraph at lines 1842--1848
+[]\T1/ptm/b/n/10 (+20) demo-priority. $\OT1/cmr/m/n/10 5000$ \T1/ptm/m/n/10 (+2
+0) de-mos are in-serted with $[] \OT1/cmr/m/n/10 = 10\OML/cmm/m/it/10 :\OT1/cmr
+/m/n/10 0$\T1/ptm/m/n/10 (+20) , set-ting
+
+Underfull \hbox (badness 4752) in paragraph at lines 1842--1848
+[] \OT1/cmr/m/n/10 = 10\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 0$\T1/ptm/m/n/10 (+20)
+ . All sub-se-quent on-line tran-si-tions en-ter at
+[51 <./fig_mw_final_success.png>]
+
+Package natbib Warning: Citation `nair2018overcomingexploration' on page 52 und
+efined on input line 1872.
+
+
+Package natbib Warning: Citation `vecerik2017ddpgfd' on page 52 undefined on in
+put line 1873.
+
+
+Package natbib Warning: Citation `rajeswaran2017dapg' on page 52 undefined on i
+nput line 1873.
+
+
+Underfull \vbox (badness 2005) has occurred while \output is active [52 <./fig_
+mw_steps_to_08.png> <./fig_mw_curves.png>])
+
+Package natbib Warning: There were undefined citations.
+
+[53] (./main.aux
+
+Package natbib Warning: Citation(s) may have changed.
+(natbib)                Rerun to get citations correct.
+
+)
 
 LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
  )
 (see the transcript file for additional information) </home/daniel-grant/.texli
@@ -627,7 +871,7 @@ mf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist
 /type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/
 type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times
 /utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (48 pages, 1062535 bytes).
+Output written on main.pdf (53 pages, 1365333 bytes).
 Transcript written on main.log.
 This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex)
  restricted \write18 enabled.
@@ -781,74 +1025,72 @@ s/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-dist/fonts/enc/dvips/b
 ase/8r.enc}]
 Underfull \vbox (badness 10000) has occurred while \output is active [2]
 [3] [4] [5]
-Underfull \hbox (badness 10000) in paragraph at lines 508--508
+Underfull \hbox (badness 10000) in paragraph at lines 546--546
 []|\T1/ptm/m/n/9 (+20) MiniGrid, OG-Bench
 [6] [7]
-Underfull \vbox (badness 10000) has occurred while \output is active [8]
-[9]
-Underfull \hbox (badness 1019) in paragraph at lines 957--971
+Underfull \vbox (badness 6477) has occurred while \output is active [8]
+[9] [10]
+Underfull \hbox (badness 1019) in paragraph at lines 995--1009
  []\T1/ptm/b/n/10 (+20) Why out-put type mat-ters: a mech-a-nis-tic ac-count.[]
  \T1/ptm/m/n/10 (+20) The two position-emitting vari-ants
-[10]
-Underfull \vbox (badness 1590) has occurred while \output is active [11]
-[12] [13] [14 <./fig_envs.pdf>] [15 <./fig_headline_v5.pdf>] [16 <./figN_c1v2_m
-odel_comparison.pdf>] [17]
-Underfull \vbox (badness 1629) has occurred while \output is active [18 <./figN
-2_cross_task_transfer.pdf>]
-Underfull \vbox (badness 1648) has occurred while \output is active [19 <./figN
-_c1v2_real_vs_synthetic.pdf>]
-Underfull \vbox (badness 7613) has occurred while \output is active [20]
-Underfull \vbox (badness 10000) has occurred while \output is active [21]
+[11] [12] [13] [14 <./fig_envs.pdf>]
+Underfull \vbox (badness 10000) has occurred while \output is active [15 <./fig
+_headline_v5.pdf>] [16] [17 <./figN_c1v2_model_comparison.pdf>] [18] [19 <./fig
+N2_cross_task_transfer.pdf>] [20 <./figN_c1v2_real_vs_synthetic.pdf>] [21]
+[22]
 
-LaTeX Warning: Reference `tab:vlm_comparison' on page 22 undefined on input lin
-e 1828.
+LaTeX Warning: Reference `tab:vlm_comparison' on page 23 undefined on input lin
+e 1941.
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active [22]
-Underfull \hbox (badness 1590) in paragraph at lines 1875--1918
+Underfull \vbox (badness 10000) has occurred while \output is active [23]
+Underfull \hbox (badness 1590) in paragraph at lines 1988--2031
 \T1/ptm/m/n/10 (+20) (run-ning mean of $\OMS/cmsy/m/n/10 k[] ^^@ \OML/cmm/m/it/
 10 g\OMS/cmsy/m/n/10 k[]$ \T1/ptm/m/n/10 (+20) for ac-cepted CFs), in-tro-duced
  in com-mit \T1/cmtt/m/n/10 a23998b\T1/ptm/m/n/10 (+20) : un-der
 
-Underfull \vbox (badness 10000) has occurred while \output is active [23]
-[24] [25] (./main.bbl [26] [27])
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \vbox (badness 10000) has occurred while \output is active [24]
+Underfull \vbox (badness 1838) has occurred while \output is active [25]
+[26] (./main.bbl
+Underfull \vbox (badness 6493) has occurred while \output is active [27]
+[28] [29])
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 []\T1/cmtt/m/n/9 You are an expert robotics analyst. The robot is attempting th
 e
 
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 \T1/cmtt/m/n/9 following task: {task_description}. Examine the {K} keyframes of
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 \T1/cmtt/m/n/9 a failed episode shown below. Identify the single keyframe index
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 \OMS/cmsy/m/n/9 2 f\OT1/cmr/m/n/9 0\OML/cmm/m/it/9 ; [] ; K  \OMS/cmsy/m/n/9 ^^
 @  \OT1/cmr/m/n/9 1\OMS/cmsy/m/n/9 g$ \T1/cmtt/m/n/9 at which the failure becam
 e inevitable, and a 1-2
 
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
+Underfull \hbox (badness 10000) in paragraph at lines 2322--2323
 \T1/cmtt/m/n/9 sentence reasoning. Return strict JSON: {``failure_frame_index''
 : $\OML/cmm/m/it/9 i$\T1/cmtt/m/n/9 ,
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
-Underfull \hbox (badness 2368) in paragraph at lines 2163--2164
+Underfull \hbox (badness 2368) in paragraph at lines 2328--2329
 []\T1/ptm/m/n/10 (+20) FetchPush: \T1/cmtt/m/n/10 ``the robot should push the r
 ed cube to the green target on
 
-Underfull \hbox (badness 1502) in paragraph at lines 2164--2165
+Underfull \hbox (badness 1502) in paragraph at lines 2329--2330
 []\T1/ptm/m/n/10 (+20) FetchPickAndPlace: \T1/cmtt/m/n/10 ``the robot should pi
 ck up the red cube and place it
 
-Underfull \hbox (badness 1552) in paragraph at lines 2165--2166
+Underfull \hbox (badness 1552) in paragraph at lines 2330--2331
 []\T1/ptm/m/n/10 (+20) FetchSlide: \T1/cmtt/m/n/10 ``the robot should strike th
 e red puck so that it slides to
-[28] (./appendix.tex [29] [30]
-Underfull \vbox (badness 1571) has occurred while \output is active [31]
-[32]
-Underfull \vbox (badness 10000) has occurred while \output is active [33]
+(./appendix.tex [30] [31] [32]
+Underfull \vbox (badness 1571) has occurred while \output is active [33]
 [34]
+Underfull \vbox (badness 10000) has occurred while \output is active [35]
+[36]
 Underfull \hbox (badness 1072) in paragraph at lines 587--611
  []\T1/ptm/b/n/10 (+20) Specialization of V-trace.[] \T1/ptm/m/n/10 (+20) V-tra
 ce de-fines per-step IS ra-tios $\OML/cmm/m/it/10 ^^Z[] \OT1/cmr/m/n/10 = \OML/
@@ -862,21 +1104,21 @@ Underfull \hbox (badness 1137) in paragraph at lines 587--611
 \OT1/cmr/m/n/10 )$\T1/ptm/m/n/10 (+20) . The N-step tar-get is $\OML/cmm/m/it/1
 0 v[] \OT1/cmr/m/n/10 = \OML/cmm/m/it/10 V\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 s\O
 T1/cmr/m/n/10 ) +
-[35]
+[37]
 Underfull \hbox (badness 1221) in paragraph at lines 702--705
  []\T1/ptm/b/n/10 (+20) Bias of the im-ple-mented under-corrected es-ti-ma-tor.
 [] \T1/ptm/m/n/10 (+20) Our run-ning im-ple-men-ta-tion uses
-[36] [37]
+[38] [39]
 Overfull \hbox (82.71632pt too wide) in paragraph at lines 841--875
  [][] 
 
 Overfull \hbox (68.92766pt too wide) in paragraph at lines 882--897
  [][] 
 
-Underfull \vbox (badness 2065) has occurred while \output is active [38]
+Underfull \vbox (badness 2065) has occurred while \output is active [40]
 Overfull \hbox (201.22679pt too wide) in paragraph at lines 925--951
  [][] 
-[39] [40] [41]
+[41] [42] [43]
 Underfull \hbox (badness 3375) in paragraph at lines 1167--1170
 []\T1/ptm/b/n/10 (+20) Datasets used. \T1/ptm/m/n/10 (+20) Gymnasium-Robotics \
 T1/cmtt/m/n/10 FetchPush-v4\T1/ptm/m/n/10 (+20) , \T1/cmtt/m/n/10 FetchPickAndP
@@ -903,13 +1145,51 @@ n/10 (+20) (anal-y-sis ar-ti-facts). The verified-CF pro-to-
 Underfull \hbox (badness 4303) in paragraph at lines 1225--1233
 \T1/ptm/m/n/10 (+20) type is at \T1/cmtt/m/n/10 src/vlm/verified_counterfactual
 .py\T1/ptm/m/n/10 (+20) ; the smoke har-ness is at
-[42] [43] [44] [45]
+[44] [45] [46] [47]
 Underfull \hbox (badness 3271) in paragraph at lines 1545--1549
  []\T1/ptm/b/n/10 (+20) Adopted pro-duc-tion con-fig-u-ra-tion.[] \T1/cmtt/m/n/
 10 (GPT-4o, \T1/cmtt/m/sc/10 achieved_goal \T1/cmtt/m/n/10 with $\OML/cmm/m/it/
 10 ^^Z  \OT1/cmr/m/n/10 =  0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 05$ \T1/cmtt/m/n/
 10 gate,
-[46] [47]) [48] (./main.aux)
+[48] [49]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1820.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\equiv' on input line 1820.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 1820.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1823--1829
+\T1/ptm/m/n/10 (+20) For ev-ery $\OT1/cmr/m/n/10 ([]\OML/cmm/m/it/10 ; []\OT1/c
+mr/m/n/10 )$ \T1/ptm/m/n/10 (+20) pair the two demo vari-ants pro-duced \T1/ptm
+/m/it/10 (+20) bit-identical \T1/ptm/m/n/10 (+20) eval
+
+Underfull \hbox (badness 3312) in paragraph at lines 1823--1829
+\T1/ptm/m/n/10 (+20) curves ($\OT1/cmr/m/n/10 0\OML/cmm/m/it/10 =\OT1/cmr/m/n/1
+0 15$ \T1/ptm/m/n/10 (+20) pairs dif-fer; Fig-ure []14[]). The cause is in the 
+buffer's in-ser-tion code
+[50]
+Underfull \hbox (badness 1400) in paragraph at lines 1837--1842
+[]\T1/ptm/b/n/10 (+20) demo-replay. $\OT1/cmr/m/n/10 5000$ \T1/ptm/m/n/10 (+20)
+ de-mos are in-serted with \T1/cmtt/m/n/10 priority=None\T1/ptm/m/n/10 (+20) , 
+so each re-ceives
+
+Underfull \hbox (badness 4279) in paragraph at lines 1842--1848
+[]\T1/ptm/b/n/10 (+20) demo-priority. $\OT1/cmr/m/n/10 5000$ \T1/ptm/m/n/10 (+2
+0) de-mos are in-serted with $[] \OT1/cmr/m/n/10 = 10\OML/cmm/m/it/10 :\OT1/cmr
+/m/n/10 0$\T1/ptm/m/n/10 (+20) , set-ting
+
+Underfull \hbox (badness 4752) in paragraph at lines 1842--1848
+[] \OT1/cmr/m/n/10 = 10\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 0$\T1/ptm/m/n/10 (+20)
+ . All sub-se-quent on-line tran-si-tions en-ter at
+[51 <./fig_mw_final_success.png>] [52 <./fig_mw_steps_to_08.png> <./fig_mw_curv
+es.png>]) [53] (./main.aux)
 
 LaTeX Warning: There were undefined references.
 
@@ -939,5 +1219,5 @@ mf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist
 /type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texlive/texmf-dist/fonts/
 type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times
 /utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (48 pages, 1062535 bytes).
+Output written on main.pdf (53 pages, 1366156 bytes).
 Transcript written on main.log.
