@@ -31,26 +31,75 @@
 
 \maketitle
 
-\begin{abstract}
-We address key challenges in experience replay for sparse-reward
-goal-conditioned manipulation: how to collect informative
-VLM-generated correction data and how to effectively update the
-replay buffer with this new data. We introduce VLM-Verified
-Counterfactual Hindsight (verified-CF), which contains two novel
-components: 1) a Semantic PER formulation that leverages a frozen
-vision-language model, allowing the priority to incorporate causal
-credit-assignment signal without modifying the value target; and 2)
-a verified counterfactual relabel mechanism that learns from
-VLM-proposed action sequences while incorporating simulator feedback
-and sparse-reward verification. Our system significantly enhances
-performance on precise sparse-reward manipulation tasks using minimal
-additional samples, improving base policy success rates by over 40\%
-on FetchSlide while outperforming both PER and HER baselines at a
-matched training budget. Through extensive simulation experiments
-and a three-model prompt-design sweep, we provide practical guidance
-for implementing effective VLM-in-replay in goal-conditioned robot
-manipulation tasks. Code and run logs accompany the report.
-\end{abstract}
+\section*{Extended Abstract}
+\label{sec:extended-abstract}
+
+\paragraph{Problem.}
+Sparse-reward manipulation is, at its core, a credit-assignment
+problem. On Gymnasium-Robotics Fetch~\citep{delazcano2024gymrobotics}
+--- Push, PickAndPlace, Slide --- a fresh policy succeeds on fewer
+than one in a hundred episodes. The single bit of reward at the end
+of a 50-step trajectory must bootstrap backward through TD, and it
+decays geometrically along the way. HER patches over part of this by
+relabeling failures against whatever goal the agent did reach, but
+it cannot say \emph{which} timestep made the failure inevitable.
+Prioritized experience replay (PER) is in similar trouble: it
+upweights transitions with large TD-errors, but the sparse regime is
+exactly the one where the TD signal is missing. The concurrent
+VLM-RB of \citet{sharony2026vlmrb} folds a frozen vision-language
+model into the priority as an \emph{additive} bias; we go the other
+way, with a \emph{multiplicative} form, and add a counterfactual
+channel that the simulator itself certifies.
+
+\paragraph{Methodological contributions.}
+\textbf{(1) Semantic PER as IS-posterior reweighting.}
+Read the VLM as an approximation $q_\phi(t^\star\!\mid\!\tau)$ to the
+posterior over which timestep doomed the episode. Multiply that into
+the TD-error priority. PER's standard importance-sampling weight remains
+a sound correction, with a bias bound we can write down; miscalibration
+inflates the variance of $\mu$, but it does not bias the value target.
+The additive VLM-RB mixture, by contrast, quietly retargets the Bellman
+loss to a $\lambda$-weighted objective and does not correct for the
+shift.
+\textbf{(2) VLM-Verified Counterfactual Hindsight.}
+Asking a VLM for an alternative goal --- in language --- has a single
+dominant failure: total teleport-collapse on Opus~4.7 over FetchPush.
+Our workaround is structural: ask instead for a corrective action
+sequence, run it in a fork of the training simulator, and only write
+the trajectory to the buffer if the env's own sparse reward fires.
+Confidence is then exactly $1.0$. Modeling error is exactly zero.
+
+\paragraph{Main findings.}
+(i) \textbf{Verified-CF matches VLM-CF; wins on Slide.}
+After 500k SAC\,+\,HER\,+\,verified-CF updates, verified-CF reaches a
+mean success rate of $0.606$ across the three Fetch envs
+($0.85 / 0.35 / 0.617$ on Push / PickAndPlace / Slide). VLM-CF hits
+$0.622$ --- effectively a tie at three seeds ($\Delta = -0.016$, mean
+$\pm$ standard error reported throughout). On Slide alone verified-CF
+posts the higher mean ($0.617$ vs.\ $0.550$, $+0.067$). Both gain
+$+0.45 / +0.434$ on Slide over PER@3M / HER@250k baselines
+(Fig.~\ref{fig:main}).
+(ii) \textbf{Kill criterion, stated in advance and honored.} The Phase-1 Oracle-CF
+ablation came in under our $+0.10$ kill threshold on FetchPickAndPlace
+at 250k steps ($\Delta = -0.05$). We honored the kill and pivoted the
+focus to the IS-posterior framing and the verifier.
+(iii) \textbf{Teleport-collapse is a prompt-architectural failure, not a
+model failure.} Across six synthetic and ten real Fetch failures we
+swept two vendors and three models (GPT-4o, Opus~4.7, Sonnet~4.5).
+\texttt{(GPT-4o, achieved\_goal)} teleports on zero of six; Opus
+teleports on four of four under the same prompt.
+(iv) \textbf{Cross-task transfer.} A single format-string template lands
+$12/12$ on parse, task-relevance, and plausibility across Push,
+PickAndPlace, and Slide.
+
+\paragraph{Honest negative.}
+Verified-CF has a cold-start failure mode. On PnP seed~42 it
+rejected the first ${\sim}80$ VLM calls outright (a full $100\%$),
+so for that window the agent was effectively running a more
+expensive flavor of HER. The multiplicative-vs-additive contrast is
+analytical at this point (Eq.~\ref{eq:main}); a direct empirical
+VLM-RB head-to-head is left for future work.
+
 
 \section{Introduction}
 \label{sec:intro}
