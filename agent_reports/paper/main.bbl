@@ -1,4 +1,4 @@
-\begin{thebibliography}{36}
+\begin{thebibliography}{38}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -178,6 +178,16 @@ Eduardo Pignatelli, Johan Ferret, Tim Rockt{\"a}schel, Edward Grefenstette,
   in {RL}.
 \newblock \emph{arXiv preprint arXiv:2409.12798}, 2024.
 
+\bibitem[Plappert et~al.(2018)Plappert, Andrychowicz, Ray, McGrew, Baker,
+  Powell, Schneider, Tobin, Chociej, Welinder, Kumar, and
+  Zaremba]{plappert2018multigoal}
+Matthias Plappert, Marcin Andrychowicz, Alex Ray, Bob McGrew, Bowen Baker,
+  Glenn Powell, Jonas Schneider, Josh Tobin, Maciek Chociej, Peter Welinder,
+  Vikash Kumar, and Wojciech Zaremba.
+\newblock Multi-goal reinforcement learning: Challenging robotics environments
+  and request for research.
+\newblock \emph{arXiv preprint arXiv:1802.09464}, 2018.
+
 \bibitem[Pleiss et~al.(2025)Pleiss, Sutter, and Schiffer]{pleiss2025reaper}
 Leonard~S. Pleiss, Tobias Sutter, and Maximilian Schiffer.
 \newblock Reliability-adjusted prioritized experience replay.
@@ -265,5 +275,10 @@ Kaiwen Zha et~al.
   reasoning.
 \newblock In \emph{Advances in Neural Information Processing Systems
   (NeurIPS)}, 2025.
+
+\bibitem[Zhao and Tresp(2018)]{zhao2018energy}
+Rui Zhao and Volker Tresp.
+\newblock Energy-based hindsight experience prioritization.
+\newblock In \emph{Conference on Robot Learning (CoRL)}, 2018.
 
 \end{thebibliography}

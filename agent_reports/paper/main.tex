@@ -1082,6 +1082,28 @@ sample size. Eval success rate is the fraction of the 20 eval episodes for
 which $r_t\!=\!0$ fires at any step, time-averaged over the last
 50\,k-step window to reduce per-evaluation noise.
 
+\paragraph{Horizon caveat and baselines calibration.}
+Our 500\,k-step (and 1\,M-step in-flight) training budget is intentionally
+shorter than the canonical Fetch+HER horizon of 4.75\,M timesteps reported
+by \citet{plappert2018multigoal} and 8\,M timesteps reported by
+\citet{andrychowicz2017her}, both of which use DDPG. At 4.75\,M, the
+canonical HER+DDPG asymptotes are approximately $0.99$ / $0.95$ / $0.75$ on
+\texttt{FetchPush} / \texttt{FetchPickAndPlace} / \texttt{FetchSlide}
+respectively (\citealp{plappert2018multigoal}, Fig.\ 3), and
+\citet{zhao2018energy} independently report a HER baseline of $0.938$ on
+\texttt{FetchPickAndPlace} at 50 epochs. \citet{plappert2018multigoal} note
+that ``it took around 2{,}000{,}000 timesteps to reach a median success
+rate of $0.9$'' on Push---i.e., canonical training itself does not saturate
+until well past our budget. Our absolute success rates at 500\,k are
+therefore not directly comparable to these asymptotes; the comparisons we
+draw are between \emph{methods at matched horizon}---all curves share the
+same 500\,k-step budget---and the Semantic-PER vs.\ uniform PER gap (rather
+than absolute SR) is the load-bearing claim. A 1\,M-step HER reference run,
+currently in flight, will close part of the absolute gap; its preliminary
+\texttt{FetchPickAndPlace} value is $0.40$ mean over $n\!=\!2$ seeds vs.\
+$0.18$ at 250\,k, consistent with the convex shape of canonical learning
+curves at the matched-step regime.
+
 \paragraph{VLM API and cost.}
 VLM calls use Claude Opus 4.7 and GPT-4o (\texttt{gpt-4o-2024-08-06}) via
 the official APIs at $\le\!\$0.05$ per call. Calls are issued only on failed
