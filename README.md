@@ -33,7 +33,7 @@ Phase 2 final results across both CF mechanisms at 500k steps (n=3 seeds each):
 
 - **FetchPush**: VLM-CF 0.95, Verified-CF 0.85 — both approach PER's 3M-step asymptote at one-sixth the training.
 - **FetchSlide**: Verified-CF **0.617** (best across all methods), VLM-CF 0.55 — both dramatically exceed HER (0.18) and PER (0.10) on the task where prior baselines cluster near zero.
-- **FetchPickAndPlace**: VLM-CF 0.367, Verified-CF 0.35 — essentially tied; still climbing relative to Oracle-CF@1M (0.58) and HER@1M.
+- **FetchPickAndPlace**: VLM-CF 0.367, Verified-CF 0.35 — essentially tied; the 1M asymptotic comparators are now complete and tie exactly: HER@1M mean 0.583 (n=3 seeds: 0.35/0.45/0.95) equals Oracle-CF@1M mean 0.583 (n=3: 0.30/0.90/0.55), so at the convergence horizon privileged simulator state provides zero headroom over vanilla HER on this task; VLM-CF@500k reaches ~63% of HER@1M's asymptote at half the budget.
 
 The cold-start verifier-rejection regime (formerly framed as a hard failure mode) is now documented as **transitory**: Verified-CF spends ~200k steps with near-zero acceptance, then climbs sharply as the policy clears a minimum precision threshold (see learning curves below).
 

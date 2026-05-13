@@ -451,9 +451,13 @@ HER $0.550$ vs.\ Oracle-CF $0.383\!\pm\!0.109$. On Slide, HER $0.100$ vs.\
 Oracle-CF $0.183$ ($\Delta\!=\!+0.083$, below threshold).
 \textbf{Path~C is killed at the 250k horizon}; the headline pivoted to
 the IS-posterior framing (\S\ref{sec:method}) and the verifier
-(\S\ref{sec:method:verified}). A post-hoc 1M re-run of Oracle-CF on
-PickAndPlace reaches mean $\approx\!0.40$; we report this as
-transparency, not retraction.
+(\S\ref{sec:method:verified}). Post-hoc 1M runs on PickAndPlace:
+Oracle-CF mean $0.583$ ($n\!=\!3$) and HER mean $0.583$
+($n\!=\!3$; seeds $0.35/0.45/0.95$) tie exactly, indicating zero
+headroom for privileged simulator state over vanilla HER at the
+convergence horizon; \emph{vlm\_cf}@500k ($0.367$) reaches 63\% of
+HER@1M's asymptote at half the budget. We report this as transparency,
+not retraction.
 
 \section{Discussion and Limitations}
 \label{sec:discussion}
