@@ -1,0 +1,22 @@
+[project]
+name = "cs285"
+version = "0.1.0"
+description = "Expert-demonstration replay priority for sparse-reward MetaWorld SAC"
+requires-python = ">=3.11"
+dependencies = [
+    "gymnasium>=1.0.0",
+    "matplotlib>=3.9.0",
+    "metaworld>=3.0.0",
+    "modal>=1.4.0",
+    "mujoco>=3.2.0",
+    "numpy>=1.26.0,<2.0",
+    "pandas>=2.2.0",
+    "pillow>=11.0.0",
+    "pyyaml>=6.0.3",
+    "scipy>=1.13.0",
+    "seaborn>=0.13.0",
+    "torch==2.5.1",
+]
+
+[tool.uv]
+package = false
