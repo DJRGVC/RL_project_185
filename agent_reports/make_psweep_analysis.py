@@ -274,29 +274,30 @@ def make_bar_chart(rows, out_dir: pathlib.Path, tag: str) -> None:
     colors = [cmap(0.15 + 0.7 * (i / max(len(rows) - 1, 1))) for i in range(len(rows))]
 
     for i, row in enumerate(rows):
-        if not has_data[i]:
-            # Hollow placeholder bar
-            ax.bar(xs[i], 0.0, 0.7, color="white", edgecolor="#999999",
-                   linewidth=0.6, hatch="//", zorder=2,
-                   label=None)
-            continue
-        ax.bar(
-            xs[i], means[i], 0.7,
-            yerr=ses[i] if ses[i] > 0 else None,
-            color=colors[i],
-            edgecolor="white", linewidth=0.4,
-            error_kw=dict(elinewidth=0.7, capsize=2.0,
-                          capthick=0.7, ecolor="#333333"),
-            zorder=3,
-        )
+        if has_data[i]:
+            ax.bar(
+                xs[i], means[i], 0.7,
+                yerr=ses[i] if ses[i] > 0 else None,
+                color=colors[i],
+                edgecolor="white", linewidth=0.4,
+                error_kw=dict(elinewidth=0.7, capsize=2.0,
+                              capthick=0.7, ecolor="#333333"),
+                zorder=3,
+            )
+        else:
+            # Hollow placeholder bar — height 0, just for the gridline anchor.
+            ax.bar(xs[i], 0.0, 0.7, color="white", edgecolor="#bbbbbb",
+                   linewidth=0.5, hatch="//", zorder=2)
 
-        # Seed dots (over the bar)
-        vals = row["finished_vals"] + [v for v in row["all_vals"] if v not in row["finished_vals"]]
+        # Seed dots (regardless of whether the bar has a "finished" mean).
+        # Closed dots for finished seeds, open dots for partial (running).
+        finished = row["finished_vals"]
+        running = [v for v in row["all_vals"] if v not in finished]
+        vals = finished + running
         if vals:
             rng = np.random.default_rng(42 + i)
             jitter = rng.uniform(-0.18, 0.18, size=len(vals))
-            # Closed dots for finished seeds, open dots for partial (running)
-            n_fin = len(row["finished_vals"])
+            n_fin = len(finished)
             for k, v in enumerate(vals):
                 is_fin = k < n_fin
                 ax.scatter(
@@ -308,10 +309,14 @@ def make_bar_chart(rows, out_dir: pathlib.Path, tag: str) -> None:
                     zorder=5, clip_on=True,
                 )
 
-        # Annotate "n/3" if not complete
+        # Annotate "n/3" if not complete.
         if row["n_finished"] < 3:
+            anchor_y = (means[i] + (ses[i] if ses[i] else 0)) if has_data[i] else 0.0
+            # Lift annotation above the highest seed dot if it sits higher.
+            if vals:
+                anchor_y = max(anchor_y, max(vals))
             ax.annotate(f"n={row['n_finished']}/3",
-                        xy=(xs[i], means[i] + (ses[i] if ses[i] else 0) + 0.02),
+                        xy=(xs[i], anchor_y + 0.03),
                         ha="center", va="bottom",
                         fontsize=6.5, color="#666666", style="italic",
                         annotation_clip=False)
